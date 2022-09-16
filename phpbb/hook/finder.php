@@ -26,7 +26,7 @@ class finder
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -36,13 +36,13 @@ class finder
 	/**
 	* Creates a new finder instance.
 	*
-	* @param string $phpbb_root_path Path to the phpbb root directory
+	* @param string $engine_root_path Path to the phpbb root directory
 	* @param string $php_ext php file extension
 	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct($engine_root_path, $php_ext, \phpbb\cache\driver\driver_interface $cache = null)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
 	}

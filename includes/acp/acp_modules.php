@@ -39,10 +39,10 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template, $module, $request, $phpbb_log, $phpbb_container;
+		global $db, $user, $template, $module, $request, $engine_log, $engine_container;
 
 		/** @var \phpbb\module\module_manager $module_manager */
-		$module_manager = $phpbb_container->get('module.manager');
+		$module_manager = $engine_container->get('module.manager');
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
 		define('MODULE_INCLUDE', true);
@@ -102,7 +102,7 @@ class acp_modules
 					{
 						$row = $module_manager->get_module_row($module_id, $this->module_class);
 						$module_manager->delete_module($module_id, $this->module_class);
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_REMOVED', false, array($user->lang($row['module_langname'])));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_REMOVED', false, array($user->lang($row['module_langname'])));
 					}
 					catch (module_exception $e)
 					{
@@ -157,7 +157,7 @@ class acp_modules
 						AND module_id = $module_id";
 				$db->sql_query($sql);
 
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($user->lang($row['module_langname'])));
+				$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($user->lang($row['module_langname'])));
 				$module_manager->remove_cache_file($this->module_class);
 
 			break;
@@ -191,7 +191,7 @@ class acp_modules
 				{
 					$move_module_name = $module_manager->move_module_by($row, $this->module_class, $action, 1);
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($user->lang($row['module_langname']), $move_module_name));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($user->lang($row['module_langname']), $move_module_name));
 					$module_manager->remove_cache_file($this->module_class);
 				}
 				catch (module_exception $e)
@@ -241,7 +241,7 @@ class acp_modules
 						try
 						{
 							$module_manager->update_module_data($module_data);
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_ADD', false, array($user->lang($module_data['module_langname'])));
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_ADD', false, array($user->lang($module_data['module_langname'])));
 						}
 						catch (\phpbb\module\exception\module_exception $e)
 						{
@@ -351,7 +351,7 @@ class acp_modules
 					try
 					{
 						$module_manager->update_module_data($module_data);
-						$phpbb_log->add('admin',
+						$engine_log->add('admin',
 							$user->data['user_id'],
 							$user->ip,
 							($action === 'edit') ? 'LOG_MODULE_EDIT' : 'LOG_MODULE_ADD',

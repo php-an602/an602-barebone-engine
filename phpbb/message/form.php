@@ -30,7 +30,7 @@ abstract class form
 	protected $user;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 	/** @var string */
 	protected $phpEx;
 
@@ -48,12 +48,12 @@ abstract class form
 	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\user $user
-	* @param string $phpbb_root_path
+	* @param string $engine_root_path
 	* @param string $phpEx
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $engine_root_path, $phpEx)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->phpEx = $phpEx;
 		$this->user = $user;
 		$this->auth = $auth;

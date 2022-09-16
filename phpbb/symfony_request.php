@@ -24,15 +24,15 @@ class symfony_request extends Request
 	/**
 	* Constructor
 	*
-	* @param \phpbb\request\request_interface $phpbb_request
+	* @param \phpbb\request\request_interface $engine_request
 	*/
-	public function __construct(\phpbb\request\request_interface $phpbb_request)
+	public function __construct(\phpbb\request\request_interface $engine_request)
 	{
-		$get_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::GET);
-		$post_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::POST);
-		$server_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::SERVER);
-		$files_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::FILES);
-		$cookie_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::COOKIE);
+		$get_parameters = $engine_request->get_super_global(\phpbb\request\request_interface::GET);
+		$post_parameters = $engine_request->get_super_global(\phpbb\request\request_interface::POST);
+		$server_parameters = $engine_request->get_super_global(\phpbb\request\request_interface::SERVER);
+		$files_parameters = $engine_request->get_super_global(\phpbb\request\request_interface::FILES);
+		$cookie_parameters = $engine_request->get_super_global(\phpbb\request\request_interface::COOKIE);
 
 		parent::__construct($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 	}

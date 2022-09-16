@@ -514,7 +514,7 @@ class auth
 	*/
 	function acl_clear_prefetch($user_id = false)
 	{
-		global $db, $cache, $phpbb_dispatcher;
+		global $db, $cache, $engine_dispatcher;
 
 		// Rebuild options cache
 		$cache->destroy('_role_cache');
@@ -561,7 +561,7 @@ class auth
 		* @since 3.1.11-RC1
 		*/
 		$vars = array('user_id');
-		extract($phpbb_dispatcher->trigger_event('core.acl_clear_prefetch_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.acl_clear_prefetch_after', compact($vars)));
 
 		return;
 	}
@@ -937,11 +937,11 @@ class auth
 	*/
 	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
-		global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
-		global $phpbb_dispatcher;
+		global $db, $user, $engine_root_path, $phpEx, $engine_container;
+		global $engine_dispatcher;
 
 		/* @var $provider_collection \phpbb\auth\provider_collection */
-		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$provider_collection = $engine_container->get('auth.provider_collection');
 
 		$provider = $provider_collection->get_provider();
 		if ($provider)
@@ -954,7 +954,7 @@ class auth
 				// we are going to use the user_add function so include functions_user.php if it wasn't defined yet
 				if (!function_exists('user_add'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($engine_root_path . 'includes/functions_user.' . $phpEx);
 				}
 
 				user_add($login['user_row'], (isset($login['cp_data'])) ? $login['cp_data'] : false);
@@ -989,7 +989,7 @@ class auth
 				// This data is passed along as GET data to the next page allow the account to be linked
 
 				$params = array('mode' => 'login_link');
-				$url = append_sid($phpbb_root_path . 'ucp.' . $phpEx, array_merge($params, $login['redirect_data']));
+				$url = append_sid($engine_root_path . 'ucp.' . $phpEx, array_merge($params, $login['redirect_data']));
 
 				redirect($url);
 			}
@@ -1010,7 +1010,7 @@ class auth
 				'username',
 				'autologin',
 			);
-			extract($phpbb_dispatcher->trigger_event('core.auth_login_session_create_before', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.auth_login_session_create_before', compact($vars)));
 
 			// If login succeeded, we will log the user in... else we pass the login array through...
 			if ($login['status'] == LOGIN_SUCCESS)

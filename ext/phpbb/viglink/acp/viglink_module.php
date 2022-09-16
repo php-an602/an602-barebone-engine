@@ -28,19 +28,19 @@ class viglink_module
 
 	public function main($id, $mode)
 	{
-		global $phpbb_container;
+		global $engine_container;
 
 		/** @var \phpbb\config\config $config Config object */
-		$config = $phpbb_container->get('config');
+		$config = $engine_container->get('config');
 
 		/** @var \phpbb\language\language $language Language object */
-		$language = $phpbb_container->get('language');
+		$language = $engine_container->get('language');
 
 		/** @var \phpbb\request\request $request Request object */
-		$request  = $phpbb_container->get('request');
+		$request  = $engine_container->get('request');
 
 		/** @var \phpbb\template\template $template Template object */
-		$template = $phpbb_container->get('template');
+		$template = $engine_container->get('template');
 
 		$language->add_lang('viglink_module_acp', 'phpbb/viglink');
 

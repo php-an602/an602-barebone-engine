@@ -26,7 +26,7 @@ class acp_reasons
 	function main($id, $mode)
 	{
 		global $db, $user, $template;
-		global $request, $phpbb_log;
+		global $request, $engine_log;
 
 		$user->add_lang(array('mcp', 'acp/posting'));
 
@@ -138,7 +138,7 @@ class acp_reasons
 							$log = 'UPDATED';
 						}
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_REASON_' . $log, false, array($reason_row['reason_title']));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_REASON_' . $log, false, array($reason_row['reason_title']));
 						trigger_error($user->lang['REASON_' . $log] . adm_back_link($this->u_action));
 					}
 				}
@@ -259,7 +259,7 @@ class acp_reasons
 
 					$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_REASON_REMOVED', false, array($reason_row['reason_title']));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_REASON_REMOVED', false, array($reason_row['reason_title']));
 					trigger_error($user->lang['REASON_REMOVED'] . adm_back_link($this->u_action));
 				}
 				else

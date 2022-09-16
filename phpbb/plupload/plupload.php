@@ -21,7 +21,7 @@ class plupload
 	/**
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	* @var \phpbb\config\config
@@ -63,16 +63,16 @@ class plupload
 	/**
 	* Constructor.
 	*
-	* @param string $phpbb_root_path
+	* @param string $engine_root_path
 	* @param \phpbb\config\config $config
 	* @param \phpbb\request\request_interface $request
 	* @param \phpbb\user $user
 	* @param \bantu\IniGetWrapper\IniGetWrapper $php_ini
 	* @param \phpbb\mimetype\guesser $mimetype_guesser
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
+	public function __construct($engine_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;

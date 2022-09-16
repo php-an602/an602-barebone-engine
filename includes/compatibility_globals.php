@@ -35,58 +35,58 @@ define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files - @deprecated 3.3
  */
 function register_compatibility_globals()
 {
-	global $phpbb_container;
+	global $engine_container;
 
-	global $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $language, $phpbb_log;
-	global $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template;
+	global $cache, $engine_dispatcher, $request, $user, $auth, $db, $config, $language, $engine_log;
+	global $symfony_request, $engine_filesystem, $engine_path_helper, $engine_extension_manager, $template;
 
 	// set up caching
 	/* @var $cache \phpbb\cache\service */
-	$cache = $phpbb_container->get('cache');
+	$cache = $engine_container->get('cache');
 
 	// Instantiate some basic classes
-	/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
-	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+	/* @var $engine_dispatcher \phpbb\event\dispatcher */
+	$engine_dispatcher = $engine_container->get('dispatcher');
 
 	/* @var $request \phpbb\request\request_interface */
-	$request = $phpbb_container->get('request');
+	$request = $engine_container->get('request');
 	// Inject request instance, so only this instance is used with request_var
 	request_var('', 0, false, false, $request);
 
 	/* @var $user \phpbb\user */
-	$user = $phpbb_container->get('user');
+	$user = $engine_container->get('user');
 
 	/* @var \phpbb\language\language $language */
-	$language = $phpbb_container->get('language');
+	$language = $engine_container->get('language');
 
 	/* @var $auth \phpbb\auth\auth */
-	$auth = $phpbb_container->get('auth');
+	$auth = $engine_container->get('auth');
 
 	/* @var $db \phpbb\db\driver\driver_interface */
-	$db = $phpbb_container->get('dbal.conn');
+	$db = $engine_container->get('dbal.conn');
 
 	// Grab global variables, re-cache if necessary
 	/* @var $config phpbb\config\db */
-	$config = $phpbb_container->get('config');
+	$config = $engine_container->get('config');
 	set_config('', '', false, $config);
 	set_config_count('', 0, false, $config);
 
-	/* @var $phpbb_log \phpbb\log\log_interface */
-	$phpbb_log = $phpbb_container->get('log');
+	/* @var $engine_log \phpbb\log\log_interface */
+	$engine_log = $engine_container->get('log');
 
 	/* @var $symfony_request \phpbb\symfony_request */
-	$symfony_request = $phpbb_container->get('symfony_request');
+	$symfony_request = $engine_container->get('symfony_request');
 
-	/* @var $phpbb_filesystem \phpbb\filesystem\filesystem_interface */
-	$phpbb_filesystem = $phpbb_container->get('filesystem');
+	/* @var $engine_filesystem \phpbb\filesystem\filesystem_interface */
+	$engine_filesystem = $engine_container->get('filesystem');
 
-	/* @var $phpbb_path_helper \phpbb\path_helper */
-	$phpbb_path_helper = $phpbb_container->get('path_helper');
+	/* @var $engine_path_helper \phpbb\path_helper */
+	$engine_path_helper = $engine_container->get('path_helper');
 
 	// load extensions
-	/* @var $phpbb_extension_manager \phpbb\extension\manager */
-	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+	/* @var $engine_extension_manager \phpbb\extension\manager */
+	$engine_extension_manager = $engine_container->get('ext.manager');
 
 	/* @var $template \phpbb\template\template */
-	$template = $phpbb_container->get('template');
+	$template = $engine_container->get('template');
 }

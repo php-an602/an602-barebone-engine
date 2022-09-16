@@ -47,15 +47,15 @@ class php_exporter
 	protected $file_lines;
 
 	/**
-	* @param string $phpbb_root_path
+	* @param string $engine_root_path
 	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @param string $min_version
 	* @param string $max_version
 	*/
-	public function __construct($phpbb_root_path, $extension = null, $min_version = null, $max_version = null)
+	public function __construct($engine_root_path, $extension = null, $min_version = null, $max_version = null)
 	{
-		$this->root_path = $phpbb_root_path;
-		$this->path = $phpbb_root_path;
+		$this->root_path = $engine_root_path;
+		$this->path = $engine_root_path;
 		$this->events = $this->file_lines = array();
 		$this->current_file = $this->current_event = '';
 		$this->current_event_line = 0;

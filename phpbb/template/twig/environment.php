@@ -18,13 +18,13 @@ use phpbb\template\assets_bag;
 class environment extends \Twig\Environment
 {
 	/** @var \phpbb\config\config */
-	protected $phpbb_config;
+	protected $engine_config;
 
 	/** @var \phpbb\filesystem\filesystem */
 	protected $filesystem;
 
 	/** @var \phpbb\path_helper */
-	protected $phpbb_path_helper;
+	protected $engine_path_helper;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
 	protected $container;
@@ -33,10 +33,10 @@ class environment extends \Twig\Environment
 	protected $extension_manager;
 
 	/** @var \phpbb\event\dispatcher_interface */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string */
 	protected $web_root_path;
@@ -50,23 +50,23 @@ class environment extends \Twig\Environment
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $phpbb_config The phpBB configuration
+	* @param \phpbb\config\config $engine_config The phpBB configuration
 	* @param \phpbb\filesystem\filesystem $filesystem
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param string $cache_path The path to the cache directory
 	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
 	* @param \Twig\Loader\LoaderInterface $loader Twig loader interface
-	* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	* @param \phpbb\event\dispatcher_interface	$engine_dispatcher	Event dispatcher object
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig\Loader\LoaderInterface $loader = null, \phpbb\event\dispatcher_interface $phpbb_dispatcher = null, $options = array())
+	public function __construct(\phpbb\config\config $engine_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig\Loader\LoaderInterface $loader = null, \phpbb\event\dispatcher_interface $engine_dispatcher = null, $options = array())
 	{
-		$this->phpbb_config = $phpbb_config;
+		$this->phpbb_config = $engine_config;
 
 		$this->filesystem = $filesystem;
 		$this->phpbb_path_helper = $path_helper;
 		$this->extension_manager = $extension_manager;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();

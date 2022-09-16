@@ -33,7 +33,7 @@ class installer_index
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Constructor
@@ -41,14 +41,14 @@ class installer_index
 	 * @param helper 					$helper
 	 * @param \phpbb\language\language	$language
 	 * @param \phpbb\template\template	$template
-	 * @param string					$phpbb_root_path
+	 * @param string					$engine_root_path
 	 */
-	public function __construct(helper $helper, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct(helper $helper, \phpbb\language\language $language, \phpbb\template\template $template, $engine_root_path)
 	{
 		$this->helper = $helper;
 		$this->language = $language;
 		$this->template = $template;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 	}
 
 	public function handle($mode)

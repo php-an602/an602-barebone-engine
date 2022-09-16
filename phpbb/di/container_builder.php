@@ -36,7 +36,7 @@ class container_builder
 	/**
 	 * @var string phpBB Root Path
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string php file extension
@@ -124,12 +124,12 @@ class container_builder
 	/**
 	 * Constructor
 	 *
-	 * @param string $phpbb_root_path Path to the phpbb includes directory.
+	 * @param string $engine_root_path Path to the phpbb includes directory.
 	 * @param string $php_ext php file extension
 	 */
-	public function __construct($phpbb_root_path, $php_ext)
+	public function __construct($engine_root_path, $php_ext)
 	{
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 		$this->env_parameters	= $this->get_env_parameters();
 

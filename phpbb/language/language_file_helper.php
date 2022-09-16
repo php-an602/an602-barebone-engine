@@ -23,16 +23,16 @@ class language_file_helper
 	/**
 	 * @var string	Path to phpBB's root
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Constructor
 	 *
-	 * @param string	$phpbb_root_path	Path to phpBB's root
+	 * @param string	$engine_root_path	Path to phpBB's root
 	 */
-	public function __construct($phpbb_root_path)
+	public function __construct($engine_root_path)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 	}
 
 	/**

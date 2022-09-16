@@ -58,7 +58,7 @@ class notify_user extends \phpbb\install\task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -71,10 +71,10 @@ class notify_user extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\container_factory				$container
 	 * @param \phpbb\install\helper\config							$install_config
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
-	 * @param string												$phpbb_root_path
+	 * @param string												$engine_root_path
 	 * @param string												$php_ext
 	 */
-	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, $engine_root_path, $php_ext)
 	{
 		$this->install_config	= $install_config;
 		$this->iohandler		= $iohandler;
@@ -83,7 +83,7 @@ class notify_user extends \phpbb\install\task_base
 		$this->language			= $container->get('language');
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 
 		// We need to reload config for cases when it doesn't have all values

@@ -29,7 +29,7 @@ class ucp_resend
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $engine_root_path, $phpEx;
 		global $db, $user, $auth, $template, $request;
 
 		$username	= $request->variable('username', '', true);
@@ -88,7 +88,7 @@ class ucp_resend
 
 			$coppa = ($row['group_name'] == 'REGISTERED_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
 
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			include_once($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 			$messenger = new messenger(false);
 
 			if ($config['require_activation'] == USER_ACTIVATION_SELF || $coppa)
@@ -144,17 +144,17 @@ class ucp_resend
 				$db->sql_freeresult($result);
 			}
 
-			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
+			meta_refresh(3, append_sid("{$engine_root_path}index.$phpEx"));
 
 			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACTIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$engine_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 
 		$template->assign_vars(array(
 			'USERNAME'			=> $username,
 			'EMAIL'				=> $email,
-			'S_PROFILE_ACTION'	=> append_sid($phpbb_root_path . 'ucp.' . $phpEx, 'mode=resend_act'))
+			'S_PROFILE_ACTION'	=> append_sid($engine_root_path . 'ucp.' . $phpEx, 'mode=resend_act'))
 		);
 
 		$this->tpl_name = 'ucp_resend';

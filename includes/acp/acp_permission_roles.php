@@ -26,18 +26,18 @@ class acp_permission_roles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template, $phpbb_container;
-		global $phpbb_root_path, $phpEx;
-		global $request, $phpbb_log;
+		global $db, $user, $template, $engine_container;
+		global $engine_root_path, $phpEx;
+		global $request, $engine_log;
 
 		if (!function_exists('user_get_id_name'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($engine_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		if (!class_exists('auth_admin'))
 		{
-			include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			include($engine_root_path . 'includes/acp/auth.' . $phpEx);
 		}
 
 		$this->auth_admin = new auth_admin();
@@ -116,7 +116,7 @@ class acp_permission_roles
 						$this->remove_role($role_id, $permission_type);
 
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, array($role_name));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, array($role_name));
 						trigger_error($user->lang['ROLE_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
@@ -219,7 +219,7 @@ class acp_permission_roles
 					$this->auth_admin->acl_set_role($role_id, $auth_settings);
 
 					$role_name = (!empty($user->lang[$role_name])) ? $user->lang[$role_name] : $role_name;
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, array($role_name));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, array($role_name));
 
 					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
 
@@ -306,8 +306,8 @@ class acp_permission_roles
 					trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				/* @var $phpbb_permissions \phpbb\permissions */
-				$phpbb_permissions = $phpbb_container->get('acl.permissions');
+				/* @var $engine_permissions \phpbb\permissions */
+				$engine_permissions = $engine_container->get('acl.permissions');
 
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
@@ -317,7 +317,7 @@ class acp_permission_roles
 
 					'ROLE_NAME'			=> $role_row['role_name'],
 					'ROLE_DESCRIPTION'	=> $role_row['role_description'],
-					'L_ACL_TYPE'		=> $phpbb_permissions->get_type_lang($permission_type),
+					'L_ACL_TYPE'		=> $engine_permissions->get_type_lang($permission_type),
 				));
 
 				// We need to fill the auth options array with ACL_NO options ;)
@@ -482,10 +482,10 @@ class acp_permission_roles
 	*/
 	function display_auth_options($auth_options)
 	{
-		global $template, $phpbb_container;
+		global $template, $engine_container;
 
-		/* @var $phpbb_permissions \phpbb\permissions */
-		$phpbb_permissions = $phpbb_container->get('acl.permissions');
+		/* @var $engine_permissions \phpbb\permissions */
+		$engine_permissions = $engine_container->get('acl.permissions');
 
 		$content_array = $categories = array();
 		$key_sort_array = array(0);
@@ -502,7 +502,7 @@ class acp_permission_roles
 		foreach ($content_array as $cat => $cat_array)
 		{
 			$template->assign_block_vars('auth', array(
-				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
+				'CAT_NAME'	=> $engine_permissions->get_category_lang($cat),
 
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
@@ -517,7 +517,7 @@ class acp_permission_roles
 					'S_NO'		=> ($allowed == ACL_NO) ? true : false,
 
 					'FIELD_NAME'	=> $permission,
-					'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+					'PERMISSION'	=> $engine_permissions->get_permission_lang($permission),
 				));
 			}
 		}

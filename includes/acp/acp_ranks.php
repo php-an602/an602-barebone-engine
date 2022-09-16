@@ -25,8 +25,8 @@ class acp_ranks
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template, $cache, $request, $phpbb_dispatcher;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpbb_log;
+		global $db, $user, $template, $cache, $request, $engine_dispatcher;
+		global $config, $engine_root_path, $engine_admin_path, $engine_log;
 
 		$user->add_lang('acp/posting');
 
@@ -82,21 +82,21 @@ class acp_ranks
 				* @since 3.1.0-RC3
 				*/
 				$vars = array('rank_id', 'sql_ary');
-				extract($phpbb_dispatcher->trigger_event('core.acp_ranks_save_modify_sql_ary', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_ranks_save_modify_sql_ary', compact($vars)));
 
 				if ($rank_id)
 				{
 					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
 					$message = $user->lang['RANK_UPDATED'];
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_UPDATED', false, array($rank_title));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_UPDATED', false, array($rank_title));
 				}
 				else
 				{
 					$sql = 'INSERT INTO ' . RANKS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 					$message = $user->lang['RANK_ADDED'];
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_ADDED', false, array($rank_title));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_ADDED', false, array($rank_title));
 				}
 				$db->sql_query($sql);
 
@@ -133,7 +133,7 @@ class acp_ranks
 
 					$cache->destroy('_ranks');
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_REMOVED', false, array($rank_title));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_REMOVED', false, array($rank_title));
 
 					if ($request->is_ajax())
 					{
@@ -180,7 +180,7 @@ class acp_ranks
 				}
 				$db->sql_freeresult($result);
 
-				$imglist = filelist($phpbb_root_path . $config['ranks_path'], '');
+				$imglist = filelist($engine_root_path . $config['ranks_path'], '');
 				$edit_img = $filename_list = '';
 
 				foreach ($imglist as $path => $img_ary)
@@ -216,12 +216,12 @@ class acp_ranks
 				$tpl_ary = array(
 					'S_EDIT'			=> true,
 					'U_BACK'			=> $this->u_action,
-					'RANKS_PATH'		=> $phpbb_root_path . $config['ranks_path'],
+					'RANKS_PATH'		=> $engine_root_path . $config['ranks_path'],
 					'U_ACTION'			=> $this->u_action . '&amp;id=' . $rank_id,
 
 					'RANK_TITLE'		=> (isset($ranks['rank_title'])) ? $ranks['rank_title'] : '',
 					'S_FILENAME_LIST'	=> $filename_list,
-					'RANK_IMAGE'		=> ($edit_img) ? $phpbb_root_path . $config['ranks_path'] . '/' . $edit_img : htmlspecialchars($phpbb_admin_path, ENT_COMPAT) . 'images/spacer.gif',
+					'RANK_IMAGE'		=> ($edit_img) ? $engine_root_path . $config['ranks_path'] . '/' . $edit_img : htmlspecialchars($engine_admin_path, ENT_COMPAT) . 'images/spacer.gif',
 					'S_SPECIAL_RANK'	=> (isset($ranks['rank_special']) && $ranks['rank_special']) ? true : false,
 					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0,
 				);
@@ -235,7 +235,7 @@ class acp_ranks
 				* @since 3.1.0-RC3
 				*/
 				$vars = array('ranks', 'tpl_ary');
-				extract($phpbb_dispatcher->trigger_event('core.acp_ranks_edit_modify_tpl_ary', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_ranks_edit_modify_tpl_ary', compact($vars)));
 
 				$template->assign_vars($tpl_ary);
 				return;
@@ -258,7 +258,7 @@ class acp_ranks
 				'S_RANK_IMAGE'		=> ($row['rank_image']) ? true : false,
 				'S_SPECIAL_RANK'	=> ($row['rank_special']) ? true : false,
 
-				'RANK_IMAGE'		=> $phpbb_root_path . $config['ranks_path'] . '/' . $row['rank_image'],
+				'RANK_IMAGE'		=> $engine_root_path . $config['ranks_path'] . '/' . $row['rank_image'],
 				'RANK_TITLE'		=> $row['rank_title'],
 				'MIN_POSTS'			=> $row['rank_min'],
 
@@ -275,7 +275,7 @@ class acp_ranks
 			* @since 3.1.0-RC3
 			*/
 			$vars = array('row', 'rank_row');
-			extract($phpbb_dispatcher->trigger_event('core.acp_ranks_list_modify_rank_row', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.acp_ranks_list_modify_rank_row', compact($vars)));
 
 			$template->assign_block_vars('ranks', $rank_row);
 		}

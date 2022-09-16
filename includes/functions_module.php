@@ -42,9 +42,9 @@ class p_master
 	*/
 	function __construct($include_path = false)
 	{
-		global $phpbb_root_path;
+		global $engine_root_path;
 
-		$this->include_path = ($include_path !== false) ? $include_path : $phpbb_root_path . 'includes/';
+		$this->include_path = ($include_path !== false) ? $include_path : $engine_root_path . 'includes/';
 
 		// Make sure the path ends with /
 		if (substr($this->include_path, -1) !== '/')
@@ -83,7 +83,7 @@ class p_master
 	function list_modules($p_class)
 	{
 		global $db, $user, $cache;
-		global $phpbb_dispatcher;
+		global $engine_dispatcher;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
@@ -311,7 +311,7 @@ class p_master
 			* @since 3.1.0-b3
 			*/
 			$vars = array('url_func', 'lang_func', 'custom_func', 'row', 'module_row');
-			extract($phpbb_dispatcher->trigger_event('core.modify_module_row', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.modify_module_row', compact($vars)));
 
 			$this->module_ary[] = $module_row;
 		}
@@ -388,7 +388,7 @@ class p_master
 	static function module_auth($module_auth, $forum_id)
 	{
 		global $auth, $config;
-		global $request, $phpbb_extension_manager, $phpbb_dispatcher;
+		global $request, $engine_extension_manager, $engine_dispatcher;
 
 		$module_auth = trim($module_auth);
 
@@ -412,7 +412,7 @@ class p_master
 			'aclf_([a-z0-9_]+)'				=> '(int) $auth->acl_getf_global(\'\\1\')',
 			'cfg_([a-z0-9_]+)'				=> '(int) $config[\'\\1\']',
 			'request_([a-zA-Z0-9_]+)'		=> '$request->variable(\'\\1\', false)',
-			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
+			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $engine_extension_manager->all_enabled())',
 			'authmethod_([a-z0-9_\\\\]+)'		=> '($config[\'auth_method\'] === \'\\1\')',
 		);
 
@@ -428,7 +428,7 @@ class p_master
 		* @since 3.1.0-a3
 		*/
 		$vars = array('valid_tokens', 'module_auth', 'forum_id');
-		extract($phpbb_dispatcher->trigger_event('core.module_auth', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.module_auth', compact($vars)));
 
 		$tokens = $match[0];
 		for ($i = 0, $size = count($tokens); $i < $size; $i++)
@@ -555,7 +555,7 @@ class p_master
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template, $request;
+		global $engine_root_path, $engine_admin_path, $phpEx, $user, $template, $request;
 
 		$module_path = $this->include_path . $this->p_class;
 		$icat = $request->variable('icat', '');
@@ -604,7 +604,7 @@ class p_master
 			// 0 vendor, 1 extension name, ...
 			if (isset($module_dir[1]))
 			{
-				$module_style_dir = $phpbb_root_path . 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/adm/style';
+				$module_style_dir = $engine_root_path . 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/adm/style';
 
 				if (is_dir($module_style_dir))
 				{
@@ -613,7 +613,7 @@ class p_master
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
 						),
-					), array($module_style_dir, $phpbb_admin_path . 'style'));
+					), array($module_style_dir, $engine_admin_path . 'style'));
 				}
 			}
 
@@ -624,7 +624,7 @@ class p_master
 			}
 
 			// Not being able to overwrite ;)
-			$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=' . $this->get_module_identifier($this->p_name)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			$this->module->u_action = append_sid("{$engine_admin_path}index.$phpEx", 'i=' . $this->get_module_identifier($this->p_name)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 		}
 		else
 		{
@@ -640,7 +640,7 @@ class p_master
 			{
 				$module_style_dir = 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/styles';
 
-				if (is_dir($phpbb_root_path . $module_style_dir))
+				if (is_dir($engine_root_path . $module_style_dir))
 				{
 					$template->set_style(array($module_style_dir, 'styles'));
 				}
@@ -653,7 +653,7 @@ class p_master
 			}
 			else
 			{
-				$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
+				$this->module->u_action = $engine_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 			}
 
 			$this->module->u_action = append_sid($this->module->u_action, 'i=' . $this->get_module_identifier($this->p_name)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
@@ -1056,9 +1056,9 @@ class p_master
 	*/
 	function add_mod_info($module_class)
 	{
-		global $config, $user, $phpEx, $phpbb_extension_manager;
+		global $config, $user, $phpEx, $engine_extension_manager;
 
-		$finder = $phpbb_extension_manager->get_finder();
+		$finder = $engine_extension_manager->get_finder();
 
 		// We grab the language files from the default, English and user's language.
 		// So we can fall back to the other files like we do when using add_lang()

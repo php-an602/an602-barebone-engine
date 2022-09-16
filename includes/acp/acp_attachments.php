@@ -31,7 +31,7 @@ class acp_attachments
 	protected $language;
 
 	/** @var ContainerBuilder */
-	protected $phpbb_container;
+	protected $engine_container;
 
 	/** @var \phpbb\template\template */
 	protected $template;
@@ -51,18 +51,18 @@ class acp_attachments
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container, $phpbb_filesystem, $phpbb_dispatcher;
-		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log, $request;
+		global $db, $user, $auth, $template, $cache, $engine_container, $engine_filesystem, $engine_dispatcher;
+		global $config, $engine_admin_path, $engine_root_path, $phpEx, $engine_log, $request;
 
 		$this->id = $id;
 		$this->db = $db;
 		$this->config = $config;
-		$this->language = $phpbb_container->get('language');
+		$this->language = $engine_container->get('language');
 		$this->template = $template;
 		$this->user = $user;
-		$this->phpbb_container = $phpbb_container;
-		$this->filesystem = $phpbb_filesystem;
-		$this->attachment_manager = $phpbb_container->get('attachment.manager');
+		$this->phpbb_container = $engine_container;
+		$this->filesystem = $engine_filesystem;
+		$this->attachment_manager = $engine_container->get('attachment.manager');
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -120,7 +120,7 @@ class acp_attachments
 
 				if (!function_exists('get_supported_image_types'))
 				{
-					include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+					include($engine_root_path . 'includes/functions_posting.' . $phpEx);
 				}
 
 				$allowed_pm_groups = [];
@@ -197,7 +197,7 @@ class acp_attachments
 				* @since 3.1.11-RC1
 				*/
 				$vars = array('display_vars', 'mode', 'submit');
-				extract($phpbb_dispatcher->trigger_event('core.acp_attachments_config_edit_add', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_attachments_config_edit_add', compact($vars)));
 
 				$this->new_config = $config;
 				$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => '')) : $this->new_config;
@@ -241,7 +241,7 @@ class acp_attachments
 
 				if ($submit)
 				{
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_ATTACH');
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_ATTACH');
 
 					// Check Settings
 					$this->test_upload($error, $this->new_config['upload_path'], false);
@@ -282,7 +282,7 @@ class acp_attachments
 					'S_DEFINED_IPS'			=> ($defined_ips != '') ? true : false,
 					'S_WARNING'				=> (count($error)) ? true : false,
 
-					'U_EXTENSION_GROUPS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=ext_groups"),
+					'U_EXTENSION_GROUPS'	=> append_sid("{$engine_admin_path}index.$phpEx", "i=$id&amp;mode=ext_groups"),
 
 					'WARNING_MSG'			=> implode('<br />', $error),
 					'DEFINED_IPS'			=> $defined_ips,
@@ -374,7 +374,7 @@ class acp_attachments
 									WHERE extension_id = ' . $row['extension_id'];
 								$db->sql_query($sql);
 
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_UPDATE', false, array($row['extension']));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_UPDATE', false, array($row['extension']));
 							}
 						}
 						$db->sql_freeresult($result);
@@ -401,7 +401,7 @@ class acp_attachments
 								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$db->sql_query($sql);
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_DEL', false, array($extension_list));
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_DEL', false, array($extension_list));
 						}
 					}
 
@@ -434,7 +434,7 @@ class acp_attachments
 
 								$db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_ADD', false, array($add_extension));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_ADD', false, array($add_extension));
 							}
 						}
 					}
@@ -599,7 +599,7 @@ class acp_attachments
 						}
 
 						$group_name = $this->language->is_set('EXT_GROUP_' . utf8_strtoupper($group_name)) ? $this->language->lang('EXT_GROUP_' . utf8_strtoupper($group_name)) : $group_name;
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), false, array($group_name));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), false, array($group_name));
 					}
 
 					$extension_list = $request->variable('extensions', array(0));
@@ -660,7 +660,7 @@ class acp_attachments
 								WHERE group_id = $group_id";
 							$db->sql_query($sql);
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_DEL', false, array($group_name));
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_DEL', false, array($group_name));
 
 							$cache->destroy('_extensions');
 
@@ -735,7 +735,7 @@ class acp_attachments
 						$filename_list = '';
 						$no_image_select = false;
 
-						$imglist = filelist($phpbb_root_path . $img_path);
+						$imglist = filelist($engine_root_path . $img_path);
 
 						if (!empty($imglist['']))
 						{
@@ -787,7 +787,7 @@ class acp_attachments
 							'GROUP_NAME'			=> $ext_group_row['group_name'],
 							'ALLOW_GROUP'			=> $ext_group_row['allow_group'],
 							'ALLOW_IN_PM'			=> $ext_group_row['allow_in_pm'],
-							'UPLOAD_ICON_SRC'		=> $phpbb_root_path . $img_path . '/' . $ext_group_row['upload_icon'],
+							'UPLOAD_ICON_SRC'		=> $engine_root_path . $img_path . '/' . $ext_group_row['upload_icon'],
 							'EXTGROUP_FILESIZE'		=> $ext_group_row['max_filesize'],
 							'ASSIGNED_EXTENSIONS'	=> $assigned_extensions,
 
@@ -799,7 +799,7 @@ class acp_attachments
 							'S_NO_IMAGE'				=> $no_image_select,
 							'S_FORUM_IDS'				=> (count($forum_ids)) ? true : false,
 
-							'U_EXTENSIONS'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=extensions"),
+							'U_EXTENSIONS'		=> append_sid("{$engine_admin_path}index.$phpEx", "i=$id&amp;mode=extensions"),
 							'U_BACK'			=> $this->u_action,
 
 							'L_LEGEND'			=> $user->lang[strtoupper($action) . '_EXTENSION_GROUP'])
@@ -951,7 +951,7 @@ class acp_attachments
 							WHERE ' . $db->sql_in_set('attach_id', array_keys($delete_files));
 						$db->sql_query($sql);
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_ORPHAN_DEL', false, array(implode(', ', $delete_files)));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_ORPHAN_DEL', false, array(implode(', ', $delete_files)));
 						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode($user->lang['COMMA_SEPARATOR'], $delete_files));
 					}
 
@@ -1058,7 +1058,7 @@ class acp_attachments
 							$space_taken += $row['filesize'];
 							$files_added++;
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_FILEUPLOAD', false, [$post_row['post_id'], $row['real_filename']]);
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_FILEUPLOAD', false, [$post_row['post_id'], $row['real_filename']]);
 						}
 						$db->sql_freeresult($result);
 
@@ -1107,7 +1107,7 @@ class acp_attachments
 						'PHYSICAL_FILENAME'	=> utf8_basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_ID'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']),
+						'U_FILE'			=> append_sid($engine_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']),
 					]);
 				}
 				$db->sql_freeresult($result);
@@ -1155,7 +1155,7 @@ class acp_attachments
 								$error[] = $user->lang['FILES_GONE'];
 							}
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode(', ', $deleted_filenames)));
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode(', ', $deleted_filenames)));
 							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode($user->lang['COMMA_SEPARATOR'], $deleted_filenames));
 						}
 						else
@@ -1208,7 +1208,7 @@ class acp_attachments
 
 				// Make sure $start is set to the last page if it exceeds the amount
 				/* @var $pagination \phpbb\pagination */
-				$pagination = $phpbb_container->get('pagination');
+				$pagination = $engine_container->get('pagination');
 				$start = $pagination->validate_start($start, $attachments_per_page, $num_files);
 
 				// If the user is trying to reach the second half of the attachments list, fetch it starting from the end
@@ -1294,8 +1294,8 @@ class acp_attachments
 
 						'S_IN_MESSAGE'		=> (bool) $row['in_message'],
 
-						'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}",
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
+						'U_VIEW_TOPIC'		=> append_sid("{$engine_root_path}viewtopic.$phpEx", "p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}",
+						'U_FILE'			=> append_sid($engine_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
 					);
 				}
 
@@ -1502,18 +1502,18 @@ class acp_attachments
 	*/
 	function test_upload(&$error, $upload_dir, $create_directory = false)
 	{
-		global $user, $phpbb_root_path;
+		global $user, $engine_root_path;
 
 		// Does the target directory exist, is it a directory and writable.
 		if ($create_directory)
 		{
-			if (!file_exists($phpbb_root_path . $upload_dir))
+			if (!file_exists($engine_root_path . $upload_dir))
 			{
-				@mkdir($phpbb_root_path . $upload_dir, 0777);
+				@mkdir($engine_root_path . $upload_dir, 0777);
 
 				try
 				{
-					$this->filesystem->phpbb_chmod($phpbb_root_path . $upload_dir, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
+					$this->filesystem->phpbb_chmod($engine_root_path . $upload_dir, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
 				}
 				catch (\phpbb\filesystem\exception\filesystem_exception $e)
 				{
@@ -1522,19 +1522,19 @@ class acp_attachments
 			}
 		}
 
-		if (!file_exists($phpbb_root_path . $upload_dir))
+		if (!file_exists($engine_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $upload_dir);
 			return;
 		}
 
-		if (!is_dir($phpbb_root_path . $upload_dir))
+		if (!is_dir($engine_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $upload_dir);
 			return;
 		}
 
-		if (!$this->filesystem->is_writable($phpbb_root_path . $upload_dir))
+		if (!$this->filesystem->is_writable($engine_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 			return;
@@ -1546,7 +1546,7 @@ class acp_attachments
 	*/
 	function perform_site_list()
 	{
-		global $db, $user, $request, $phpbb_log;
+		global $db, $user, $request, $engine_log;
 
 		if (isset($_REQUEST['securesubmit']))
 		{
@@ -1694,7 +1694,7 @@ class acp_attachments
 			{
 				// Update log
 				$log_entry = ($ip_exclude) ? 'LOG_DOWNLOAD_EXCLUDE_IP' : 'LOG_DOWNLOAD_IP';
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_entry, false, array($ip_list_log));
+				$engine_log->add('admin', $user->data['user_id'], $user->ip, $log_entry, false, array($ip_list_log));
 			}
 
 			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
@@ -1723,7 +1723,7 @@ class acp_attachments
 					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
 				$db->sql_query($sql);
 
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DOWNLOAD_REMOVE_IP', false, array($l_unip_list));
+				$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DOWNLOAD_REMOVE_IP', false, array($l_unip_list));
 			}
 
 			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));

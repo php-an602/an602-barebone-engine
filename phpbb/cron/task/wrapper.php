@@ -34,7 +34,7 @@ class wrapper
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -53,15 +53,15 @@ class wrapper
 	*
 	* @param task	$task				The cron task to wrap.
 	* @param helper	$routing_helper		Routing helper for route generation
-	* @param string	$phpbb_root_path	Relative path to phpBB root
+	* @param string	$engine_root_path	Relative path to phpBB root
 	* @param string	$php_ext			PHP file extension
 	* @param \phpbb\template\template	$template
 	*/
-	public function __construct(task $task, helper $routing_helper, $phpbb_root_path, $php_ext, $template)
+	public function __construct(task $task, helper $routing_helper, $engine_root_path, $php_ext, $template)
 	{
 		$this->task = $task;
 		$this->routing_helper = $routing_helper;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->template = $template;
 	}

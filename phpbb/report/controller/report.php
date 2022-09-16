@@ -51,7 +51,7 @@ class report
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -68,14 +68,14 @@ class report
 	 */
 	protected $report_reason_provider;
 
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\template\template $template, \phpbb\controller\helper $helper, \phpbb\request\request_interface $request, \phpbb\captcha\factory $captcha_factory, \phpbb\report\handler_factory $report_factory, \phpbb\report\report_reason_list_provider $ui_provider, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\template\template $template, \phpbb\controller\helper $helper, \phpbb\request\request_interface $request, \phpbb\captcha\factory $captcha_factory, \phpbb\report\handler_factory $report_factory, \phpbb\report\report_reason_list_provider $ui_provider, $engine_root_path, $php_ext)
 	{
 		$this->config			= $config;
 		$this->user				= $user;
 		$this->template			= $template;
 		$this->helper			= $helper;
 		$this->request			= $request;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 		$this->captcha_factory	= $captcha_factory;
 		$this->report_handler	= $report_factory;

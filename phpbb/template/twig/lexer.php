@@ -22,7 +22,7 @@ class lexer extends \Twig\Lexer
 
 		// Our phpBB tags
 		// Commented out tokens are handled separately from the main replace
-		$phpbb_tags = array(
+		$engine_tags = array(
 			/*'BEGIN',
 			'BEGINELSE',
 			'END',
@@ -108,7 +108,7 @@ class lexer extends \Twig\Lexer
 
 		// Replace all of our starting tokens, <!-- TOKEN --> with Twig style, {% TOKEN %}
 		// This also strips outer parenthesis, <!-- IF (blah) --> becomes <!-- IF blah -->
-		$code = preg_replace('#<!-- (' . implode('|', $phpbb_tags) . ')(?: (.*?) ?)?-->#', '{% $1 $2 %}', $code);
+		$code = preg_replace('#<!-- (' . implode('|', $engine_tags) . ')(?: (.*?) ?)?-->#', '{% $1 $2 %}', $code);
 
 		// Replace all of our twig masks with Twig code (e.g. <!-- BLOCK .+ --> with {% block $1 %})
 		$code = $this->replace_twig_tag_masks($code, $twig_tags);

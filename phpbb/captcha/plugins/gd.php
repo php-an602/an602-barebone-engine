@@ -53,7 +53,7 @@ class gd extends captcha_abstract
 
 	function acp_page($id, $module)
 	{
-		global $user, $template, $phpbb_log, $request;
+		global $user, $template, $engine_log, $request;
 		global $config;
 
 		$user->add_lang('acp/board');
@@ -77,7 +77,7 @@ class gd extends captcha_abstract
 				}
 			}
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)

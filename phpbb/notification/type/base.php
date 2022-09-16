@@ -34,7 +34,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	protected $auth;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -80,18 +80,18 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 * @param \phpbb\language\language          $language
 	 * @param \phpbb\user                       $user
 	 * @param \phpbb\auth\auth                  $auth
-	 * @param string                            $phpbb_root_path
+	 * @param string                            $engine_root_path
 	 * @param string                            $php_ext
 	 * @param string                            $user_notifications_table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext, $user_notifications_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $engine_root_path, $php_ext, $user_notifications_table)
 	{
 		$this->db = $db;
 		$this->language = $language;
 		$this->user = $user;
 		$this->auth = $auth;
 
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 
 		$this->user_notifications_table = $user_notifications_table;

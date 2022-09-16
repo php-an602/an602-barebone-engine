@@ -32,7 +32,7 @@ class delete extends \phpbb\console\command\command
 	* phpBB root path
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	* Constructor
@@ -40,13 +40,13 @@ class delete extends \phpbb\console\command\command
 	* @param \config\config $config The config
 	* @param \phpbb\user $user The user object (used to get language information)
 	* @param \phpbb\db\driver\driver_interface $db Database connection
-	* @param string $phpbb_root_path Root path
+	* @param string $engine_root_path Root path
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, $phpbb_root_path)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, $engine_root_path)
 	{
 		$this->config = $config;
 		$this->db = $db;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 
 		parent::__construct($user);
 	}

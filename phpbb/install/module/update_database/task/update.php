@@ -78,7 +78,7 @@ class update extends task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Constructor
@@ -88,15 +88,15 @@ class update extends task_base
 	 * @param \phpbb\install\helper\config							$installer_config
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
 	 * @param \phpbb\language\language								$language
-	 * @param string												$phpbb_root_path
+	 * @param string												$engine_root_path
 	 */
-	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\filesystem\filesystem $filesystem, \phpbb\install\helper\config $installer_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, \phpbb\language\language $language, $phpbb_root_path)
+	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\filesystem\filesystem $filesystem, \phpbb\install\helper\config $installer_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, \phpbb\language\language $language, $engine_root_path)
 	{
 		$this->filesystem			= $filesystem;
 		$this->installer_config		= $installer_config;
 		$this->iohandler			= $iohandler;
 		$this->language				= $language;
-		$this->phpbb_root_path		= $phpbb_root_path;
+		$this->phpbb_root_path		= $engine_root_path;
 
 		$this->cache				= $container->get('cache.driver');
 		$this->config				= $container->get('config');

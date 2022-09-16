@@ -86,9 +86,9 @@ class update_extensions extends task_base
 	 * @param config					$install_config
 	 * @param iohandler_interface		$iohandler
 	 * @param $update_helper			$update_helper
-	 * @param string					$phpbb_root_path phpBB root path
+	 * @param string					$engine_root_path phpBB root path
 	 */
-	public function __construct(container_factory $container, config $install_config, iohandler_interface $iohandler, update_helper $update_helper, $phpbb_root_path)
+	public function __construct(container_factory $container, config $install_config, iohandler_interface $iohandler, update_helper $update_helper, $engine_root_path)
 	{
 		$this->install_config	= $install_config;
 		$this->iohandler		= $iohandler;
@@ -102,7 +102,7 @@ class update_extensions extends task_base
 		$this->db				= $container->get('dbal.conn');
 		$this->update_helper = $update_helper;
 		$this->finder = new Finder();
-		$this->finder->in($phpbb_root_path . 'ext/')
+		$this->finder->in($engine_root_path . 'ext/')
 			->ignoreUnreadableDirs()
 			->depth('< 3')
 			->files()

@@ -25,7 +25,7 @@ class manager
 	* phpBB event dispatcher
 	* @var \phpbb\event\dispatcher_interface
 	*/
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/**
 	* Array that contains a list of enabled drivers
@@ -55,13 +55,13 @@ class manager
 	* Construct an avatar manager object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
-	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher phpBB event dispatcher
+	* @param \phpbb\event\dispatcher_interface $engine_dispatcher phpBB event dispatcher
 	* @param array $avatar_drivers Avatar drivers passed via the service container
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, $avatar_drivers)
+	public function __construct(\phpbb\config\config $config, \phpbb\event\dispatcher_interface $engine_dispatcher, $avatar_drivers)
 	{
 		$this->config = $config;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 		$this->register_avatar_drivers($avatar_drivers);
 	}
 

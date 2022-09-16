@@ -28,7 +28,7 @@ class path_helper
 	protected $request;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string */
 	protected $adm_relative_path;
@@ -45,16 +45,16 @@ class path_helper
 	* @param \phpbb\symfony_request $symfony_request
 	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param \phpbb\request\request_interface $request
-	* @param string $phpbb_root_path Relative path to phpBB root
+	* @param string $engine_root_path Relative path to phpBB root
 	* @param string $php_ext PHP file extension
 	* @param mixed $adm_relative_path Relative path admin path to adm/ root
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\request\request_interface $request, $engine_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->filesystem = $filesystem;
 		$this->request = $request;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->adm_relative_path = $adm_relative_path;
 	}
@@ -92,7 +92,7 @@ class path_helper
 	/**
 	* Update a web path to the correct relative root path
 	*
-	* This replaces $phpbb_root_path . some_url with
+	* This replaces $engine_root_path . some_url with
 	*	get_web_root_path() . some_url
 	*
 	* @param string $path The path to be updated
@@ -127,7 +127,7 @@ class path_helper
 	* Strips away the web root path and prepends the normal root path
 	*
 	* This replaces get_web_root_path() . some_url with
-	*	$phpbb_root_path . some_url
+	*	$engine_root_path . some_url
 	*
 	* @param string $path The path to be updated
 	* @return string
@@ -475,7 +475,7 @@ class path_helper
 	{
 		// We need to be cautious here.
 		// On some situations, the redirect path is an absolute URL, sometimes a relative path
-		// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+		// For a relative path, let's prefix it with $engine_root_path to point to the correct location,
 		// else we use the URL directly.
 		$url_parts = parse_url($page);
 

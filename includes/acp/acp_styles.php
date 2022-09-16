@@ -57,7 +57,7 @@ class acp_styles
 	protected $text_formatter_cache;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -67,7 +67,7 @@ class acp_styles
 
 	public function main($id, $mode)
 	{
-		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container;
+		global $db, $user, $engine_admin_path, $engine_root_path, $phpEx, $template, $request, $cache, $auth, $config, $engine_dispatcher, $engine_container;
 
 		$this->db = $db;
 		$this->user = $user;
@@ -75,16 +75,16 @@ class acp_styles
 		$this->request = $request;
 		$this->cache = $cache;
 		$this->auth = $auth;
-		$this->text_formatter_cache = $phpbb_container->get('text_formatter.cache');
+		$this->text_formatter_cache = $engine_container->get('text_formatter.cache');
 		$this->config = $config;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $phpEx;
-		$this->dispatcher = $phpbb_dispatcher;
+		$this->dispatcher = $engine_dispatcher;
 
 		$this->default_style = $config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
 
-		$this->u_base_action = append_sid("{$phpbb_admin_path}index.{$this->php_ext}", "i={$id}");
+		$this->u_base_action = append_sid("{$engine_admin_path}index.{$this->php_ext}", "i={$id}");
 		$this->s_hidden_fields = array(
 			'mode'		=> $mode,
 		);
@@ -300,7 +300,7 @@ class acp_styles
 	*/
 	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
-		global $user, $phpbb_log;
+		global $user, $engine_log;
 
 		$default = $this->default_style;
 		$uninstalled = array();
@@ -361,7 +361,7 @@ class acp_styles
 		// Log action
 		if (count($uninstalled))
 		{
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
 		}
 
 		// Clear cache
@@ -433,7 +433,7 @@ class acp_styles
 	*/
 	protected function action_details()
 	{
-		global $user, $phpbb_log;
+		global $user, $engine_log;
 
 		$id = $this->request->variable('id', 0);
 		if (!$id)
@@ -570,7 +570,7 @@ class acp_styles
 					}
 				}
 
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
+				$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
 			}
 
 			// Update default style
@@ -1182,7 +1182,7 @@ class acp_styles
 	*/
 	protected function install_style($style)
 	{
-		global $user, $phpbb_log;
+		global $user, $engine_log;
 
 		// Generate row
 		$sql_ary = array();
@@ -1205,7 +1205,7 @@ class acp_styles
 
 		$this->db->sql_transaction('commit');
 
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($sql_ary['style_name']));
+		$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($sql_ary['style_name']));
 
 		return $id;
 	}

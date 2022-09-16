@@ -59,7 +59,7 @@ class fulltext_postgres extends \phpbb\search\base
 	 * phpBB event dispatcher object
 	 * @var \phpbb\event\dispatcher_interface
 	 */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/**
 	 * User object
@@ -92,19 +92,19 @@ class fulltext_postgres extends \phpbb\search\base
 	 * Creates a new \phpbb\search\fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
-	 * @param string $phpbb_root_path Relative path to phpBB root
+	 * @param string $engine_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 * @param \phpbb\auth\auth $auth Auth object
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\db\driver\driver_interface $db Database object
 	 * @param \phpbb\user $user User object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @param \phpbb\event\dispatcher_interface	$engine_dispatcher	Event dispatcher object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct(&$error, $engine_root_path, $phpEx, $auth, $config, $db, $user, $engine_dispatcher)
 	{
 		$this->config = $config;
 		$this->db = $db;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 		$this->user = $user;
 
 		$this->word_length = array('min' => $this->config['fulltext_postgres_min_word_len'], 'max' => $this->config['fulltext_postgres_max_word_len']);
@@ -114,7 +114,7 @@ class fulltext_postgres extends \phpbb\search\base
 		 */
 		if (!function_exists('utf8_strlen'))
 		{
-			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+			include($engine_root_path . 'includes/utf/utf_tools.' . $phpEx);
 		}
 
 		$error = false;

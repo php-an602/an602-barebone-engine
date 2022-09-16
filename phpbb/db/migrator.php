@@ -44,7 +44,7 @@ class migrator
 	protected $table_prefix;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -94,7 +94,7 @@ class migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
+	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $migrations_table, $engine_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
 	{
 		$this->container = $container;
 		$this->config = $config;
@@ -104,7 +104,7 @@ class migrator
 
 		$this->migrations_table = $migrations_table;
 
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 
 		$this->table_prefix = $table_prefix;

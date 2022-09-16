@@ -44,7 +44,7 @@ class diff_files extends task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -63,15 +63,15 @@ class diff_files extends task_base
 	 * @param config				$config
 	 * @param iohandler_interface	$iohandler
 	 * @param update_helper			$update_helper
-	 * @param string				$phpbb_root_path
+	 * @param string				$engine_root_path
 	 * @param string				$php_ext
 	 */
-	public function __construct(container_factory $container, config $config, iohandler_interface $iohandler, update_helper $update_helper, $phpbb_root_path, $php_ext)
+	public function __construct(container_factory $container, config $config, iohandler_interface $iohandler, update_helper $update_helper, $engine_root_path, $php_ext)
 	{
 		$this->installer_config	= $config;
 		$this->iohandler		= $iohandler;
 		$this->update_helper	= $update_helper;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 
 		$this->cache			= $container->get('cache.driver');

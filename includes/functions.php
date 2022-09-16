@@ -546,7 +546,7 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
-	global $request, $phpbb_container, $phpbb_dispatcher;
+	global $request, $engine_container, $engine_dispatcher;
 
 	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
 
@@ -576,7 +576,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		'user_id',
 		'should_markread',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.markread_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.markread_before', compact($vars)));
 
 	if (!$should_markread)
 	{
@@ -588,11 +588,11 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		if (empty($forum_id))
 		{
 			// Mark all forums read (index page)
-			/* @var $phpbb_notifications \phpbb\notification\manager */
-			$phpbb_notifications = $phpbb_container->get('notification_manager');
+			/* @var $engine_notifications \phpbb\notification\manager */
+			$engine_notifications = $engine_container->get('notification_manager');
 
 			// Mark all topic notifications read for this user
-			$phpbb_notifications->mark_notifications(array(
+			$engine_notifications->mark_notifications(array(
 				'notification.type.topic',
 				'notification.type.quote',
 				'notification.type.bookmark',
@@ -658,10 +658,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$forum_id = array_unique($forum_id);
 		}
 
-		/* @var $phpbb_notifications \phpbb\notification\manager */
-		$phpbb_notifications = $phpbb_container->get('notification_manager');
+		/* @var $engine_notifications \phpbb\notification\manager */
+		$engine_notifications = $engine_container->get('notification_manager');
 
-		$phpbb_notifications->mark_notifications_by_parent(array(
+		$engine_notifications->mark_notifications_by_parent(array(
 			'notification.type.topic',
 			'notification.type.approve_topic',
 		), $forum_id, $user->data['user_id'], $post_time);
@@ -678,7 +678,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		$db->sql_freeresult($result);
 
-		$phpbb_notifications->mark_notifications_by_parent(array(
+		$engine_notifications->mark_notifications_by_parent(array(
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -780,16 +780,16 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			return;
 		}
 
-		/* @var $phpbb_notifications \phpbb\notification\manager */
-		$phpbb_notifications = $phpbb_container->get('notification_manager');
+		/* @var $engine_notifications \phpbb\notification\manager */
+		$engine_notifications = $engine_container->get('notification_manager');
 
 		// Mark post notifications read for this user in this topic
-		$phpbb_notifications->mark_notifications(array(
+		$engine_notifications->mark_notifications(array(
 			'notification.type.topic',
 			'notification.type.approve_topic',
 		), $topic_id, $user->data['user_id'], $post_time);
 
-		$phpbb_notifications->mark_notifications_by_parent(array(
+		$engine_notifications->mark_notifications_by_parent(array(
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -931,7 +931,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		'post_time',
 		'user_id',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.markread_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.markread_after', compact($vars)));
 }
 
 /**
@@ -1099,7 +1099,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001, $sql_limit_offset = 0)
 {
 	global $config, $db, $user, $request;
-	global $phpbb_dispatcher;
+	global $engine_dispatcher;
 
 	$user_id = ($user_id === false) ? (int) $user->data['user_id'] : (int) $user_id;
 
@@ -1159,7 +1159,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 			'sql_extra',
 			'sql_sort',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.get_unread_topics_modify_sql', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.get_unread_topics_modify_sql', compact($vars)));
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $sql_limit, $sql_limit_offset);
@@ -1244,7 +1244,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $request, $phpbb_container;
+	global $db, $tracking_topics, $user, $config, $request, $engine_container;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1269,8 +1269,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 	// Handle update of unapproved topics info.
 	// Only update for moderators having m_approve permission for the forum.
-	/* @var $phpbb_content_visibility \phpbb\content_visibility */
-	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+	/* @var $engine_content_visibility \phpbb\content_visibility */
+	$engine_content_visibility = $engine_container->get('content.visibility');
 
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
@@ -1291,7 +1291,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
 					AND t.topic_moved_id = 0
-					AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . '
+					AND ' . $engine_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . '
 					AND (tt.topic_id IS NULL
 						OR tt.mark_time < t.topic_last_post_time)';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1314,7 +1314,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
 					AND t.topic_moved_id = 0
-					AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
+					AND ' . $engine_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 			$result = $db->sql_query($sql);
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
@@ -1483,17 +1483,17 @@ function tracking_unserialize($string, $max_depth = 3)
 * @return string The corrected url.
 *
 * Examples:
-* <code> append_sid("{$phpbb_root_path}viewtopic.$phpEx?t=1");
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1');
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1', false);
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('t' => 1, 'f' => 2));
+* <code> append_sid("{$engine_root_path}viewtopic.$phpEx?t=1");
+* append_sid("{$engine_root_path}viewtopic.$phpEx", 't=1');
+* append_sid("{$engine_root_path}viewtopic.$phpEx", 't=1', false);
+* append_sid("{$engine_root_path}viewtopic.$phpEx", array('t' => 1, 'f' => 2));
 * </code>
 *
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false, $is_route = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_path_helper;
-	global $phpbb_dispatcher;
+	global $_SID, $_EXTRA_URL, $engine_hook, $engine_path_helper;
+	global $engine_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -1502,9 +1502,9 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 	}
 
 	// Update the root path with the correct relative web path
-	if (!$is_route && $phpbb_path_helper instanceof \phpbb\path_helper)
+	if (!$is_route && $engine_path_helper instanceof \phpbb\path_helper)
 	{
-		$url = $phpbb_path_helper->update_web_root_path($url);
+		$url = $engine_path_helper->update_web_root_path($url);
 	}
 
 	$append_sid_overwrite = false;
@@ -1532,7 +1532,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 	* @since 3.1.0-a1
 	*/
 	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_overwrite', 'is_route');
-	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.append_sid', compact($vars)));
 
 	if ($append_sid_overwrite)
 	{
@@ -1543,11 +1543,11 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 	// the event above is preferred.
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
 	// They could mimic most of what is within this function
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
+	if (!empty($engine_hook) && $engine_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
 	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
+		if ($engine_hook->hook_return(__FUNCTION__))
 		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
+			return $engine_hook->hook_return_result(__FUNCTION__);
 		}
 	}
 
@@ -1707,7 +1707,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $user, $phpbb_path_helper, $phpbb_dispatcher;
+	global $user, $engine_path_helper, $engine_dispatcher;
 
 	if (!$user->is_setup())
 	{
@@ -1755,7 +1755,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 			}
 		}
 
-		$url = $phpbb_path_helper->remove_web_root_path($url);
+		$url = $engine_path_helper->remove_web_root_path($url);
 
 		if ($user->page['page_dir'])
 		{
@@ -1766,7 +1766,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	}
 
 	// Clean URL and check if we go outside the forum directory
-	$url = $phpbb_path_helper->clean_url($url);
+	$url = $engine_path_helper->clean_url($url);
 
 	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
 	{
@@ -1798,7 +1798,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	* @since 3.1.0-RC3
 	*/
 	$vars = array('url', 'return', 'disable_cd_check');
-	extract($phpbb_dispatcher->trigger_event('core.functions.redirect', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.functions.redirect', compact($vars)));
 
 	if ($return)
 	{
@@ -1819,15 +1819,15 @@ function redirect($url, $return = false, $disable_cd_check = false)
 */
 function reapply_sid($url, $is_route = false)
 {
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $engine_root_path;
 
 	if ($url === "index.$phpEx")
 	{
 		return append_sid("index.$phpEx");
 	}
-	else if ($url === "{$phpbb_root_path}index.$phpEx")
+	else if ($url === "{$engine_root_path}index.$phpEx")
 	{
-		return append_sid("{$phpbb_root_path}index.$phpEx");
+		return append_sid("{$engine_root_path}index.$phpEx");
 	}
 
 	// Remove previously added sid
@@ -1847,16 +1847,16 @@ function reapply_sid($url, $is_route = false)
 */
 function build_url($strip_vars = false)
 {
-	global $config, $user, $phpbb_path_helper;
+	global $config, $user, $engine_path_helper;
 
-	$page = $phpbb_path_helper->get_valid_page($user->page['page'], $config['enable_mod_rewrite']);
+	$page = $engine_path_helper->get_valid_page($user->page['page'], $config['enable_mod_rewrite']);
 
 	// Append SID
 	$redirect = append_sid($page, false, false);
 
 	if ($strip_vars !== false)
 	{
-		$redirect = $phpbb_path_helper->strip_url_params($redirect, $strip_vars, false);
+		$redirect = $engine_path_helper->strip_url_params($redirect, $strip_vars, false);
 	}
 	else
 	{
@@ -2003,7 +2003,7 @@ function check_link_hash($token, $link_name)
 */
 function add_form_key($form_name, $template_variable_suffix = '')
 {
-	global $config, $template, $user, $phpbb_dispatcher;
+	global $config, $template, $user, $engine_dispatcher;
 
 	$now = time();
 	$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
@@ -2036,7 +2036,7 @@ function add_form_key($form_name, $template_variable_suffix = '')
 		'token_sid',
 		'template_variable_suffix',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.add_form_key', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.add_form_key', compact($vars)));
 
 	$template->assign_var('S_FORM_TOKEN' . $template_variable_suffix, $s_fields);
 }
@@ -2103,7 +2103,7 @@ function check_form_key($form_name, $timespan = false)
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db, $request;
-	global $config, $language, $phpbb_path_helper, $phpbb_dispatcher;
+	global $config, $language, $engine_path_helper, $engine_dispatcher;
 
 	if (isset($_POST['cancel']))
 	{
@@ -2180,7 +2180,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
 	$use_page = ($u_action) ? $u_action : str_replace('&', '&amp;', $user->page['page']);
-	$u_action = reapply_sid($phpbb_path_helper->get_valid_page($use_page, $config['enable_mod_rewrite']));
+	$u_action = reapply_sid($engine_path_helper->get_valid_page($use_page, $config['enable_mod_rewrite']));
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
@@ -2226,7 +2226,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 			'hidden',
 			's_hidden_fields',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.confirm_box_ajax_before', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.confirm_box_ajax_before', compact($vars)));
 
 		$json_response = new \phpbb\json_response;
 		$json_response->send($data);
@@ -2249,8 +2249,8 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
+	global $user, $template, $auth, $phpEx, $engine_root_path, $config;
+	global $request, $engine_container, $engine_dispatcher, $engine_log;
 
 	$err = '';
 	$form_name = 'login';
@@ -2275,7 +2275,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	 * @since 3.1.9-RC1
 	 */
 	$vars = array('redirect', 'l_explain', 'l_success', 'admin', 's_display', 'err');
-	extract($phpbb_dispatcher->trigger_event('core.login_box_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.login_box_before', compact($vars)));
 
 	// Print out error if user tries to authenticate as an administrator without having the privileges...
 	if ($admin && !$auth->acl_get('a_'))
@@ -2284,7 +2284,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
 		if ($user->data['is_registered'])
 		{
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 		}
 		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_ADMIN');
@@ -2301,7 +2301,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			{
 				if ($user->data['is_registered'])
 				{
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 				}
 				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_ADMIN');
@@ -2324,7 +2324,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		if ($admin && utf8_clean_string($username) != utf8_clean_string($user->data['username']))
 		{
 			// We log the attempt to use a different username...
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 
 			send_status_line(403, 'Forbidden');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
@@ -2350,7 +2350,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			if ($result['status'] == LOGIN_SUCCESS)
 			{
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_SUCCESS');
+				$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_SUCCESS');
 			}
 			else
 			{
@@ -2358,7 +2358,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
 				if ($user->data['is_registered'])
 				{
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 				}
 			}
 		}
@@ -2366,7 +2366,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// The result parameter is always an array, holding the relevant information...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
-			$redirect = $request->variable('redirect', "{$phpbb_root_path}index.$phpEx");
+			$redirect = $request->variable('redirect', "{$engine_root_path}index.$phpEx");
 
 			/**
 			* This event allows an extension to modify the redirection when a user successfully logs in
@@ -2380,7 +2380,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			* @changed 3.2.4-RC1 Added result
 			*/
 			$vars = array('redirect', 'admin', 'result');
-			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
 
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
@@ -2406,16 +2406,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			case LOGIN_ERROR_PASSWORD_CONVERT:
 				$err = sprintf(
 					$user->lang[$result['error_msg']],
-					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
+					($config['email_enable']) ? '<a href="' . append_sid("{$engine_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
-					'<a href="' . phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx) . '">',
+					'<a href="' . phpbb_get_board_contact_link($config, $engine_root_path, $phpEx) . '">',
 					'</a>'
 				);
 			break;
 
 			case LOGIN_ERROR_ATTEMPTS:
 
-				$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+				$captcha = $engine_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
 				$captcha->init(CONFIRM_LOGIN);
 				// $captcha->reset();
 
@@ -2431,7 +2431,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = sprintf($user->lang[$result['error_msg']], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
+					$err = sprintf($user->lang[$result['error_msg']], '<a href="' . append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
 				}
 
 			break;
@@ -2448,7 +2448,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		 * @since 3.1.3-RC1
 		 */
 		$vars = array('result', 'username', 'password', 'err');
-		extract($phpbb_dispatcher->trigger_event('core.login_box_failed', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.login_box_failed', compact($vars)));
 	}
 
 	// Assign credential for username/password pair
@@ -2469,7 +2469,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	}
 
 	/* @var $provider_collection \phpbb\auth\provider_collection */
-	$provider_collection = $phpbb_container->get('auth.provider_collection');
+	$provider_collection = $engine_container->get('auth.provider_collection');
 	$auth_provider = $provider_collection->get_provider();
 
 	$auth_provider_data = $auth_provider->get_login_data();
@@ -2496,17 +2496,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
+	$controller_helper = $engine_container->get('controller.helper');
 
 	$login_box_template_data = array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
 		'U_SEND_PASSWORD' 		=> ($config['email_enable'] && $config['allow_password_reset']) ? $controller_helper->route('phpbb_ucp_forgot_password_controller') : '',
-		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',
-		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
-		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
-		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
+		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable']) ? append_sid("{$engine_root_path}ucp.$phpEx", 'mode=resend_act') : '',
+		'U_TERMS_USE'			=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=terms'),
+		'U_PRIVACY'				=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=privacy'),
+		'UA_PRIVACY'			=> addslashes(append_sid("{$engine_root_path}ucp.$phpEx", 'mode=privacy')),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
@@ -2536,7 +2536,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'redirect',
 		'login_box_template_data',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.login_box_modify_template_data', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.login_box_modify_template_data', compact($vars)));
 
 	$template->assign_vars($login_box_template_data);
 
@@ -2545,7 +2545,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+	make_jumpbox(append_sid("{$engine_root_path}viewforum.$phpEx"));
 
 	page_footer();
 }
@@ -2555,7 +2555,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $phpbb_container, $request, $template, $user, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+	global $db, $engine_container, $request, $template, $user, $engine_dispatcher, $engine_root_path, $phpEx;
 
 	$password = $request->variable('password', '', true);
 
@@ -2599,7 +2599,7 @@ function login_forum_box($forum_data)
 		$db->sql_freeresult($result);
 
 		/* @var $passwords_manager \phpbb\passwords\manager */
-		$passwords_manager = $phpbb_container->get('passwords.manager');
+		$passwords_manager = $engine_container->get('passwords.manager');
 
 		if ($passwords_manager->check($password, $forum_data['forum_password']))
 		{
@@ -2626,7 +2626,7 @@ function login_forum_box($forum_data)
 	* @since 3.1.0-RC3
 	*/
 	$vars = array('forum_data', 'password');
-	extract($phpbb_dispatcher->trigger_event('core.login_forum_box', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.login_forum_box', compact($vars)));
 
 	page_header($user->lang['LOGIN']);
 
@@ -2640,7 +2640,7 @@ function login_forum_box($forum_data)
 		'body' => 'login_forum.html')
 	);
 
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_data['forum_id']);
+	make_jumpbox(append_sid("{$engine_root_path}viewforum.$phpEx"), $forum_data['forum_id']);
 
 	page_footer();
 }
@@ -2992,8 +2992,8 @@ function phpbb_ip_normalise(string $address)
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user, $request;
-	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
-	global $phpbb_container;
+	global $engine_root_path, $msg_title, $msg_long_text, $engine_log;
+	global $engine_container;
 
 	// Do not display notices if we suppress them via @
 	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
@@ -3014,7 +3014,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ($phpbb_container != null && $phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
+			if (($errno & ($engine_container != null && $engine_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
@@ -3029,7 +3029,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				// we are writing an image - the user won't see the debug, so let's place it in the log
 				if (defined('IMAGE_OUTPUT') || defined('IN_CRON'))
 				{
-					$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_IMAGE_GENERATION_ERROR', false, array($errfile, $errline, $msg_text));
+					$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_IMAGE_GENERATION_ERROR', false, array($errfile, $errline, $msg_text));
 				}
 				// echo '<br /><br />BACKTRACE<br />' . get_backtrace() . '<br />' . "\n";
 			}
@@ -3045,7 +3045,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 				$msg_title = (!isset($msg_title)) ? $user->lang['GENERAL_ERROR'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 
-				$l_return_index = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $phpbb_root_path . '">', '</a>');
+				$l_return_index = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $engine_root_path . '">', '</a>');
 				$l_notify = '';
 
 				if (!empty($config['board_contact']))
@@ -3056,7 +3056,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			else
 			{
 				$msg_title = 'General Error';
-				$l_return_index = '<a href="' . $phpbb_root_path . '">Return to index page</a>';
+				$l_return_index = '<a href="' . $engine_root_path . '">Return to index page</a>';
 				$l_notify = '';
 
 				if (!empty($config['board_contact']))
@@ -3072,7 +3072,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$log_text .= '<br /><br />BACKTRACE<br />' . $backtrace;
 			}
 
-			if (defined('IN_INSTALL') || ($phpbb_container != null && $phpbb_container->getParameter('debug.show_errors')) || isset($auth) && $auth->acl_get('a_'))
+			if (defined('IN_INSTALL') || ($engine_container != null && $engine_container->getParameter('debug.show_errors')) || isset($auth) && $auth->acl_get('a_'))
 			{
 				$msg_text = $log_text;
 
@@ -3091,7 +3091,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				// let's avoid loops
 				$db->sql_return_on_error(true);
-				$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_GENERAL_ERROR', false, array($msg_title, $log_text));
+				$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_GENERAL_ERROR', false, array($msg_title, $log_text));
 				$db->sql_return_on_error(false);
 			}
 
@@ -3250,15 +3250,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 */
 function phpbb_filter_root_path($errfile)
 {
-	global $phpbb_filesystem;
+	global $engine_filesystem;
 
 	static $root_path;
 
 	if (empty($root_path))
 	{
-		if ($phpbb_filesystem)
+		if ($engine_filesystem)
 		{
-			$root_path = $phpbb_filesystem->realpath(__DIR__ . '/../');
+			$root_path = $engine_filesystem->realpath(__DIR__ . '/../');
 		}
 		else
 		{
@@ -3390,7 +3390,7 @@ function obtain_users_online($item_id = 0, $item = 'forum')
 */
 function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum')
 {
-	global $config, $db, $user, $auth, $phpbb_dispatcher;
+	global $config, $db, $user, $auth, $engine_dispatcher;
 
 	$user_online_link = $rowset = array();
 	// Need caps version of $item for language-strings
@@ -3422,7 +3422,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 		* @changed 3.1.7-RC1			Change sql query into array and adjust var accordingly. Allows extension authors the ability to adjust the sql_ary.
 		*/
 		$vars = array('online_users', 'item_id', 'item', 'sql_ary');
-		extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_sql', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.obtain_users_online_string_sql', compact($vars)));
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 		$rowset = $db->sql_fetchrowset($result);
@@ -3467,7 +3467,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 		'rowset',
 		'user_online_link',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_before_modify', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.obtain_users_online_string_before_modify', compact($vars)));
 
 	$online_userlist = implode(', ', $user_online_link);
 
@@ -3527,7 +3527,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 		'online_userlist',
 		'l_online_users',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_modify', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.obtain_users_online_string_modify', compact($vars)));
 
 	return array(
 		'online_userlist'	=> $online_userlist,
@@ -3663,7 +3663,7 @@ function phpbb_get_group_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_confi
 function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 {
 	global $user, $config;
-	global $phpbb_container, $phpbb_dispatcher;
+	global $engine_container, $engine_dispatcher;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
 	{
@@ -3676,9 +3676,9 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 		'height' => $row['avatar_height'],
 	);
 
-	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
-	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
-	$driver = $phpbb_avatar_manager->get_driver($row['avatar_type'], !$ignore_config);
+	/* @var $engine_avatar_manager \phpbb\avatar\manager */
+	$engine_avatar_manager = $engine_container->get('avatar.manager');
+	$driver = $engine_avatar_manager->get_driver($row['avatar_type'], !$ignore_config);
 	$html = '';
 
 	if ($driver)
@@ -3700,8 +3700,8 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 			// This path is sent with the base template paths in the assign_vars()
 			// call below. We need to correct it in case we are accessing from a
 			// controller because the web paths will be incorrect otherwise.
-			$phpbb_path_helper = $phpbb_container->get('path_helper');
-			$corrected_path = $phpbb_path_helper->get_web_root_path();
+			$engine_path_helper = $engine_container->get('path_helper');
+			$corrected_path = $engine_path_helper->get_web_root_path();
 
 			$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
@@ -3732,7 +3732,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 	* @since 3.1.6-RC1
 	*/
 	$vars = array('row', 'alt', 'ignore_config', 'avatar_data', 'html');
-	extract($phpbb_dispatcher->trigger_event('core.get_avatar_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.get_avatar_after', compact($vars)));
 
 	return $html;
 }
@@ -3742,8 +3742,8 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 */
 function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = true)
 {
-	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
+	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $engine_root_path;
+	global $engine_dispatcher, $request, $engine_container, $engine_admin_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -3770,7 +3770,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	* @since 3.1.0-a1
 	*/
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
-	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.page_header', compact($vars)));
 
 	if ($page_header_override)
 	{
@@ -3805,13 +3805,13 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
+		$u_login_logout = append_sid("{$engine_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
 		$l_login_logout = $user->lang['LOGOUT'];
 	}
 	else
 	{
 		$redirect = $request->variable('redirect', rawurlencode($user->page['page']));
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $redirect);
+		$u_login_logout = append_sid("{$engine_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $redirect);
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
@@ -3896,9 +3896,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
-	/* @var $phpbb_path_helper \phpbb\path_helper */
-	$phpbb_path_helper = $phpbb_container->get('path_helper');
-	$corrected_path = $phpbb_path_helper->get_web_root_path();
+	/* @var $engine_path_helper \phpbb\path_helper */
+	$engine_path_helper = $engine_container->get('path_helper');
+	$corrected_path = $engine_path_helper->get_web_root_path();
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
@@ -3935,10 +3935,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$notifications = false;
 	if ($config['load_notifications'] && $config['allow_board_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
 	{
-		/* @var $phpbb_notifications \phpbb\notification\manager */
-		$phpbb_notifications = $phpbb_container->get('notification_manager');
+		/* @var $engine_notifications \phpbb\notification\manager */
+		$engine_notifications = $engine_container->get('notification_manager');
 
-		$notifications = $phpbb_notifications->load_notifications('notification.method.board', array(
+		$notifications = $engine_notifications->load_notifications('notification.method.board', array(
 			'all_unread'	=> true,
 			'limit'			=> 5,
 		));
@@ -3950,10 +3950,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
+	$controller_helper = $engine_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
-	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
+	$s_login_redirect = build_hidden_fields(array('redirect' => $engine_path_helper->remove_web_root_path(build_url())));
 
 	// Add form token for login box, in case page is presenting a login form.
 	add_form_key('login', '_LOGIN');
@@ -3989,9 +3989,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
-		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
-		'U_MARK_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_list&amp;mark=all&amp;token=' . $notification_mark_hash),
-		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
+		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$engine_root_path}ucp.$phpEx", 'i=ucp_notifications'),
+		'U_MARK_ALL_NOTIFICATIONS'		=> append_sid("{$engine_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_list&amp;mark=all&amp;token=' . $notification_mark_hash),
+		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$engine_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'] && $config['allow_board_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
@@ -4009,31 +4009,31 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
-		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
+		'U_PRIVATEMSGS'			=> append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
+		'U_RETURN_INBOX'		=> append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
+		'U_MEMBERLIST'			=> append_sid("{$engine_root_path}memberlist.$phpEx"),
+		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$engine_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
-		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
-		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
+		'U_INDEX'				=> append_sid("{$engine_root_path}index.$phpEx"),
+		'U_SEARCH'				=> append_sid("{$engine_root_path}search.$phpEx"),
 		'U_SITE_HOME'			=> $config['site_home_url'],
-		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
+		'U_REGISTER'			=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=register'),
+		'U_PROFILE'				=> append_sid("{$engine_root_path}ucp.$phpEx"),
 		'U_USER_PROFILE'		=> get_username_string('profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
-		'U_MODCP'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", false, true, $user->session_id),
+		'U_MODCP'				=> append_sid("{$engine_root_path}mcp.$phpEx", false, true, $user->session_id),
 		'U_FAQ'					=> $controller_helper->route('phpbb_help_faq_controller'),
-		'U_SEARCH_SELF'			=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=egosearch'),
-		'U_SEARCH_NEW'			=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=newposts'),
-		'U_SEARCH_UNANSWERED'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unanswered'),
-		'U_SEARCH_UNREAD'		=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unreadposts'),
-		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=active_topics'),
-		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
-		'U_CONTACT_US'			=> ($config['contact_admin_form_enable'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') : '',
-		'U_TEAM'				=> (!$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
-		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
-		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
-		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
-		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
+		'U_SEARCH_SELF'			=> append_sid("{$engine_root_path}search.$phpEx", 'search_id=egosearch'),
+		'U_SEARCH_NEW'			=> append_sid("{$engine_root_path}search.$phpEx", 'search_id=newposts'),
+		'U_SEARCH_UNANSWERED'	=> append_sid("{$engine_root_path}search.$phpEx", 'search_id=unanswered'),
+		'U_SEARCH_UNREAD'		=> append_sid("{$engine_root_path}search.$phpEx", 'search_id=unreadposts'),
+		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$engine_root_path}search.$phpEx", 'search_id=active_topics'),
+		'U_DELETE_COOKIES'		=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=delete_cookies'),
+		'U_CONTACT_US'			=> ($config['contact_admin_form_enable'] && $config['email_enable']) ? append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=contactadmin') : '',
+		'U_TEAM'				=> (!$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=team'),
+		'U_TERMS_USE'			=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=terms'),
+		'U_PRIVACY'				=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=privacy'),
+		'UA_PRIVACY'			=> addslashes(append_sid("{$engine_root_path}ucp.$phpEx", 'mode=privacy')),
+		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$engine_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
@@ -4058,7 +4058,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
 
-		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id)),
+		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$engine_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$engine_admin_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> $s_login_redirect,
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
@@ -4142,7 +4142,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	* @since 3.1.0-b3
 	*/
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'http_headers');
-	extract($phpbb_dispatcher->trigger_event('core.page_header_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.page_header_after', compact($vars)));
 
 	foreach ($http_headers as $hname => $hval)
 	{
@@ -4163,10 +4163,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 */
 function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
+	$controller_helper = $engine_container->get('controller.helper');
 
 	$controller_helper->display_sql_report();
 }
@@ -4178,17 +4178,17 @@ function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $re
 * @param \phpbb\config\config				$config		Config object
 * @param \phpbb\auth\auth					$auth		Auth object
 * @param \phpbb\user						$user		User object
-* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher
+* @param \phpbb\event\dispatcher_interface	$engine_dispatcher	Event dispatcher
 * @return string
 */
-function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
+function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\event\dispatcher_interface $engine_dispatcher)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	$debug_info = array();
 
 	// Output page creation time
-	if ($phpbb_container->getParameter('debug.load_time'))
+	if ($engine_container->getParameter('debug.load_time'))
 	{
 		if (isset($GLOBALS['starttime']))
 		{
@@ -4197,7 +4197,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 		}
 	}
 
-	if ($phpbb_container->getParameter('debug.memory'))
+	if ($engine_container->getParameter('debug.memory'))
 	{
 		$memory_usage = memory_get_peak_usage();
 		if ($memory_usage)
@@ -4215,7 +4215,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 		}
 	}
 
-	if ($phpbb_container->getParameter('debug.sql_explain'))
+	if ($engine_container->getParameter('debug.sql_explain'))
 	{
 		$debug_info[] = sprintf('<span title="Cached: %d">Queries: %d</span>', $db->sql_num_queries(true), $db->sql_num_queries());
 
@@ -4234,7 +4234,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 	* @since 3.1.0-RC3
 	*/
 	$vars = array('debug_info');
-	extract($phpbb_dispatcher->trigger_event('core.phpbb_generate_debug_output', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.phpbb_generate_debug_output', compact($vars)));
 
 	return implode(' | ', $debug_info);
 }
@@ -4248,7 +4248,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 */
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
-	global $phpbb_dispatcher, $phpbb_container, $template;
+	global $engine_dispatcher, $engine_container, $template;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
@@ -4263,7 +4263,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	* @since 3.1.0-a1
 	*/
 	$vars = array('run_cron', 'page_footer_override');
-	extract($phpbb_dispatcher->trigger_event('core.page_footer', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.page_footer', compact($vars)));
 
 	if ($page_footer_override)
 	{
@@ -4271,7 +4271,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	}
 
 	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
+	$controller_helper = $engine_container->get('controller.helper');
 
 	$controller_helper->display_footer($run_cron);
 
@@ -4285,7 +4285,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	* @since 3.1.0-RC5
 	*/
 	$vars = array('display_template', 'exit_handler');
-	extract($phpbb_dispatcher->trigger_event('core.page_footer_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.page_footer_after', compact($vars)));
 
 	if ($display_template)
 	{
@@ -4307,9 +4307,9 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 function garbage_collection()
 {
 	global $cache, $db;
-	global $phpbb_dispatcher;
+	global $engine_dispatcher;
 
-	if (!empty($phpbb_dispatcher))
+	if (!empty($engine_dispatcher))
 	{
 		/**
 		* Unload some objects, to free some memory, before we finish our task
@@ -4317,7 +4317,7 @@ function garbage_collection()
 		* @event core.garbage_collection
 		* @since 3.1.0-a1
 		*/
-		$phpbb_dispatcher->dispatch('core.garbage_collection');
+		$engine_dispatcher->dispatch('core.garbage_collection');
 	}
 
 	// Unload cache, must be done before the DB connection if closed
@@ -4341,13 +4341,13 @@ function garbage_collection()
 */
 function exit_handler()
 {
-	global $phpbb_hook;
+	global $engine_hook;
 
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
+	if (!empty($engine_hook) && $engine_hook->call_hook(__FUNCTION__))
 	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
+		if ($engine_hook->hook_return(__FUNCTION__))
 		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
+			return $engine_hook->hook_return_result(__FUNCTION__);
 		}
 	}
 
@@ -4363,13 +4363,13 @@ function exit_handler()
 */
 function phpbb_user_session_handler()
 {
-	global $phpbb_hook;
+	global $engine_hook;
 
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
+	if (!empty($engine_hook) && $engine_hook->call_hook(__FUNCTION__))
 	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
+		if ($engine_hook->hook_return(__FUNCTION__))
 		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
+			return $engine_hook->hook_return_result(__FUNCTION__);
 		}
 	}
 
@@ -4412,15 +4412,15 @@ function phpbb_get_board_contact(\phpbb\config\config $config, $phpEx)
 * Get a clickable board contact details link
 *
 * @param \phpbb\config\config	$config
-* @param string					$phpbb_root_path
+* @param string					$engine_root_path
 * @param string					$phpEx
 * @return string
 */
-function phpbb_get_board_contact_link(\phpbb\config\config $config, $phpbb_root_path, $phpEx)
+function phpbb_get_board_contact_link(\phpbb\config\config $config, $engine_root_path, $phpEx)
 {
 	if ($config['contact_admin_form_enable'] && $config['email_enable'])
 	{
-		return append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
+		return append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=contactadmin');
 	}
 	else
 	{

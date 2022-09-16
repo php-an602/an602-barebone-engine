@@ -28,13 +28,13 @@ class file extends \phpbb\cache\driver\base
 	/**
 	* Set cache path
 	*
-	* @param string $cache_dir Define the path to the cache directory (default: $phpbb_root_path . 'cache/')
+	* @param string $cache_dir Define the path to the cache directory (default: $engine_root_path . 'cache/')
 	*/
 	function __construct($cache_dir = null)
 	{
-		global $phpbb_container;
+		global $engine_container;
 
-		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_container->getParameter('core.cache_dir');
+		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $engine_container->getParameter('core.cache_dir');
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 
 		if (!is_dir($this->cache_dir))

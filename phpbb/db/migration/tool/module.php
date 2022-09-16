@@ -33,7 +33,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	protected $module_manager;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -51,17 +51,17 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
 	* @param \phpbb\module\module_manager	$module_manager
-	* @param string $phpbb_root_path
+	* @param string $engine_root_path
 	* @param string $php_ext
 	* @param string $modules_table
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, \phpbb\module\module_manager $module_manager, $phpbb_root_path, $php_ext, $modules_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, \phpbb\module\module_manager $module_manager, $engine_root_path, $php_ext, $modules_table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->user = $user;
 		$this->module_manager = $module_manager;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->modules_table = $modules_table;
 	}
@@ -182,7 +182,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	*/
 	public function add($class, $parent = 0, $data = array())
 	{
-		global $user, $phpbb_log;
+		global $user, $engine_log;
 
 		// allow sending the name as a string in $data to create a category
 		if (!is_array($data))
@@ -255,7 +255,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 				// Success
 				$module_log_name = ((isset($this->user->lang[$data['module_langname']])) ? $this->user->lang[$data['module_langname']] : $data['module_langname']);
-				$phpbb_log->add('admin', (isset($user->data['user_id'])) ? $user->data['user_id'] : ANONYMOUS, $user->ip, 'LOG_MODULE_ADD', false, array($module_log_name));
+				$engine_log->add('admin', (isset($user->data['user_id'])) ? $user->data['user_id'] : ANONYMOUS, $user->ip, 'LOG_MODULE_ADD', false, array($module_log_name));
 
 				// Move the module if requested above/below an existing one
 				if (isset($data['before']) && $data['before'])

@@ -59,9 +59,9 @@ class user extends \phpbb\session
 	*/
 	function __construct(\phpbb\language\language $lang, $datetime_class)
 	{
-		global $phpbb_root_path;
+		global $engine_root_path;
 
-		$this->lang_path = $phpbb_root_path . 'language/';
+		$this->lang_path = $engine_root_path . 'language/';
 		$this->language = $lang;
 		$this->datetime = $datetime_class;
 
@@ -109,8 +109,8 @@ class user extends \phpbb\session
 	*/
 	function setup($lang_set = false, $style_id = false)
 	{
-		global $db, $request, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
-		global $phpbb_dispatcher, $phpbb_container;
+		global $db, $request, $template, $config, $auth, $phpEx, $engine_root_path, $cache;
+		global $engine_dispatcher, $engine_container;
 
 		$this->language->set_default_language($config['default_lang']);
 
@@ -219,7 +219,7 @@ class user extends \phpbb\session
 			'lang_set_ext',
 			'style_id',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.user_setup', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.user_setup', compact($vars)));
 
 		$this->data = $user_data;
 		$this->lang_name = $user_lang_name;
@@ -344,7 +344,7 @@ class user extends \phpbb\session
 		* @event core.user_setup_after
 		* @since 3.1.6-RC1
 		*/
-		$phpbb_dispatcher->dispatch('core.user_setup_after');
+		$engine_dispatcher->dispatch('core.user_setup_after');
 
 		// If this function got called from the error handler we are finished here.
 		if (defined('IN_ERROR_HANDLER'))
@@ -354,7 +354,7 @@ class user extends \phpbb\session
 
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this every time we develop locally
-		if (!$phpbb_container->getParameter('allow_install_dir') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
+		if (!$engine_container->getParameter('allow_install_dir') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($engine_root_path . 'install') && !is_file($engine_root_path . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
 			if ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))
@@ -434,7 +434,7 @@ class user extends \phpbb\session
 		{
 			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != "ucp.$phpEx")
 			{
-				redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=reg_details'));
+				redirect(append_sid("{$engine_root_path}ucp.$phpEx", 'i=profile&amp;mode=reg_details'));
 			}
 		}
 
@@ -599,7 +599,7 @@ class user extends \phpbb\session
 	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
-		global $phpbb_dispatcher;
+		global $engine_dispatcher;
 		static $utc;
 
 		if (!isset($utc))
@@ -622,7 +622,7 @@ class user extends \phpbb\session
 		* @since 3.2.1-RC1
 		*/
 		$vars = array('utc', 'function_arguments', 'format_date_override');
-		extract($phpbb_dispatcher->trigger_event('core.user_format_date_override', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.user_format_date_override', compact($vars)));
 
 		if (!$format_date_override)
 		{
@@ -820,9 +820,9 @@ class user extends \phpbb\session
 
 		if (!function_exists('remove_newly_registered'))
 		{
-			global $phpbb_root_path, $phpEx;
+			global $engine_root_path, $phpEx;
 
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($engine_root_path . 'includes/functions_user.' . $phpEx);
 		}
 		if ($group = remove_newly_registered($this->data['user_id'], $this->data))
 		{

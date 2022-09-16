@@ -35,8 +35,8 @@ class acp_listener implements EventSubscriberInterface
 	/** @var \phpbb\viglink\acp\viglink_helper $helper VigLink helper object */
 	protected $helper;
 
-	/** @var string $phpbb_root_path phpBB root path */
-	protected $phpbb_root_path;
+	/** @var string $engine_root_path phpBB root path */
+	protected $engine_root_path;
 
 	/** @var string $php_ext PHP file extension */
 	protected $php_ext;
@@ -50,12 +50,12 @@ class acp_listener implements EventSubscriberInterface
 	 * @param \phpbb\template\template $template
 	 * @param \phpbb\user $user User object
 	 * @param \phpbb\viglink\acp\viglink_helper $viglink_helper Viglink helper object
-	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $engine_root_path phpBB root path
 	 * @param string $php_ext PHP file extension
 	 */
 	public function __construct(\phpbb\config\config $config, \phpbb\language\language $language, \phpbb\request\request_interface $request,
 								\phpbb\template\template $template, \phpbb\user $user, \phpbb\viglink\acp\viglink_helper $viglink_helper,
-								$phpbb_root_path, $php_ext)
+								$engine_root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->language = $language;
@@ -63,7 +63,7 @@ class acp_listener implements EventSubscriberInterface
 		$this->template = $template;
 		$this->user = $user;
 		$this->helper = $viglink_helper;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 	}
 

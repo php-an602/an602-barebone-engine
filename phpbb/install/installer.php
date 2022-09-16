@@ -255,9 +255,9 @@ class installer
 					$user->setup();
 				}
 
-				$phpbb_root_path = $this->container_factory->get_parameter('core.root_path');
+				$engine_root_path = $this->container_factory->get_parameter('core.root_path');
 
-				$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
+				$acp_url = append_sid($engine_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
 				$this->iohandler->add_success_message('INSTALLER_FINISHED', array(
 					'ACP_LINK',
 					$acp_url,

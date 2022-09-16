@@ -154,12 +154,12 @@ class recaptcha_v3 extends captcha_abstract
 		/**
 		 * @var \phpbb\config\config		$config		Config object
 		 * @var \phpbb\language\language	$language	Language object
-		 * @var \phpbb\log\log				$phpbb_log	Log object
+		 * @var \phpbb\log\log				$engine_log	Log object
 		 * @var \phpbb\request\request		$request	Request object
 		 * @var \phpbb\template\template	$template	Template object
 		 * @var \phpbb\user					$user		User object
 		 */
-		global $config, $language, $phpbb_log, $request, $template, $user;
+		global $config, $language, $engine_log, $request, $template, $user;
 
 		$module->tpl_name		= 'captcha_recaptcha_v3_acp';
 		$module->page_title		= 'ACP_VC_SETTINGS';
@@ -190,7 +190,7 @@ class recaptcha_v3 extends captcha_abstract
 				$config->set("recaptcha_v3_threshold_{$action}", $request->variable("recaptcha_v3_threshold_{$action}", 0.50));
 			}
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 
 			trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($module->u_action));
 		}
@@ -246,17 +246,17 @@ class recaptcha_v3 extends captcha_abstract
 		 * @var \phpbb\config\config		$config				Config object
 		 * @var \phpbb\language\language	$language			Language object
 		 * @var \phpbb\template\template	$template			Template object
-		 * @var string						$phpbb_root_path	phpBB root path
+		 * @var string						$engine_root_path	phpBB root path
 		 * @var string						$phpEx				php File extensions
 		 */
-		global $config, $language, $template, $phpbb_root_path, $phpEx;
+		global $config, $language, $template, $engine_root_path, $phpEx;
 
 		if ($this->is_solved())
 		{
 			return false;
 		}
 
-		$contact = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
+		$contact = phpbb_get_board_contact_link($config, $engine_root_path, $phpEx);
 		$explain = $this->type !== CONFIRM_POST ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN';
 
 		$domain = $config['recaptcha_v3_domain'] ?? self::GOOGLE;

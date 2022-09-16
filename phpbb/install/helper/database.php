@@ -28,7 +28,7 @@ class database
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var array
@@ -96,12 +96,12 @@ class database
 	 * Constructor
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface	$filesystem			Filesystem interface
-	 * @param string									$phpbb_root_path	Path to phpBB's root
+	 * @param string									$engine_root_path	Path to phpBB's root
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $engine_root_path)
 	{
 		$this->filesystem		= $filesystem;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 	}
 
 	/**

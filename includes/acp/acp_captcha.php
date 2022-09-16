@@ -25,13 +25,13 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $user, $template, $phpbb_log, $request;
-		global $config, $phpbb_container;
+		global $user, $template, $engine_log, $request;
+		global $config, $engine_container;
 
 		$user->add_lang('acp/board');
 
 		/* @var $factory \phpbb\captcha\factory */
-		$factory = $phpbb_container->get('captcha.factory');
+		$factory = $engine_container->get('captcha.factory');
 		$captchas = $factory->get_captcha_types();
 
 		$selected = $request->variable('select_captcha', $config['captcha_plugin']);
@@ -130,7 +130,7 @@ class acp_captcha
 						$new_captcha = $factory->get_instance($config['captcha_plugin']);
 						$new_captcha->install();
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 					}
 					else
 					{
@@ -178,9 +178,9 @@ class acp_captcha
 	*/
 	function deliver_demo($selected)
 	{
-		global $phpbb_container;
+		global $engine_container;
 
-		$captcha = $phpbb_container->get('captcha.factory')->get_instance($selected);
+		$captcha = $engine_container->get('captcha.factory')->get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();
 

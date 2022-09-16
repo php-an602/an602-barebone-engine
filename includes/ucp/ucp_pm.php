@@ -45,7 +45,7 @@ class ucp_pm
 
 	function main($id, $mode)
 	{
-		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config, $request;
+		global $user, $template, $engine_root_path, $auth, $phpEx, $db, $config, $request;
 
 		if (!$user->data['is_registered'])
 		{
@@ -84,7 +84,7 @@ class ucp_pm
 
 		if (!function_exists('get_folder'))
 		{
-			include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+			include($engine_root_path . 'includes/functions_privmsgs.' . $phpEx);
 		}
 
 		switch ($mode)
@@ -109,7 +109,7 @@ class ucp_pm
 
 				if (!function_exists('compose_pm'))
 				{
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+					include($engine_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
 				}
 				compose_pm($id, $mode, $action, $user_folders);
 
@@ -122,7 +122,7 @@ class ucp_pm
 
 				if (!function_exists('message_options'))
 				{
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
+					include($engine_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
 				}
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
 
@@ -136,7 +136,7 @@ class ucp_pm
 
 				if (!class_exists('ucp_main'))
 				{
-					include($phpbb_root_path . 'includes/ucp/ucp_main.' . $phpEx);
+					include($engine_root_path . 'includes/ucp/ucp_main.' . $phpEx);
 				}
 
 				$module = new ucp_main($this);
@@ -395,7 +395,7 @@ class ucp_pm
 				{
 					if (!function_exists('view_folder'))
 					{
-						include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
+						include($engine_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
 					}
 					view_folder($id, $mode, $folder_id, $folder);
 
@@ -416,7 +416,7 @@ class ucp_pm
 
 					if (!function_exists('view_message'))
 					{
-						include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
+						include($engine_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
 					}
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 

@@ -30,12 +30,12 @@ class permissions
 	/**
 	* Constructor
 	*
-	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher
+	* @param	\phpbb\event\dispatcher_interface	$engine_dispatcher	Event dispatcher
 	* @param	\phpbb\user				$user				User Object
 	*/
-	public function __construct(\phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\user $user)
+	public function __construct(\phpbb\event\dispatcher_interface $engine_dispatcher, \phpbb\user $user)
 	{
-		$this->dispatcher = $phpbb_dispatcher;
+		$this->dispatcher = $engine_dispatcher;
 		$this->user = $user;
 
 		$categories = $this->categories;
@@ -63,7 +63,7 @@ class permissions
 		* @since 3.1.0-a1
 		*/
 		$vars = array('types', 'categories', 'permissions');
-		extract($phpbb_dispatcher->trigger_event('core.permissions', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.permissions', compact($vars)));
 
 		$this->categories = $categories;
 		$this->types = $types;

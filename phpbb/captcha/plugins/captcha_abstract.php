@@ -86,7 +86,7 @@ abstract class captcha_abstract
 
 	function get_template()
 	{
-		global $config, $user, $template, $phpEx, $phpbb_root_path;
+		global $config, $user, $template, $phpEx, $engine_root_path;
 
 		if ($this->is_solved())
 		{
@@ -94,8 +94,8 @@ abstract class captcha_abstract
 		}
 		else
 		{
-			$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx,  'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
-			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
+			$link = append_sid($engine_root_path . 'ucp.' . $phpEx,  'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
+			$contact_link = phpbb_get_board_contact_link($config, $engine_root_path, $phpEx);
 			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
 
 			$template->assign_vars(array(
@@ -115,7 +115,7 @@ abstract class captcha_abstract
 
 	function get_demo_template($id)
 	{
-		global $config, $template, $request, $phpbb_admin_path, $phpEx;
+		global $config, $template, $request, $engine_admin_path, $phpEx;
 
 		$variables = '';
 
@@ -129,7 +129,7 @@ abstract class captcha_abstract
 
 		// acp_captcha has a delivery function; let's use it
 		$template->assign_vars(array(
-			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_service_name()) . $variables,
+			'CONFIRM_IMAGE'		=> append_sid($engine_admin_path . 'index.' . $phpEx, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_service_name()) . $variables,
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 

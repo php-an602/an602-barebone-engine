@@ -46,7 +46,7 @@ class upload
 	protected $mimetype_guesser;
 
 	/** @var dispatcher */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/** @var plupload Plupload */
 	protected $plupload;
@@ -74,12 +74,12 @@ class upload
 	 * @param \phpbb\files\upload $files_upload
 	 * @param language $language
 	 * @param guesser $mimetype_guesser
-	 * @param dispatcher $phpbb_dispatcher
+	 * @param dispatcher $engine_dispatcher
 	 * @param plupload $plupload
 	 * @param user $user
-	 * @param $phpbb_root_path
+	 * @param $engine_root_path
 	 */
-	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, user $user, $phpbb_root_path)
+	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $engine_dispatcher, plupload $plupload, user $user, $engine_root_path)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -87,10 +87,10 @@ class upload
 		$this->files_upload = $files_upload;
 		$this->language = $language;
 		$this->mimetype_guesser = $mimetype_guesser;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 		$this->plupload = $plupload;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 	}
 
 	/**

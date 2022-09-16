@@ -33,24 +33,24 @@ class acp_extensions
 	private $user;
 	private $log;
 	private $request;
-	private $phpbb_dispatcher;
+	private $engine_dispatcher;
 	private $ext_manager;
-	private $phpbb_container;
+	private $engine_container;
 	private $php_ini;
 
 	function main($id, $mode)
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher, $phpbb_container;
+		global $config, $user, $template, $request, $engine_extension_manager, $engine_root_path, $engine_log, $engine_dispatcher, $engine_container;
 
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
 		$this->request = $request;
-		$this->log = $phpbb_log;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->ext_manager = $phpbb_extension_manager;
-		$this->phpbb_container = $phpbb_container;
+		$this->log = $engine_log;
+		$this->phpbb_dispatcher = $engine_dispatcher;
+		$this->ext_manager = $engine_extension_manager;
+		$this->phpbb_container = $engine_container;
 		$this->php_ini = $this->phpbb_container->get('php_ini');
 
 		$this->user->add_lang(array('install', 'acp/extensions', 'acp/modules', 'migrator'));
@@ -223,7 +223,7 @@ class acp_extensions
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
 						),
-					), array($phpbb_root_path . 'adm/style'));
+					), array($engine_root_path . 'adm/style'));
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}

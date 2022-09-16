@@ -25,7 +25,7 @@ if (!defined('IN_ENGINE'))
 */
 function send_avatar_to_browser($file, $browser)
 {
-	global $config, $phpbb_root_path;
+	global $config, $engine_root_path;
 
 	$prefix = $config['avatar_salt'] . '_';
 	$image_dir = $config['avatar_path'];
@@ -41,7 +41,7 @@ function send_avatar_to_browser($file, $browser)
 	{
 		$image_dir = '';
 	}
-	$file_path = $phpbb_root_path . $image_dir . '/' . $prefix . $file;
+	$file_path = $engine_root_path . $image_dir . '/' . $prefix . $file;
 
 	if ((@file_exists($file_path) && @is_readable($file_path)) && !headers_sent())
 	{
@@ -124,9 +124,9 @@ function wrap_img_in_html($src, $title)
 */
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $user, $db, $phpbb_dispatcher, $phpbb_root_path, $request;
+	global $user, $db, $engine_dispatcher, $engine_root_path, $request;
 
-	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
+	$filename = $engine_root_path . $upload_dir . '/' . $attachment['physical_filename'];
 
 	if (!@file_exists($filename))
 	{
@@ -167,7 +167,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		'filename',
 		'size',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
 
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
 
@@ -654,7 +654,7 @@ function phpbb_increment_downloads($db, $ids)
 */
 function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	$sql_array = [
 		'SELECT'	=> 't.forum_id, t.topic_poster, t.topic_visibility, f.forum_name, f.forum_password, f.parent_id',
@@ -671,9 +671,9 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+	$engine_content_visibility = $engine_container->get('content.visibility');
 
-	if ($row && !$phpbb_content_visibility->is_visible('topic', $row['forum_id'], $row))
+	if ($row && !$engine_content_visibility->is_visible('topic', $row['forum_id'], $row))
 	{
 		send_status_line(404, 'Not Found');
 		trigger_error('ERROR_NO_ATTACHMENT');
@@ -705,7 +705,7 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 */
 function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 {
-	global $phpbb_dispatcher;
+	global $engine_dispatcher;
 
 	if (!$auth->acl_get('u_pm_download'))
 	{
@@ -725,7 +725,7 @@ function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 	* @since 3.1.11-RC1
 	*/
 	$vars = array('allowed', 'msg_id', 'user_id');
-	extract($phpbb_dispatcher->trigger_event('core.modify_pm_attach_download_auth', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_pm_attach_download_auth', compact($vars)));
 
 	if (!$allowed)
 	{

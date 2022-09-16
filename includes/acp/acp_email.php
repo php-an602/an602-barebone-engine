@@ -25,8 +25,8 @@ class acp_email
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $template, $phpbb_log, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_dispatcher;
+		global $config, $db, $user, $template, $engine_log, $request;
+		global $engine_root_path, $engine_admin_path, $phpEx, $engine_dispatcher;
 
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';
@@ -137,7 +137,7 @@ class acp_email
 				* @since 3.1.2-RC1
 				*/
 				$vars = array('sql_ary');
-				extract($phpbb_dispatcher->trigger_event('core.acp_email_modify_sql', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_email_modify_sql', compact($vars)));
 
 				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query($sql);
@@ -191,12 +191,12 @@ class acp_email
 				// Send the messages
 				if (!class_exists('messenger'))
 				{
-					include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+					include($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 				}
 
 				if (!function_exists('get_group_name'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($engine_root_path . 'includes/functions_user.' . $phpEx);
 				}
 				$messenger = new messenger($use_queue);
 
@@ -233,7 +233,7 @@ class acp_email
 					'use_queue',
 					'priority',
 				);
-				extract($phpbb_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
 
 				for ($i = 0, $size = count($email_list); $i < $size; $i++)
 				{
@@ -270,7 +270,7 @@ class acp_email
 				{
 					if (!empty($usernames))
 					{
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MASS_EMAIL', false, array(implode(', ', utf8_normalize_nfc($usernames))));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MASS_EMAIL', false, array(implode(', ', utf8_normalize_nfc($usernames))));
 					}
 					else
 					{
@@ -284,7 +284,7 @@ class acp_email
 							$group_name = $user->lang['ALL_USERS'];
 						}
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MASS_EMAIL', false, array($group_name));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MASS_EMAIL', false, array($group_name));
 					}
 				}
 
@@ -295,7 +295,7 @@ class acp_email
 				}
 				else
 				{
-					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=critical') . '">', '</a>');
+					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . append_sid("{$engine_admin_path}index.$phpEx", 'i=logs&amp;mode=critical') . '">', '</a>');
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
@@ -327,7 +327,7 @@ class acp_email
 			'U_ACTION'				=> $this->u_action,
 			'S_GROUP_OPTIONS'		=> $select_list,
 			'USERNAMES'				=> implode("\n", $usernames),
-			'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
+			'U_FIND_USERNAME'		=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
 			'SUBJECT'				=> $subject,
 			'MESSAGE'				=> $message,
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options,
@@ -344,7 +344,7 @@ class acp_email
 		* @since 3.1.4-RC1
 		*/
 		$vars = array('template_data', 'exclude', 'usernames');
-		extract($phpbb_dispatcher->trigger_event('core.acp_email_display', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.acp_email_display', compact($vars)));
 
 		$template->assign_vars($template_data);
 	}

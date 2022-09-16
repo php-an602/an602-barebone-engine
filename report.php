@@ -17,9 +17,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 * @ignore
 */
 define('IN_ENGINE', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$engine_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+include($engine_root_path . 'common.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -31,7 +31,7 @@ $pm_id			= $request->variable('pm', 0);
 $redirect_route_name = ($pm_id === 0) ? 'phpbb_report_post_controller' : 'phpbb_report_pm_controller';
 
 /** @var \phpbb\controller\helper $controller_helper */
-$controller_helper = $phpbb_container->get('controller.helper');
+$controller_helper = $engine_container->get('controller.helper');
 $response = new RedirectResponse(
 	$controller_helper->route($redirect_route_name, array(
 		'id'	=> ($pm_id === 0) ? $post_id : $pm_id,

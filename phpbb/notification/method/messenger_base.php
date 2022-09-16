@@ -25,7 +25,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	protected $user_loader;
 
 	/** @var string */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string */
 	protected $php_ext;
@@ -34,13 +34,13 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	 * Notification Method Board Constructor
 	 *
 	 * @param \phpbb\user_loader $user_loader
-	 * @param string $phpbb_root_path
+	 * @param string $engine_root_path
 	 * @param string $php_ext
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\user_loader $user_loader, $engine_root_path, $php_ext)
 	{
 		$this->user_loader = $user_loader;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 	}
 

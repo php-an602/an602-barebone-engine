@@ -72,7 +72,7 @@ if (getenv('PHPBB_NO_COMPOSER_AUTOLOAD'))
 }
 else
 {
-	if (!file_exists($phpbb_root_path . 'vendor/autoload.php'))
+	if (!file_exists($engine_root_path . 'vendor/autoload.php'))
 	{
 		trigger_error(
 			'Composer dependencies have not been set up yet, run ' .
@@ -80,7 +80,7 @@ else
 			E_USER_ERROR
 		);
 	}
-	require($phpbb_root_path . 'vendor/autoload.php');
+	require($engine_root_path . 'vendor/autoload.php');
 }
 
 $starttime = microtime(true);

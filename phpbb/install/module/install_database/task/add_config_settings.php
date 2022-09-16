@@ -53,7 +53,7 @@ class add_config_settings extends \phpbb\install\task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -93,14 +93,14 @@ class add_config_settings extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler			Installer's input-output handler
 	 * @param \phpbb\install\helper\container_factory				$container			Installer's DI container
 	 * @param \phpbb\language\language								$language			Language service
-	 * @param string												$phpbb_root_path	Path to phpBB's root
+	 * @param string												$engine_root_path	Path to phpBB's root
 	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem,
 								\phpbb\install\helper\config $install_config,
 								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
 								\phpbb\install\helper\container_factory $container,
 								\phpbb\language\language $language,
-								$phpbb_root_path)
+								$engine_root_path)
 	{
 		$this->db				= $container->get('dbal.conn');
 		$this->filesystem		= $filesystem;
@@ -108,7 +108,7 @@ class add_config_settings extends \phpbb\install\task_base
 		$this->iohandler		= $iohandler;
 		$this->language			= $language;
 		$this->password_manager	= $container->get('passwords.manager');
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 
 		// Table names
 		$this->config_table				= $container->get_parameter('tables.config');

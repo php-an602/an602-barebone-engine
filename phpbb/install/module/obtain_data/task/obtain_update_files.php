@@ -33,7 +33,7 @@ class obtain_update_files extends task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -45,14 +45,14 @@ class obtain_update_files extends task_base
 	 *
 	 * @param config				$config
 	 * @param iohandler_interface	$iohandler
-	 * @param string				$phpbb_root_path
+	 * @param string				$engine_root_path
 	 * @param string				$php_ext
 	 */
-	public function __construct(config $config, iohandler_interface $iohandler, $phpbb_root_path, $php_ext)
+	public function __construct(config $config, iohandler_interface $iohandler, $engine_root_path, $php_ext)
 	{
 		$this->installer_config	= $config;
 		$this->iohandler		= $iohandler;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 
 		parent::__construct(false);

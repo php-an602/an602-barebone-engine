@@ -29,7 +29,7 @@ class ucp_prefs
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_dispatcher, $request;
+		global $config, $db, $user, $auth, $template, $engine_dispatcher, $request;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();
@@ -72,7 +72,7 @@ class ucp_prefs
 				* @changed 3.1.4-RC1 Added error variable to the event
 				*/
 				$vars = array('submit', 'data', 'error');
-				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));
 
 				if ($submit)
 				{
@@ -121,7 +121,7 @@ class ucp_prefs
 						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
-						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_update_data', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.ucp_prefs_personal_update_data', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -239,7 +239,7 @@ class ucp_prefs
 				* @since 3.1.0-a1
 				*/
 				$vars = array('submit', 'data');
-				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_data', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.ucp_prefs_view_data', compact($vars)));
 
 				if ($submit)
 				{
@@ -300,7 +300,7 @@ class ucp_prefs
 						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
-						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_update_data', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.ucp_prefs_view_update_data', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -399,7 +399,7 @@ class ucp_prefs
 					's_sort_post_key',
 					's_sort_post_dir',
 				);
-				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_after', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.ucp_prefs_view_after', compact($vars)));
 
 				$template->assign_vars(array(
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
@@ -445,7 +445,7 @@ class ucp_prefs
 				* @since 3.1.0-a1
 				*/
 				$vars = array('submit', 'data');
-				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_data', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.ucp_prefs_post_data', compact($vars)));
 
 				if ($submit)
 				{
@@ -469,7 +469,7 @@ class ucp_prefs
 						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
-						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_update_data', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.ucp_prefs_post_update_data', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -512,7 +512,7 @@ class ucp_prefs
 			'mode',
 			's_hidden_fields',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_modify_common', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_prefs_modify_common', compact($vars)));
 
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_PREFS_' . strtoupper($mode)],

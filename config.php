@@ -8,7 +8,7 @@ $dbname = 'groomlake_engine';
 $dbuser = 'groomlake_engine';
 $dbpasswd = '';
 $table_prefix = 'engine_';
-$phpbb_adm_relative_path = 'adm/';
+$engine_adm_relative_path = 'adm/';
 $acm_type = 'phpbb\\cache\\driver\\file';
 
 @define('PHPBB_INSTALLED', true);

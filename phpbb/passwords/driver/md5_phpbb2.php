@@ -27,7 +27,7 @@ class md5_phpbb2 extends base
 	protected $helper;
 
 	/** @var string phpBB root path */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string php file extension */
 	protected $php_ext;
@@ -38,15 +38,15 @@ class md5_phpbb2 extends base
 	* @param \phpbb\request\request $request phpBB request object
 	* @param \phpbb\passwords\driver\salted_md5 $salted_md5 Salted md5 driver
 	 * @param \phpbb\passwords\driver\helper $helper Driver helper
-	* @param string $phpbb_root_path phpBB root path
+	* @param string $engine_root_path phpBB root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct($request, salted_md5 $salted_md5, helper $helper, $phpbb_root_path, $php_ext)
+	public function __construct($request, salted_md5 $salted_md5, helper $helper, $engine_root_path, $php_ext)
 	{
 		$this->request = $request;
 		$this->salted_md5 = $salted_md5;
 		$this->helper = $helper;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 	}
 

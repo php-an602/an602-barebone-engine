@@ -30,13 +30,13 @@ class manager
 	protected $notification_methods;
 
 	/** @var ContainerInterface */
-	protected $phpbb_container;
+	protected $engine_container;
 
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
 	/** @var \phpbb\event\dispatcher_interface */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -61,9 +61,9 @@ class manager
 	*
 	* @param array $notification_types
 	* @param array $notification_methods
-	* @param ContainerInterface $phpbb_container
+	* @param ContainerInterface $engine_container
 	* @param \phpbb\user_loader $user_loader
-	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
+	* @param \phpbb\event\dispatcher_interface $engine_dispatcher
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\language\language $language
@@ -73,14 +73,14 @@ class manager
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\language\language $language, \phpbb\user $user, $notification_types_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $engine_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $engine_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\language\language $language, \phpbb\user $user, $notification_types_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
-		$this->phpbb_container = $phpbb_container;
+		$this->phpbb_container = $engine_container;
 
 		$this->user_loader = $user_loader;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->language = $language;

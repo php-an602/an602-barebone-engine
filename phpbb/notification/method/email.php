@@ -41,13 +41,13 @@ class email extends \phpbb\notification\method\messenger_base
 	 * @param \phpbb\user $user
 	 * @param \phpbb\config\config $config
 	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param string $phpbb_root_path
+	 * @param string $engine_root_path
 	 * @param string $php_ext
 	 * @param string $notification_emails_table
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $notification_emails_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $engine_root_path, $php_ext, $notification_emails_table)
 	{
-		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
+		parent::__construct($user_loader, $engine_root_path, $php_ext);
 
 		$this->user = $user;
 		$this->config = $config;

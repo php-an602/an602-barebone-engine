@@ -31,18 +31,18 @@ class update_helper
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Constructor
 	 *
-	 * @param string	$phpbb_root_path
+	 * @param string	$engine_root_path
 	 */
-	public function __construct($phpbb_root_path)
+	public function __construct($engine_root_path)
 	{
-		$this->phpbb_root_path		= $phpbb_root_path;
-		$this->path_to_new_files	= $phpbb_root_path . 'install/update/new/';
-		$this->path_to_old_files	= $phpbb_root_path . 'install/update/old/';
+		$this->phpbb_root_path		= $engine_root_path;
+		$this->path_to_new_files	= $engine_root_path . 'install/update/new/';
+		$this->path_to_old_files	= $engine_root_path . 'install/update/old/';
 	}
 
 	/**

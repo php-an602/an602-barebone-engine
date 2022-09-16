@@ -43,7 +43,7 @@ abstract class base implements feed_interface
 	protected $content_visibility;
 
 	/** @var \phpbb\event\dispatcher_interface */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/** @var string */
 	protected $phpEx;
@@ -86,7 +86,7 @@ abstract class base implements feed_interface
 	 * @param \phpbb\user						$user		User object
 	 * @param \phpbb\auth\auth					$auth		Auth object
 	 * @param \phpbb\content_visibility			$content_visibility		Auth object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher		Event dispatcher object
+	 * @param \phpbb\event\dispatcher_interface	$engine_dispatcher		Event dispatcher object
 	 * @param string								$phpEx		php file extension
 	 */
 	public function __construct(
@@ -97,7 +97,7 @@ abstract class base implements feed_interface
 		\phpbb\user $user,
 		\phpbb\auth\auth $auth,
 		\phpbb\content_visibility $content_visibility,
-		\phpbb\event\dispatcher_interface $phpbb_dispatcher,
+		\phpbb\event\dispatcher_interface $engine_dispatcher,
 		$phpEx
 	)
 	{
@@ -108,7 +108,7 @@ abstract class base implements feed_interface
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->content_visibility = $content_visibility;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 		$this->phpEx = $phpEx;
 
 		$this->set_keys();

@@ -15,9 +15,9 @@
 * @ignore
 */
 define('IN_ENGINE', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$engine_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+include($engine_root_path . 'common.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -45,10 +45,10 @@ if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 }
 
 /* @var $pagination \phpbb\pagination */
-$pagination = $phpbb_container->get('pagination');
+$pagination = $engine_container->get('pagination');
 
 /* @var $viewonline_helper \phpbb\viewonline_helper */
-$viewonline_helper = $phpbb_container->get('viewonline_helper');
+$viewonline_helper = $engine_container->get('viewonline_helper');
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);
 $sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
@@ -66,7 +66,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 {
 	if (!function_exists('user_get_id_name'))
 	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		include($engine_root_path . 'includes/functions_user.' . $phpEx);
 	}
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
@@ -87,7 +87,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 	$template->set_filenames(array(
 		'body' => 'viewonline_whois.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+	make_jumpbox(append_sid("{$engine_root_path}viewforum.$phpEx"));
 
 	page_footer();
 }
@@ -111,7 +111,7 @@ $sql_ary = array(
 * @since 3.1.5-RC1
 */
 $vars = array('sql_ary');
-extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_forum_data_sql', compact($vars)));
+extract($engine_dispatcher->trigger_event('core.viewonline_modify_forum_data_sql', compact($vars)));
 
 $result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary), 600);
 unset($sql_ary);
@@ -177,7 +177,7 @@ $sql_ary = array(
 * @changed 3.1.0-a2 Added vars guest_counter and forum_data
 */
 $vars = array('sql_ary', 'show_guests', 'guest_counter', 'forum_data');
-extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
+extract($engine_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
 
 $result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
@@ -185,10 +185,10 @@ $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
 
 /** @var \phpbb\controller\helper $controller_helper */
-$controller_helper = $phpbb_container->get('controller.helper');
+$controller_helper = $engine_container->get('controller.helper');
 
 /** @var \phpbb\group\helper $group_helper */
-$group_helper = $phpbb_container->get('group_helper');
+$group_helper = $engine_container->get('group_helper');
 
 while ($row = $db->sql_fetchrow($result))
 {
@@ -250,12 +250,12 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		case 'index':
 			$location = $user->lang['INDEX'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid("{$engine_root_path}index.$phpEx");
 		break;
 
-		case $phpbb_adm_relative_path . 'index':
+		case $engine_adm_relative_path . 'index':
 			$location = $user->lang['ACP'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid("{$engine_root_path}index.$phpEx");
 		break;
 
 		case 'posting':
@@ -266,7 +266,7 @@ while ($row = $db->sql_fetchrow($result))
 			if ($forum_id && $auth->acl_get('f_list', $forum_id))
 			{
 				$location = '';
-				$location_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
+				$location_url = append_sid("{$engine_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 
 				if ($forum_data[$forum_id]['forum_type'] == FORUM_LINK)
 				{
@@ -305,22 +305,22 @@ while ($row = $db->sql_fetchrow($result))
 			else
 			{
 				$location = $user->lang['INDEX'];
-				$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+				$location_url = append_sid("{$engine_root_path}index.$phpEx");
 			}
 		break;
 
 		case 'search':
 			$location = $user->lang['SEARCHING_FORUMS'];
-			$location_url = append_sid("{$phpbb_root_path}search.$phpEx");
+			$location_url = append_sid("{$engine_root_path}search.$phpEx");
 		break;
 
 		case 'viewonline':
 			$location = $user->lang['VIEWING_ONLINE'];
-			$location_url = append_sid("{$phpbb_root_path}viewonline.$phpEx");
+			$location_url = append_sid("{$engine_root_path}viewonline.$phpEx");
 		break;
 
 		case 'memberlist':
-			$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx");
+			$location_url = append_sid("{$engine_root_path}memberlist.$phpEx");
 
 			if (strpos($row['session_page'], 'mode=viewprofile') !== false)
 			{
@@ -329,7 +329,7 @@ while ($row = $db->sql_fetchrow($result))
 			else if (strpos($row['session_page'], 'mode=contactadmin') !== false)
 			{
 				$location = $user->lang['VIEWING_CONTACT_ADMIN'];
-				$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
+				$location_url = append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=contactadmin');
 			}
 			else
 			{
@@ -339,7 +339,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		case 'mcp':
 			$location = $user->lang['VIEWING_MCP'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid("{$engine_root_path}index.$phpEx");
 		break;
 
 		case 'ucp':
@@ -363,22 +363,22 @@ while ($row = $db->sql_fetchrow($result))
 				}
 			}
 
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid("{$engine_root_path}index.$phpEx");
 		break;
 
 		case 'download/file':
 			$location = $user->lang['DOWNLOADING_FILE'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid("{$engine_root_path}index.$phpEx");
 		break;
 
 		case 'report':
 			$location = $user->lang['REPORTING_POST'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid("{$engine_root_path}index.$phpEx");
 		break;
 
 		default:
 			$location = $user->lang['INDEX'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid("{$engine_root_path}index.$phpEx");
 
 			if ($row['session_page'] === 'app.' . $phpEx . '/help/faq' ||
 				$row['session_page'] === 'app.' . $phpEx . '/help/bbcode')
@@ -402,7 +402,7 @@ while ($row = $db->sql_fetchrow($result))
 	* @changed 3.1.0-a2 Added var forum_data
 	*/
 	$vars = array('on_page', 'row', 'location', 'location_url', 'forum_data');
-	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
 
 	$template_row = array(
 		'USERNAME' 			=> $row['username'],
@@ -414,8 +414,8 @@ while ($row = $db->sql_fetchrow($result))
 		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
 
 		'U_USER_PROFILE'	=> ($row['user_type'] != USER_IGNORE) ? get_username_string('profile', $row['user_id'], '') : '',
-		'U_USER_IP'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
-		'U_WHOIS'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $row['session_id']),
+		'U_USER_IP'			=> append_sid("{$engine_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
+		'U_WHOIS'			=> append_sid("{$engine_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $row['session_id']),
 		'U_FORUM_LOCATION'	=> $location_url,
 
 		'S_USER_HIDDEN'		=> $s_user_hidden,
@@ -434,7 +434,7 @@ while ($row = $db->sql_fetchrow($result))
 	* @since 3.1.0-RC4
 	*/
 	$vars = array('on_page', 'row', 'forum_data', 'template_row');
-	extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_user_row', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.viewonline_modify_user_row', compact($vars)));
 
 	$template->assign_block_vars('user_row', $template_row);
 }
@@ -475,21 +475,21 @@ while ($row = $db->sql_fetchrow($result))
 	}
 	else
 	{
-		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_helper->get_name($row['group_name']) . '</a>';
+		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_helper->get_name($row['group_name']) . '</a>';
 	}
 }
 $db->sql_freeresult($result);
 
 // Refreshing the page every 60 seconds...
-meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
+meta_refresh(60, append_sid("{$engine_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
 
 $start = $pagination->validate_start($start, $config['topics_per_page'], $counter);
-$base_url = append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir");
+$base_url = append_sid("{$engine_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir");
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $counter, $config['topics_per_page'], $start);
 
 $template->assign_block_vars('navlinks', array(
 	'BREADCRUMB_NAME'	=> $user->lang('WHO_IS_ONLINE'),
-	'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx"),
+	'U_BREADCRUMB'		=> append_sid("{$engine_root_path}viewonline.$phpEx"),
 ));
 
 // Send data to template
@@ -498,11 +498,11 @@ $template->assign_vars(array(
 	'TOTAL_GUEST_USERS_ONLINE'		=> $user->lang('GUEST_USERS_ONLINE', (int) $guest_counter),
 	'LEGEND'						=> $legend,
 
-	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
-	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
-	'U_SORT_LOCATION'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_USERNAME'		=> append_sid("{$engine_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_UPDATED'		=> append_sid("{$engine_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_LOCATION'		=> append_sid("{$engine_root_path}viewonline.$phpEx", 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 
-	'U_SWITCH_GUEST_DISPLAY'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sg=' . ((int) !$show_guests)),
+	'U_SWITCH_GUEST_DISPLAY'	=> append_sid("{$engine_root_path}viewonline.$phpEx", 'sg=' . ((int) !$show_guests)),
 	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? $user->lang['HIDE_GUESTS'] : $user->lang['DISPLAY_GUESTS'],
 	'S_SWITCH_GUEST_DISPLAY'	=> ($config['load_online_guests']) ? true : false,
 	'S_VIEWONLINE'				=> true,
@@ -517,6 +517,6 @@ page_header($user->lang['WHO_IS_ONLINE']);
 $template->set_filenames(array(
 	'body' => 'viewonline_body.html')
 );
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+make_jumpbox(append_sid("{$engine_root_path}viewforum.$phpEx"));
 
 page_footer();

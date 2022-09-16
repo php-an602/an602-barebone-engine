@@ -31,11 +31,11 @@ class acp_board
 	function main($id, $mode)
 	{
 		global $user, $template, $request, $language;
-		global $config, $phpbb_root_path, $phpEx;
-		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
+		global $config, $engine_root_path, $phpEx;
+		global $cache, $engine_container, $engine_dispatcher, $engine_log;
 
 		/** @var \phpbb\language\language $language Language object */
-		$language = $phpbb_container->get('language');
+		$language = $engine_container->get('language');
 
 		$user->add_lang('acp/board');
 
@@ -111,22 +111,22 @@ class acp_board
 			break;
 
 			case 'avatar':
-				/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
-				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
-				$avatar_drivers = $phpbb_avatar_manager->get_all_drivers();
+				/* @var $engine_avatar_manager \phpbb\avatar\manager */
+				$engine_avatar_manager = $engine_container->get('avatar.manager');
+				$avatar_drivers = $engine_avatar_manager->get_all_drivers();
 
 				$avatar_vars = array();
 				foreach ($avatar_drivers as $current_driver)
 				{
 					/** @var \phpbb\avatar\driver\driver_interface $driver */
-					$driver = $phpbb_avatar_manager->get_driver($current_driver, false);
+					$driver = $engine_avatar_manager->get_driver($current_driver, false);
 
 					/*
 					* First grab the settings for enabling/disabling the avatar
 					* driver and afterwards grab additional settings the driver
 					* might have.
 					*/
-					$avatar_vars += $phpbb_avatar_manager->get_avatar_settings($driver);
+					$avatar_vars += $engine_avatar_manager->get_avatar_settings($driver);
 					$avatar_vars += $driver->prepare_form_acp($user);
 				}
 
@@ -486,7 +486,7 @@ class acp_board
 		* @since 3.1.0-a4
 		*/
 		$vars = array('display_vars', 'mode', 'submit');
-		extract($phpbb_dispatcher->trigger_event('core.acp_board_config_edit_add', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.acp_board_config_edit_add', compact($vars)));
 
 		if (isset($display_vars['lang']))
 		{
@@ -520,9 +520,9 @@ class acp_board
 			}
 			else if (!$submit)
 			{
-				$filesystem = $phpbb_container->get('filesystem');
-				$avatar_path_exists = $filesystem->exists($phpbb_root_path . $cfg_array['avatar_path']);
-				$avatar_path_writable = $filesystem->is_writable($phpbb_root_path . $cfg_array['avatar_path']);
+				$filesystem = $engine_container->get('filesystem');
+				$avatar_path_exists = $filesystem->exists($engine_root_path . $cfg_array['avatar_path']);
+				$avatar_path_writable = $filesystem->is_writable($engine_root_path . $cfg_array['avatar_path']);
 
 				// Not existing or writable path will be caught on submit by validate_config_vars().
 				// Display the warning if the directory was changed on the server afterwards
@@ -600,7 +600,7 @@ class acp_board
 				 * @since 3.3.3-RC1
 				 */
 				$vars = ['config_name_ary'];
-				extract($phpbb_dispatcher->trigger_event('core.acp_board_config_emoji_enabled', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_board_config_emoji_enabled', compact($vars)));
 
 				if (in_array($config_name, $config_name_ary))
 				{
@@ -625,7 +625,7 @@ class acp_board
 		// Invalidate the text_formatter cache when posting or server options are changed
 		if (preg_match('(^(?:post|server)$)', $mode) && $submit)
 		{
-			$phpbb_container->get('text_formatter.cache')->invalidate();
+			$engine_container->get('text_formatter.cache')->invalidate();
 		}
 
 		// Store news and exclude ids
@@ -642,7 +642,7 @@ class acp_board
 		{
 			// Retrieve a list of auth plugins and check their config values
 			/* @var $auth_providers \phpbb\auth\provider_collection */
-			$auth_providers = $phpbb_container->get('auth.provider_collection');
+			$auth_providers = $engine_container->get('auth.provider_collection');
 
 			$updated_auth_settings = false;
 			$old_auth_config = array();
@@ -713,7 +713,7 @@ class acp_board
 		{
 			if ($config['email_enable'])
 			{
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				include_once($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 
 				$messenger = new messenger(false);
 				$messenger->template('test');
@@ -736,7 +736,7 @@ class acp_board
 
 		if ($submit)
 		{
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_' . strtoupper($mode));
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_' . strtoupper($mode));
 
 			$message = $user->lang('CONFIG_UPDATED');
 			$message_type = E_USER_NOTICE;
@@ -841,10 +841,10 @@ class acp_board
 	*/
 	function select_auth_method($selected_method, $key = '')
 	{
-		global $phpbb_container;
+		global $engine_container;
 
 		/* @var $auth_providers \phpbb\auth\provider_collection */
-		$auth_providers = $phpbb_container->get('auth.provider_collection');
+		$auth_providers = $engine_container->get('auth.provider_collection');
 		$auth_plugins = array();
 
 		foreach ($auth_providers as $key => $value)

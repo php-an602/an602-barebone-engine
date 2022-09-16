@@ -39,8 +39,8 @@ class ucp_login_link
 	*/
 	function main($id, $mode)
 	{
-		global $phpbb_container, $request, $template, $user, $phpbb_dispatcher;
-		global $phpbb_root_path, $phpEx;
+		global $engine_container, $request, $template, $user, $engine_dispatcher;
+		global $engine_root_path, $phpEx;
 
 		// Initialize necessary variables
 		$login_error = null;
@@ -58,7 +58,7 @@ class ucp_login_link
 
 		// Use the auth_provider requested even if different from configured
 		/* @var $provider_collection \phpbb\auth\provider_collection */
-		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$provider_collection = $engine_container->get('auth.provider_collection');
 		$auth_provider = $provider_collection->get_provider($request->variable('auth_provider', ''));
 
 		// Set the link_method to login_link
@@ -116,7 +116,7 @@ class ucp_login_link
 			'S_HIDDEN_FIELDS'		=> $this->get_hidden_fields($data),
 
 			// Registration elements
-			'REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+			'REGISTER_ACTION'	=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=register'),
 
 			// Login elements
 			'LOGIN_ERROR'		=> $login_error,
@@ -136,7 +136,7 @@ class ucp_login_link
 		* @since 3.2.4-RC1
 		*/
 		$vars = array('data', 'auth_provider', 'login_link_error', 'login_error', 'login_username', 'tpl_ary');
-		extract($phpbb_dispatcher->trigger_event('core.ucp_login_link_template_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_login_link_template_after', compact($vars)));
 
 		$template->assign_vars($tpl_ary);
 
@@ -199,7 +199,7 @@ class ucp_login_link
 	*/
 	protected function process_login_result($result)
 	{
-		global $config, $template, $user, $phpbb_container;
+		global $config, $template, $user, $engine_container;
 
 		$login_error = null;
 
@@ -215,7 +215,7 @@ class ucp_login_link
 			{
 				case LOGIN_ERROR_ATTEMPTS:
 
-					$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+					$captcha = $engine_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
 					$captcha->init(CONFIRM_LOGIN);
 
 					$template->assign_vars(array(
@@ -228,7 +228,7 @@ class ucp_login_link
 				case LOGIN_ERROR_PASSWORD_CONVERT:
 					$login_error = sprintf(
 						$user->lang[$result['error_msg']],
-						($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
+						($config['email_enable']) ? '<a href="' . append_sid("{$engine_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
 						($config['email_enable']) ? '</a>' : '',
 						($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact'], ENT_COMPAT) . '">' : '',
 						($config['board_contact']) ? '</a>' : ''
@@ -257,8 +257,8 @@ class ucp_login_link
 	*/
 	protected function perform_redirect()
 	{
-		global $phpbb_root_path, $phpEx;
-		$url = append_sid($phpbb_root_path . 'index.' . $phpEx);
+		global $engine_root_path, $phpEx;
+		$url = append_sid($engine_root_path . 'index.' . $phpEx);
 		redirect($url);
 	}
 }

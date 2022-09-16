@@ -25,8 +25,8 @@ class acp_bots
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $template, $cache, $request, $phpbb_log;
-		global $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $template, $cache, $request, $engine_log;
+		global $engine_root_path, $phpEx;
 
 		$action = $request->variable('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -124,7 +124,7 @@ class acp_bots
 
 						$cache->destroy('_bots');
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_DELETE', false, array(implode(', ', $bot_name_ary)));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_DELETE', false, array(implode(', ', $bot_name_ary)));
 						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
@@ -144,7 +144,7 @@ class acp_bots
 
 				if (!function_exists('user_update_name'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($engine_root_path . 'includes/functions_user.' . $phpEx);
 				}
 
 				$bot_row = array(
@@ -296,7 +296,7 @@ class acp_bots
 
 						$cache->destroy('_bots');
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_' . $log, false, array($bot_row['bot_name']));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_' . $log, false, array($bot_row['bot_name']));
 						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action));
 
 					}

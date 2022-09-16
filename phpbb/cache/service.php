@@ -53,7 +53,7 @@ class service
 	*
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	* PHP file extension.
@@ -69,16 +69,16 @@ class service
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\event\dispatcher $dispatcher Event dispatcher
-	* @param string $phpbb_root_path Root path
+	* @param string $engine_root_path Root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\cache\driver\driver_interface $driver, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher $dispatcher, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\cache\driver\driver_interface $driver, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher $dispatcher, $engine_root_path, $php_ext)
 	{
 		$this->set_driver($driver);
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 	}
 

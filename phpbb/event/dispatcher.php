@@ -27,7 +27,7 @@ use Symfony\Component\EventDispatcher\Event;
 * Example:
 *
 *     $vars = array('page_title');
-*     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
+*     extract($engine_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
 class dispatcher extends EventDispatcher implements dispatcher_interface

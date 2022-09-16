@@ -31,7 +31,7 @@ class manager
 	protected $php_ext;
 	protected $extensions;
 	protected $extension_table;
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 	protected $cache_name;
 
 	/**
@@ -42,12 +42,12 @@ class manager
 	* @param \phpbb\config\config $config Config object
 	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param string $extension_table The name of the table holding extensions
-	* @param string $phpbb_root_path Path to the phpbb includes directory.
+	* @param string $engine_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension, defaults to php
 	* @param \phpbb\cache\service $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $engine_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
@@ -56,7 +56,7 @@ class manager
 		$this->db = $db;
 		$this->extension_table = $extension_table;
 		$this->filesystem = $filesystem;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
@@ -111,14 +111,14 @@ class manager
 	* Generates the path to an extension
 	*
 	* @param string $name The name of the extension
-	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	* @param bool $engine_relative Whether the path should be relative to phpbb root
 	* @return string Path to an extension
 	*/
-	public function get_extension_path($name, $phpbb_relative = false)
+	public function get_extension_path($name, $engine_relative = false)
 	{
 		$name = str_replace('.', '', $name);
 
-		return (($phpbb_relative) ? $this->phpbb_root_path : '') . 'ext/' . $name . '/';
+		return (($engine_relative) ? $this->phpbb_root_path : '') . 'ext/' . $name . '/';
 	}
 
 	/**
@@ -411,12 +411,12 @@ class manager
 	* All enabled and disabled extensions are considered configured. A purged
 	* extension that is no longer in the database is not configured.
 	*
-	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	* @param bool $engine_relative Whether the path should be relative to phpbb root
 	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_configured($phpbb_relative = true)
+	public function all_configured($engine_relative = true)
 	{
 		$configured = array();
 		foreach ($this->extensions as $name => $data)
@@ -424,7 +424,7 @@ class manager
 			if ($this->is_configured($name))
 			{
 				unset($data['metadata']);
-				$data['ext_path'] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
+				$data['ext_path'] = ($engine_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 				$configured[$name] = $data;
 			}
 		}
@@ -433,19 +433,19 @@ class manager
 
 	/**
 	* Retrieves all enabled extensions.
-	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	* @param bool $engine_relative Whether the path should be relative to phpbb root
 	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_enabled($phpbb_relative = true)
+	public function all_enabled($engine_relative = true)
 	{
 		$enabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
 			if ($this->is_enabled($name))
 			{
-				$enabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
+				$enabled[$name] = ($engine_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
 		}
 		return $enabled;
@@ -454,19 +454,19 @@ class manager
 	/**
 	* Retrieves all disabled extensions.
 	*
-	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	* @param bool $engine_relative Whether the path should be relative to phpbb root
 	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_disabled($phpbb_relative = true)
+	public function all_disabled($engine_relative = true)
 	{
 		$disabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
 			if ($this->is_disabled($name))
 			{
-				$disabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
+				$disabled[$name] = ($engine_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
 		}
 		return $disabled;

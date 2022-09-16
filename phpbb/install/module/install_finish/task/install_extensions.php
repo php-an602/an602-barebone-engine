@@ -64,9 +64,9 @@ class install_extensions extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\container_factory				$container
 	 * @param \phpbb\install\helper\config							$install_config
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
-	 * @param string												$phpbb_root_path phpBB root path
+	 * @param string												$engine_root_path phpBB root path
 	 */
-	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, $phpbb_root_path)
+	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, $engine_root_path)
 	{
 		$this->install_config	= $install_config;
 		$this->iohandler		= $iohandler;
@@ -78,7 +78,7 @@ class install_extensions extends \phpbb\install\task_base
 		$this->extension_manager = $container->get('ext.manager');
 		$this->db				= $container->get('dbal.conn');
 		$this->finder = new \Symfony\Component\Finder\Finder();
-		$this->finder->in($phpbb_root_path . 'ext/')
+		$this->finder->in($engine_root_path . 'ext/')
 			->ignoreUnreadableDirs()
 			->depth('< 3')
 			->files()

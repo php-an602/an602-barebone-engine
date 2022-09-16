@@ -23,7 +23,7 @@ class migrate extends \phpbb\console\command\db\migration_command
 	protected $log;
 
 	/** @var string phpBB root path */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var  \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
@@ -31,12 +31,12 @@ class migrate extends \phpbb\console\command\db\migration_command
 	/** @var \phpbb\language\language */
 	protected $language;
 
-	public function __construct(\phpbb\user $user, \phpbb\language\language $language, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
+	public function __construct(\phpbb\user $user, \phpbb\language\language $language, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\filesystem\filesystem_interface $filesystem, $engine_root_path)
 	{
 		$this->language = $language;
 		$this->log = $log;
 		$this->filesystem = $filesystem;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		parent::__construct($user, $migrator, $extension_manager, $config, $cache);
 		$this->language->add_lang(array('common', 'install', 'migrator'));
 	}

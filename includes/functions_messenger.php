@@ -206,7 +206,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '', $template_dir_prefix = '')
 	{
-		global $config, $phpbb_root_path, $user;
+		global $config, $engine_root_path, $user;
 
 		$template_dir_prefix = (!$template_dir_prefix || $template_dir_prefix[0] === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
 
@@ -240,7 +240,7 @@ class messenger
 		}
 		else
 		{
-			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $engine_root_path . 'language/';
 			$template_path .= $template_lang . '/email';
 
 			$template_paths = array(
@@ -253,7 +253,7 @@ class messenger
 			// do not know the default language alternative
 			if ($template_lang !== $board_language)
 			{
-				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $engine_root_path . 'language/';
 				$fallback_template_path .= $board_language . '/email';
 
 				$template_paths[] = $fallback_template_path . $template_dir_prefix;
@@ -266,7 +266,7 @@ class messenger
 			// If everything fails just fall back to en template
 			if ($template_lang !== 'en' && $board_language !== 'en')
 			{
-				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $engine_root_path . 'language/';
 				$fallback_template_path .= 'en/email';
 
 				$template_paths[] = $fallback_template_path . $template_dir_prefix;
@@ -315,7 +315,7 @@ class messenger
 	*/
 	function send($method = NOTIFY_EMAIL, $break = false)
 	{
-		global $config, $user, $phpbb_dispatcher;
+		global $config, $user, $engine_dispatcher;
 
 		// We add some standard variables we always use, no need to specify them always
 		$this->assign_vars(array(
@@ -338,7 +338,7 @@ class messenger
 		* @since 3.2.4-RC1
 		*/
 		$vars = array('method', 'break', 'subject', 'template');
-		extract($phpbb_dispatcher->trigger_event('core.modify_notification_template', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.modify_notification_template', compact($vars)));
 
 		// Parse message through template
 		$message = trim($this->template->assign_display('body'));
@@ -355,7 +355,7 @@ class messenger
 		* @since 3.1.11-RC1
 		*/
 		$vars = array('method', 'break', 'subject', 'message');
-		extract($phpbb_dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
 
 		$this->subject = $subject;
 		$this->msg = $message;
@@ -419,7 +419,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $config, $request, $phpbb_log;
+		global $user, $config, $request, $engine_log;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -441,7 +441,7 @@ class messenger
 		}
 
 		$message .= '<br /><em>' . htmlspecialchars($calling_page, ENT_COMPAT) . '</em><br /><br />' . $msg . '<br />';
-		$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_' . $type, false, array($message));
+		$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_' . $type, false, array($message));
 	}
 
 	/**
@@ -477,7 +477,7 @@ class messenger
 	*/
 	function build_header($to, $cc, $bcc)
 	{
-		global $config, $phpbb_dispatcher;
+		global $config, $engine_dispatcher;
 
 		// We could use keys here, but we won't do this for 3.0.x to retain backwards compatibility
 		$headers = array();
@@ -517,7 +517,7 @@ class messenger
 		* @since 3.1.11-RC1
 		*/
 		$vars = array('headers');
-		extract($phpbb_dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
 
 		if (count($this->extra_headers))
 		{
@@ -532,7 +532,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config, $phpbb_dispatcher;
+		global $config, $engine_dispatcher;
 
 		if (empty($config['email_enable']))
 		{
@@ -580,7 +580,7 @@ class messenger
 			'subject',
 			'msg',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.notification_message_email', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.notification_message_email', compact($vars)));
 
 		if ($break)
 		{
@@ -657,7 +657,7 @@ class messenger
 	*/
 	function msg_jabber()
 	{
-		global $config, $user, $phpbb_root_path, $phpEx;
+		global $config, $user, $engine_root_path, $phpEx;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
 		{
@@ -690,7 +690,7 @@ class messenger
 
 		if (!$use_queue)
 		{
-			include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
+			include_once($engine_root_path . 'includes/functions_jabber.' . $phpEx);
 			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], html_entity_decode($config['jab_password'], ENT_COMPAT), $config['jab_use_ssl'], $config['jab_verify_peer'], $config['jab_verify_peer_name'], $config['jab_allow_self_signed']);
 
 			if (!$this->jabber->connect())
@@ -729,7 +729,7 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $phpbb_container, $phpbb_dispatcher;
+		global $engine_container, $engine_dispatcher;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
@@ -737,28 +737,28 @@ class messenger
 		}
 
 		$template_environment = new \phpbb\template\twig\environment(
-			$phpbb_container->get('config'),
-			$phpbb_container->get('filesystem'),
-			$phpbb_container->get('path_helper'),
-			$phpbb_container->getParameter('core.template.cache_path'),
-			$phpbb_container->get('ext.manager'),
+			$engine_container->get('config'),
+			$engine_container->get('filesystem'),
+			$engine_container->get('path_helper'),
+			$engine_container->getParameter('core.template.cache_path'),
+			$engine_container->get('ext.manager'),
 			new \phpbb\template\twig\loader(
-				$phpbb_container->get('filesystem')
+				$engine_container->get('filesystem')
 			),
-			$phpbb_dispatcher,
+			$engine_dispatcher,
 			array()
 		);
-		$template_environment->setLexer($phpbb_container->get('template.twig.lexer'));
+		$template_environment->setLexer($engine_container->get('template.twig.lexer'));
 
 		$this->template = new \phpbb\template\twig\twig(
-			$phpbb_container->get('path_helper'),
-			$phpbb_container->get('config'),
+			$engine_container->get('path_helper'),
+			$engine_container->get('config'),
 			new \phpbb\template\context(),
 			$template_environment,
-			$phpbb_container->getParameter('core.template.cache_path'),
-			$phpbb_container->get('user'),
-			$phpbb_container->get('template.twig.extensions.collection'),
-			$phpbb_container->get('ext.manager')
+			$engine_container->getParameter('core.template.cache_path'),
+			$engine_container->get('user'),
+			$engine_container->get('template.twig.extensions.collection'),
+			$engine_container->get('ext.manager')
 		);
 	}
 
@@ -794,11 +794,11 @@ class queue
 	*/
 	function __construct()
 	{
-		global $phpEx, $phpbb_root_path, $phpbb_filesystem, $phpbb_container;
+		global $phpEx, $engine_root_path, $engine_filesystem, $engine_container;
 
 		$this->data = array();
-		$this->cache_file = $phpbb_container->getParameter('core.cache_dir') . "queue.$phpEx";
-		$this->filesystem = $phpbb_filesystem;
+		$this->cache_file = $engine_container->getParameter('core.cache_dir') . "queue.$phpEx";
+		$this->filesystem = $engine_filesystem;
 	}
 
 	/**
@@ -825,7 +825,7 @@ class queue
 	*/
 	function process()
 	{
-		global $config, $phpEx, $phpbb_root_path, $user, $phpbb_dispatcher;
+		global $config, $phpEx, $engine_root_path, $user, $engine_dispatcher;
 
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
@@ -890,7 +890,7 @@ class queue
 						continue 2;
 					}
 
-					include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
+					include_once($engine_root_path . 'includes/functions_jabber.' . $phpEx);
 					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], html_entity_decode($config['jab_password'], ENT_COMPAT), $config['jab_use_ssl'], $config['jab_verify_peer'], $config['jab_verify_peer_name'], $config['jab_allow_self_signed']);
 
 					if (!$this->jabber->connect())
@@ -939,7 +939,7 @@ class queue
 							'subject',
 							'msg',
 						);
-						extract($phpbb_dispatcher->trigger_event('core.notification_message_process', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.notification_message_process', compact($vars)));
 
 						if (!$break)
 						{
@@ -1168,8 +1168,8 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	// Ok we have error checked as much as we can to this point let's get on it already.
 	if (!class_exists('\phpbb\error_collector'))
 	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/error_collector.' . $phpEx);
+		global $engine_root_path, $phpEx;
+		include($engine_root_path . 'includes/error_collector.' . $phpEx);
 	}
 	$collector = new \phpbb\error_collector;
 	$collector->install();
@@ -1925,7 +1925,7 @@ function mail_encode($str, $eol = "\r\n")
  */
 function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 {
-	global $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $config, $engine_root_path, $phpEx, $engine_dispatcher;
 
 	// Convert Numeric Character References to UTF-8 chars (ie. Emojis)
 	$subject = utf8_decode_ncr($subject);
@@ -1940,7 +1940,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 
 	if (!class_exists('\phpbb\error_collector'))
 	{
-		include($phpbb_root_path . 'includes/error_collector.' . $phpEx);
+		include($engine_root_path . 'includes/error_collector.' . $phpEx);
 	}
 
 	$collector = new \phpbb\error_collector;
@@ -1974,7 +1974,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 		'eol',
 		'additional_parameters',
 	];
-	extract($phpbb_dispatcher->trigger_event('core.phpbb_mail_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.phpbb_mail_before', compact($vars)));
 
 	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
 
@@ -2000,7 +2000,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 		'additional_parameters',
 		'result',
 	];
-	extract($phpbb_dispatcher->trigger_event('core.phpbb_mail_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.phpbb_mail_after', compact($vars)));
 
 	$collector->uninstall();
 	$err_msg = $collector->format_errors();

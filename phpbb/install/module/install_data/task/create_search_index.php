@@ -42,7 +42,7 @@ class create_search_index extends \phpbb\install\task_base
 	/**
 	 * @var dispatcher
 	 */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/**
 	 * @var language
@@ -57,7 +57,7 @@ class create_search_index extends \phpbb\install\task_base
 	/**
 	 * @var string phpBB root path
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string PHP file extension
@@ -69,11 +69,11 @@ class create_search_index extends \phpbb\install\task_base
 	 *
 	 * @param config				$config				phpBB config
 	 * @param container_factory		$container			Installer's DI container
-	 * @param string				$phpbb_root_path	phpBB root path
+	 * @param string				$engine_root_path	phpBB root path
 	 * @param string				$php_ext			PHP file extension
 	 */
 	public function __construct(config $config, container_factory $container,
-								$phpbb_root_path, $php_ext)
+								$engine_root_path, $php_ext)
 	{
 		$this->auth				= $container->get('auth');
 		$this->config			= $config;
@@ -81,7 +81,7 @@ class create_search_index extends \phpbb\install\task_base
 		$this->language			= $container->get('language');
 		$this->phpbb_dispatcher = $container->get('dispatcher');
 		$this->user 			= $container->get('user');
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 
 		parent::__construct(true);

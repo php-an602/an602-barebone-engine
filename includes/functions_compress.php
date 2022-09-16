@@ -36,7 +36,7 @@ class compress
 	*/
 	function add_file($src, $src_rm_prefix = '', $src_add_prefix = '', $skip_files = '')
 	{
-		global $phpbb_root_path;
+		global $engine_root_path;
 
 		$skip_files = explode(',', $skip_files);
 
@@ -47,23 +47,23 @@ class compress
 		// Remove initial "/" if present
 		$src_path = (substr($src_path, 0, 1) == '/') ? substr($src_path, 1) : $src_path;
 
-		if (is_file($phpbb_root_path . $src))
+		if (is_file($engine_root_path . $src))
 		{
-			$this->data($src_path, file_get_contents("$phpbb_root_path$src"), stat("$phpbb_root_path$src"), false);
+			$this->data($src_path, file_get_contents("$engine_root_path$src"), stat("$engine_root_path$src"), false);
 		}
-		else if (is_dir($phpbb_root_path . $src))
+		else if (is_dir($engine_root_path . $src))
 		{
 			// Clean up path, add closing / if not present
 			$src_path = ($src_path && substr($src_path, -1) != '/') ? $src_path . '/' : $src_path;
 
-			$filelist = filelist("$phpbb_root_path$src", '', '*');
+			$filelist = filelist("$engine_root_path$src", '', '*');
 			krsort($filelist);
 
 			/**
 			* Commented out, as adding the folders produces corrupted archives
 			if ($src_path)
 			{
-				$this->data($src_path, '', true, stat("$phpbb_root_path$src"));
+				$this->data($src_path, '', true, stat("$engine_root_path$src"));
 			}
 			*/
 
@@ -77,7 +77,7 @@ class compress
 					$path = (substr($path, 0, 1) == '/') ? substr($path, 1) : $path;
 					$path = ($path && substr($path, -1) != '/') ? $path . '/' : $path;
 
-					$this->data("$src_path$path", '', true, stat("$phpbb_root_path$src$path"));
+					$this->data("$src_path$path", '', true, stat("$engine_root_path$src$path"));
 				}
 				*/
 
@@ -88,7 +88,7 @@ class compress
 						continue;
 					}
 
-					$this->data("$src_path$path$file", file_get_contents("$phpbb_root_path$src$path$file"), stat("$phpbb_root_path$src$path$file"), false);
+					$this->data("$src_path$path$file", file_get_contents("$engine_root_path$src$path$file"), stat("$engine_root_path$src$path$file"), false);
 				}
 			}
 		}
@@ -212,10 +212,10 @@ class compress_zip extends compress
 	*/
 	function __construct($mode, $file)
 	{
-		global $phpbb_filesystem;
+		global $engine_filesystem;
 
 		$this->fp = @fopen($file, $mode . 'b');
-		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
+		$this->filesystem = ($engine_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $engine_filesystem : new \phpbb\filesystem\filesystem();
 
 		if (!$this->fp)
 		{
@@ -523,7 +523,7 @@ class compress_zip extends compress
 	*/
 	function download($filename, $download_name = false)
 	{
-		global $phpbb_root_path;
+		global $engine_root_path;
 
 		if ($download_name === false)
 		{
@@ -536,7 +536,7 @@ class compress_zip extends compress
 		header("Content-Type: $mimetype; name=\"$download_name.zip\"");
 		header("Content-disposition: attachment; filename=$download_name.zip");
 
-		$fp = @fopen("{$phpbb_root_path}store/$filename.zip", 'rb');
+		$fp = @fopen("{$engine_root_path}store/$filename.zip", 'rb');
 		if ($fp)
 		{
 			while ($buffer = fread($fp, 1024))
@@ -571,7 +571,7 @@ class compress_tar extends compress
 	*/
 	function __construct($mode, $file, $type = '')
 	{
-		global $phpbb_filesystem;
+		global $engine_filesystem;
 
 		$type = (!$type) ? $file : $type;
 		$this->isgz = preg_match('#(\.tar\.gz|\.tgz)$#', $type);
@@ -582,7 +582,7 @@ class compress_tar extends compress
 		$this->type = &$type;
 		$this->open();
 
-		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
+		$this->filesystem = ($engine_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $engine_filesystem : new \phpbb\filesystem\filesystem();
 	}
 
 	/**
@@ -787,7 +787,7 @@ class compress_tar extends compress
 	*/
 	function download($filename, $download_name = false)
 	{
-		global $phpbb_root_path;
+		global $engine_root_path;
 
 		if ($download_name === false)
 		{
@@ -817,7 +817,7 @@ class compress_tar extends compress
 		header("Content-Type: $mimetype; name=\"$download_name$this->type\"");
 		header("Content-disposition: attachment; filename=$download_name$this->type");
 
-		$fp = @fopen("{$phpbb_root_path}store/$filename$this->type", 'rb');
+		$fp = @fopen("{$engine_root_path}store/$filename$this->type", 'rb');
 		if ($fp)
 		{
 			while ($buffer = fread($fp, 1024))

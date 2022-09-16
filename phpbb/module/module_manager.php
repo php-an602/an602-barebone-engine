@@ -41,7 +41,7 @@ class module_manager
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -55,16 +55,16 @@ class module_manager
 	 * @param \phpbb\db\driver\driver_interface		$db					Database driver
 	 * @param \phpbb\extension\manager				$ext_manager		Extension manager
 	 * @param string								$modules_table		Module database table's name
-	 * @param string								$phpbb_root_path	Path to phpBB's root
+	 * @param string								$engine_root_path	Path to phpBB's root
 	 * @param string								$php_ext			Extension of PHP files
 	 */
-	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $ext_manager, $modules_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $ext_manager, $modules_table, $engine_root_path, $php_ext)
 	{
 		$this->cache				= $cache;
 		$this->db					= $db;
 		$this->extension_manager	= $ext_manager;
 		$this->modules_table		= $modules_table;
-		$this->phpbb_root_path		= $phpbb_root_path;
+		$this->phpbb_root_path		= $engine_root_path;
 		$this->php_ext				= $php_ext;
 	}
 

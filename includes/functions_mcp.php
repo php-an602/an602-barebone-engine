@@ -207,7 +207,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 */
 function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
-	global $db, $auth, $config, $user, $phpbb_dispatcher, $phpbb_container;
+	global $db, $auth, $config, $user, $engine_dispatcher, $engine_container;
 
 	$rowset = array();
 
@@ -256,7 +256,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 	$result = $db->sql_query($sql);
 	unset($sql_array);
 
-	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+	$engine_content_visibility = $engine_container->get('content.visibility');
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -265,7 +265,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 			continue;
 		}
 
-		if (!$phpbb_content_visibility->is_visible('post', $row['forum_id'], $row))
+		if (!$engine_content_visibility->is_visible('post', $row['forum_id'], $row))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
@@ -292,7 +292,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 		'read_tracking',
 		'rowset',
 	];
-	extract($phpbb_dispatcher->trigger_event('core.mcp_get_post_data_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.mcp_get_post_data_after', compact($vars)));
 
 	return $rowset;
 }
@@ -302,7 +302,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 */
 function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
-	global $auth, $db, $user, $config, $phpbb_container;
+	global $auth, $db, $user, $config, $engine_container;
 
 	$rowset = array();
 
@@ -332,8 +332,8 @@ function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = 
 		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
-	/* @var $phpbb_content_visibility \phpbb\content_visibility */
-	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+	/* @var $engine_content_visibility \phpbb\content_visibility */
+	$engine_content_visibility = $engine_container->get('content.visibility');
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -342,7 +342,7 @@ function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = 
 			continue;
 		}
 
-		$row['forum_topics_approved'] = $phpbb_content_visibility->get_count('forum_topics', $row, $row['forum_id']);
+		$row['forum_topics_approved'] = $engine_content_visibility->get_count('forum_topics', $row, $row['forum_id']);
 
 		$rowset[$row['forum_id']] = $row;
 	}
@@ -400,7 +400,7 @@ function phpbb_get_pm_data($pm_ids)
 */
 function phpbb_mcp_sorting($mode, &$sort_days_val, &$sort_key_val, &$sort_dir_val, &$sort_by_sql_ary, &$sort_order_sql, &$total_val, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
-	global $db, $user, $auth, $template, $request, $phpbb_dispatcher;
+	global $db, $user, $auth, $template, $request, $engine_dispatcher;
 
 	$sort_days_val = $request->variable('st', 0);
 	$min_time = ($sort_days_val) ? time() - ($sort_days_val * 86400) : 0;
@@ -638,7 +638,7 @@ function phpbb_mcp_sorting($mode, &$sort_days_val, &$sort_key_val, &$sort_dir_va
 		'total',
 		'where_sql',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.mcp_sorting_query_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.mcp_sorting_query_before', compact($vars)));
 	$sort_by_sql_ary = $sort_by_sql;
 	$sort_days_val = $sort_days;
 	$sort_key_val = $sort_key;

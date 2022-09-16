@@ -51,7 +51,7 @@ class set_up_database extends \phpbb\install\task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Constructor
@@ -60,13 +60,13 @@ class set_up_database extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\database						$db_helper
 	 * @param \phpbb\filesystem\filesystem_interface				$filesystem
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
-	 * @param string												$phpbb_root_path
+	 * @param string												$engine_root_path
 	 */
 	public function __construct(\phpbb\install\helper\config $config,
 								\phpbb\install\helper\database $db_helper,
 								\phpbb\filesystem\filesystem_interface $filesystem,
 								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
-								$phpbb_root_path)
+								$engine_root_path)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
 		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
@@ -86,7 +86,7 @@ class set_up_database extends \phpbb\install\task_base
 		$this->database_helper	= $db_helper;
 		$this->filesystem		= $filesystem;
 		$this->iohandler		= $iohandler;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 
 		parent::__construct(false);
 	}

@@ -34,10 +34,10 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	protected $imagesize;
 
 	/**
-	* Current $phpbb_root_path
+	* Current $engine_root_path
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	* Current $php_ext
@@ -77,16 +77,16 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	*
 	* @param \phpbb\config\config $config phpBB configuration
 	* @param \FastImageSize\FastImageSize $imagesize FastImageSize class
-	* @param string $phpbb_root_path Path to the phpBB root
+	* @param string $engine_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, \FastImageSize\FastImageSize $imagesize, $engine_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->imagesize = $imagesize;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->path_helper = $path_helper;
 		$this->cache = $cache;

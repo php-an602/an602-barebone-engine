@@ -68,7 +68,7 @@ class recaptcha extends captcha_abstract
 
 	function acp_page($id, $module)
 	{
-		global $config, $template, $user, $phpbb_log, $request;
+		global $config, $template, $user, $engine_log, $request;
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
@@ -94,7 +94,7 @@ class recaptcha extends captcha_abstract
 				}
 			}
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)
@@ -130,7 +130,7 @@ class recaptcha extends captcha_abstract
 
 	function get_template()
 	{
-		global $config, $user, $template, $phpbb_root_path, $phpEx;
+		global $config, $user, $template, $engine_root_path, $phpEx;
 
 		if ($this->is_solved())
 		{
@@ -138,7 +138,7 @@ class recaptcha extends captcha_abstract
 		}
 		else
 		{
-			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
+			$contact_link = phpbb_get_board_contact_link($config, $engine_root_path, $phpEx);
 			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
 
 			$template->assign_vars(array(

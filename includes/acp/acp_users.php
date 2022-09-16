@@ -32,9 +32,9 @@ class acp_users
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $phpbb_dispatcher, $request;
-		global $phpbb_container, $phpbb_log;
+		global $engine_root_path, $engine_admin_path, $phpEx;
+		global $engine_dispatcher, $request;
+		global $engine_container, $engine_log;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -47,7 +47,7 @@ class acp_users
 		// Get referer to redirect user to the appropriate page after delete action
 		$redirect		= $request->variable('redirect', '');
 		$redirect_tag	= "redirect=$redirect";
-		$redirect_url	= append_sid("{$phpbb_admin_path}index.$phpEx", "i=$redirect");
+		$redirect_url	= append_sid("{$engine_admin_path}index.$phpEx", "i=$redirect");
 
 		$submit		= (isset($_POST['update']) && !isset($_POST['cancel'])) ? true : false;
 
@@ -59,7 +59,7 @@ class acp_users
 		{
 			if (!function_exists('user_get_id_name'))
 			{
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include($engine_root_path . 'includes/functions_user.' . $phpEx);
 			}
 
 			$this->page_title = 'WHOIS';
@@ -87,7 +87,7 @@ class acp_users
 				'ANONYMOUS_USER_ID'	=> ANONYMOUS,
 
 				'S_SELECT_USER'		=> true,
-				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username&amp;select_single=true'),
+				'U_FIND_USERNAME'	=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username&amp;select_single=true'),
 			));
 
 			return;
@@ -155,7 +155,7 @@ class acp_users
 
 		$template->assign_vars(array(
 			'U_BACK'			=> (empty($redirect)) ? $this->u_action : $redirect_url,
-			'U_MODE_SELECT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
+			'U_MODE_SELECT'		=> append_sid("{$engine_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
 			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id . ((empty($redirect)) ? '' : '&amp;' . $redirect_tag),
 			'S_FORM_OPTIONS'	=> $s_form_options,
 			'MANAGED_USERNAME'	=> $user_row['username'])
@@ -175,7 +175,7 @@ class acp_users
 
 				if (!function_exists('user_get_id_name'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($engine_root_path . 'includes/functions_user.' . $phpEx);
 				}
 
 				$user->add_lang('acp/ban');
@@ -197,7 +197,7 @@ class acp_users
 				 * @since 3.1.3-RC1
 				 */
 				$vars = array('user_row', 'mode', 'action', 'submit', 'error');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_before', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_users_overview_before', compact($vars)));
 
 				if ($submit)
 				{
@@ -232,7 +232,7 @@ class acp_users
 							{
 								user_delete($delete_type, $user_id, $user_row['username']);
 
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DELETED', false, array($user_row['username']));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DELETED', false, array($user_row['username']));
 								trigger_error($user->lang['USER_DELETED'] . adm_back_link(
 										(empty($redirect)) ? $this->u_action : $redirect_url
 									)
@@ -360,7 +360,7 @@ class acp_users
 							{
 								if (!class_exists('messenger'))
 								{
-									include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+									include($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 								}
 
 								$server_url = generate_board_url();
@@ -409,8 +409,8 @@ class acp_users
 
 								$messenger->send(NOTIFY_EMAIL);
 
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE', false, array($user_row['username']));
-								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE_USER', false, array(
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE', false, array($user_row['username']));
+								$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE_USER', false, array(
 									'reportee_id' => $user_id
 								));
 
@@ -448,13 +448,13 @@ class acp_users
 							{
 								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 								{
-									/* @var $phpbb_notifications \phpbb\notification\manager */
-									$phpbb_notifications = $phpbb_container->get('notification_manager');
-									$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
+									/* @var $engine_notifications \phpbb\notification\manager */
+									$engine_notifications = $engine_container->get('notification_manager');
+									$engine_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
 									if (!class_exists('messenger'))
 									{
-										include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+										include($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 									}
 
 									$messenger = new messenger(false);
@@ -476,8 +476,8 @@ class acp_users
 							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
 							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($user_row['username']));
-							$phpbb_log->add('user', $user->data['user_id'], $user->ip, $log . '_USER', false, array(
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($user_row['username']));
+							$engine_log->add('user', $user->data['user_id'], $user->ip, $log . '_USER', false, array(
 								'reportee_id' => $user_id
 							));
 
@@ -502,8 +502,8 @@ class acp_users
 								WHERE user_id = $user_id";
 							$db->sql_query($sql);
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG', false, array($user_row['username']));
-							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG_USER', false, array(
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG', false, array($user_row['username']));
+							$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG_USER', false, array(
 								'reportee_id' => $user_id
 							));
 
@@ -519,12 +519,12 @@ class acp_users
 							}
 
 							// Delete old avatar if present
-							/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
-							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
-							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $phpbb_avatar_manager->clean_row($user_row, 'user'), USERS_TABLE, 'user_');
+							/* @var $engine_avatar_manager \phpbb\avatar\manager */
+							$engine_avatar_manager = $engine_container->get('avatar.manager');
+							$engine_avatar_manager->handle_avatar_delete($db, $user, $engine_avatar_manager->clean_row($user_row, 'user'), USERS_TABLE, 'user_');
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR', false, array($user_row['username']));
-							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR_USER', false, array(
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR', false, array($user_row['username']));
+							$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR_USER', false, array(
 								'reportee_id' => $user_id
 							));
 
@@ -538,7 +538,7 @@ class acp_users
 								// Delete posts, attachments, etc.
 								delete_posts('poster_id', $user_id);
 
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_POSTS', false, array($user_row['username']));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_POSTS', false, array($user_row['username']));
 								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -559,11 +559,11 @@ class acp_users
 							if (confirm_box(true))
 							{
 								/** @var \phpbb\attachment\manager $attachment_manager */
-								$attachment_manager = $phpbb_container->get('attachment.manager');
+								$attachment_manager = $engine_container->get('attachment.manager');
 								$attachment_manager->delete('user', $user_id);
 								unset($attachment_manager);
 
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_ATTACH', false, array($user_row['username']));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_ATTACH', false, array($user_row['username']));
 								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -596,7 +596,7 @@ class acp_users
 								{
 									if (!function_exists('delete_pm'))
 									{
-										include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+										include($engine_root_path . 'includes/functions_privmsgs.' . $phpEx);
 									}
 
 									do
@@ -609,7 +609,7 @@ class acp_users
 
 									delete_pm($user_id, $msg_ids, PRIVMSGS_OUTBOX);
 
-									$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_OUTBOX', false, array($user_row['username']));
+									$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_OUTBOX', false, array($user_row['username']));
 
 									$lang = 'EMPTIED';
 								}
@@ -780,8 +780,8 @@ class acp_users
 								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS', false, array($user_row['username'], $forum_info['forum_name']));
-							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS_USER', false, array(
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS', false, array($user_row['username'], $forum_info['forum_name']));
+							$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS_USER', false, array(
 								'reportee_id' => $user_id,
 								$forum_info['forum_name']
 							));
@@ -796,7 +796,7 @@ class acp_users
 							{
 								remove_newly_registered($user_id, $user_row);
 
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REMOVED_NR', false, array($user_row['username']));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REMOVED_NR', false, array($user_row['username']));
 								trigger_error($user->lang['USER_LIFTED_NR'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -828,7 +828,7 @@ class acp_users
 							* @changed 3.2.10-RC1 Added user_id
 							*/
 							$vars = array('action', 'user_row', 'u_action', 'user_id');
-							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
+							extract($engine_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
 
 							unset($u_action);
 						break;
@@ -887,7 +887,7 @@ class acp_users
 
 					// Instantiate passwords manager
 					/* @var $passwords_manager \phpbb\passwords\manager */
-					$passwords_manager = $phpbb_container->get('passwords.manager');
+					$passwords_manager = $engine_container->get('passwords.manager');
 
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
@@ -952,14 +952,14 @@ class acp_users
 						* @since 3.1.0-a1
 						*/
 						$vars = array('user_row', 'data', 'sql_ary');
-						extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_modify_data', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.acp_users_overview_modify_data', compact($vars)));
 
 						if ($update_username !== false)
 						{
 							$sql_ary['username'] = $update_username;
 							$sql_ary['username_clean'] = utf8_clean_string($update_username);
 
-							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_NAME', false, array(
+							$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_NAME', false, array(
 								'reportee_id' => $user_id,
 								$user_row['username'],
 								$update_username
@@ -970,7 +970,7 @@ class acp_users
 						{
 							$sql_ary += ['user_email'		=> $update_email];
 
-							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
+							$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
 								'reportee_id' => $user_id,
 								$user_row['username'],
 								$user_row['user_email'],
@@ -987,7 +987,7 @@ class acp_users
 
 							$user->reset_login_keys($user_id);
 
-							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+							$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
 								'reportee_id' => $user_id,
 								$user_row['username']
 							));
@@ -1009,7 +1009,7 @@ class acp_users
 						// Let the users permissions being updated
 						$auth->acl_clear_prefetch($user_id);
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_USER_UPDATE', false, array($data['username']));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_USER_UPDATE', false, array($data['username']));
 
 						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
@@ -1076,7 +1076,7 @@ class acp_users
 				* @since 3.1.0-a1
 				*/
 				$vars = array('user_row', 'quick_tool_ary');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));
 
 				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
 				foreach ($quick_tool_ary as $value => $lang)
@@ -1142,10 +1142,10 @@ class acp_users
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
-					'U_MCP_QUEUE'	=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
-					'U_SEARCH_USER'	=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$user_row['user_id']}&amp;sr=posts") : '',
+					'U_MCP_QUEUE'	=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$engine_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
+					'U_SEARCH_USER'	=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$engine_root_path}search.$phpEx", "author_id={$user_row['user_id']}&amp;sr=posts") : '',
 
-					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_row['user_id']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_row['user_id']}&amp;hash=" . generate_link_hash('switchperm')) : '',
+					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_row['user_id']) ? append_sid("{$engine_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_row['user_id']}&amp;hash=" . generate_link_hash('switchperm')) : '',
 
 					'POSTS_IN_QUEUE'	=> $user_row['posts_in_queue'],
 					'USER'				=> $user_row['username'],
@@ -1173,7 +1173,7 @@ class acp_users
 				$message	= $request->variable('message', '', true);
 
 				/* @var $pagination \phpbb\pagination */
-				$pagination = $phpbb_container->get('pagination');
+				$pagination = $engine_container->get('pagination');
 
 				// Sort keys
 				$sort_days	= $request->variable('st', 0);
@@ -1208,7 +1208,7 @@ class acp_users
 							$where_sql";
 						$db->sql_query($sql);
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CLEAR_USER', false, array($user_row['username']));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CLEAR_USER', false, array($user_row['username']));
 					}
 				}
 
@@ -1219,13 +1219,13 @@ class acp_users
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($user_row['username']));
-					$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($user_row['username']));
+					$engine_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
 						'forum_id' => 0,
 						'topic_id' => 0,
 						$user_row['username']
 					));
-					$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
+					$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
 						'reportee_id' => $user_id,
 						$message
 					));
@@ -1322,11 +1322,11 @@ class acp_users
 
 							if ($log_warnings)
 							{
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED', false, array($user_row['username'], $num_warnings));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED', false, array($user_row['username'], $num_warnings));
 							}
 							else
 							{
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED_ALL', false, array($user_row['username']));
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED_ALL', false, array($user_row['username']));
 							}
 						}
 					}
@@ -1415,11 +1415,11 @@ class acp_users
 
 				if (!function_exists('user_get_id_name'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($engine_root_path . 'includes/functions_user.' . $phpEx);
 				}
 
 				/* @var $cp \phpbb\profilefields\manager */
-				$cp = $phpbb_container->get('profilefields.manager');
+				$cp = $engine_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 
@@ -1460,7 +1460,7 @@ class acp_users
 				* @since 3.1.4-RC1
 				*/
 				$vars = array('data', 'submit', 'user_id', 'user_row');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_modify_profile', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_users_modify_profile', compact($vars)));
 
 				if ($submit)
 				{
@@ -1498,7 +1498,7 @@ class acp_users
 					* @changed 3.1.12-RC1		Removed submit, added user_id, user_row
 					*/
 					$vars = array('data', 'user_id', 'user_row', 'error');
-					extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_validate', compact($vars)));
+					extract($engine_dispatcher->trigger_event('core.acp_users_profile_validate', compact($vars)));
 
 					if (!count($error))
 					{
@@ -1519,7 +1519,7 @@ class acp_users
 						* @since 3.1.4-RC1
 						*/
 						$vars = array('cp_data', 'data', 'user_id', 'user_row', 'sql_ary');
-						extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_modify_sql_ary', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.acp_users_profile_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
@@ -1579,7 +1579,7 @@ class acp_users
 
 				if (!function_exists('user_get_id_name'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($engine_root_path . 'includes/functions_user.' . $phpEx);
 				}
 
 				$data = array(
@@ -1624,7 +1624,7 @@ class acp_users
 				* @since 3.1.0-b3
 				*/
 				$vars = array('data', 'user_row');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_data', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_users_prefs_modify_data', compact($vars)));
 
 				if ($submit)
 				{
@@ -1693,7 +1693,7 @@ class acp_users
 						* @since 3.1.0-b3
 						*/
 						$vars = array('data', 'user_row', 'sql_ary', 'error');
-						extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_sql', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.acp_users_prefs_modify_sql', compact($vars)));
 
 						if (!count($error))
 						{
@@ -1842,7 +1842,7 @@ class acp_users
 				* @since 3.1.0-b3
 				*/
 				$vars = array('data', 'user_row', 'user_prefs_data');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_template_data', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_users_prefs_modify_template_data', compact($vars)));
 
 				$template->assign_vars($user_prefs_data);
 
@@ -1851,12 +1851,12 @@ class acp_users
 			case 'avatar':
 
 				$avatars_enabled = false;
-				/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
-				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+				/** @var \phpbb\avatar\manager $engine_avatar_manager */
+				$engine_avatar_manager = $engine_container->get('avatar.manager');
 
 				if ($config['allow_avatar'])
 				{
-					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
+					$avatar_drivers = $engine_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
 					$avatar_data = \phpbb\avatar\manager::clean_row($user_row, 'user');
@@ -1865,11 +1865,11 @@ class acp_users
 					{
 						if (check_form_key($form_name))
 						{
-							$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
+							$driver_name = $engine_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
 
 							if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 							{
-								$driver = $phpbb_avatar_manager->get_driver($driver_name);
+								$driver = $engine_avatar_manager->get_driver($driver_name);
 								$result = $driver->process_form($request, $template, $user, $avatar_data, $error);
 
 								if ($result && empty($error))
@@ -1891,7 +1891,7 @@ class acp_users
 									* @since 3.2.4-RC1
 									*/
 									$vars = array('user_row', 'result');
-									extract($phpbb_dispatcher->trigger_event('core.acp_users_avatar_sql', compact($vars)));
+									extract($engine_dispatcher->trigger_event('core.acp_users_avatar_sql', compact($vars)));
 
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
@@ -1919,13 +1919,13 @@ class acp_users
 						}
 						else
 						{
-							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, USERS_TABLE, 'user_');
+							$engine_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, USERS_TABLE, 'user_');
 
 							trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						}
 					}
 
-					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user_row['user_avatar_type']));
+					$selected_driver = $engine_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user_row['user_avatar_type']));
 
 					// Assign min and max values before generating avatar driver html
 					$template->assign_vars(array(
@@ -1937,7 +1937,7 @@ class acp_users
 
 					foreach ($avatar_drivers as $current_driver)
 					{
-						$driver = $phpbb_avatar_manager->get_driver($current_driver);
+						$driver = $engine_avatar_manager->get_driver($current_driver);
 
 						$avatars_enabled = true;
 						$template->set_filenames(array(
@@ -1946,7 +1946,7 @@ class acp_users
 
 						if ($driver->prepare_form($request, $template, $user, $avatar_data, $error))
 						{
-							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
+							$driver_name = $engine_avatar_manager->prepare_driver_name($current_driver);
 							$driver_upper = strtoupper($driver_name);
 
 							$template->assign_block_vars('avatar_drivers', array(
@@ -1962,10 +1962,10 @@ class acp_users
 				}
 
 				// Avatar manager is not initialized if avatars are disabled
-				if (isset($phpbb_avatar_manager))
+				if (isset($engine_avatar_manager))
 				{
 					// Replace "error" strings with their real, localised form
-					$error = $phpbb_avatar_manager->localize_errors($user, $error);
+					$error = $engine_avatar_manager->localize_errors($user, $error);
 				}
 
 				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
@@ -1973,7 +1973,7 @@ class acp_users
 				$template->assign_vars(array(
 					'S_AVATAR'	=> true,
 					'ERROR'			=> (!empty($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
+					'AVATAR'		=> (empty($avatar) ? '<img src="' . $engine_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
@@ -2029,7 +2029,7 @@ class acp_users
 
 				if (!function_exists('display_custom_bbcodes'))
 				{
-					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+					include($engine_root_path . 'includes/functions_display.' . $phpEx);
 				}
 
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? $this->optionget($user_row, 'sig_bbcode') : false;
@@ -2104,7 +2104,7 @@ class acp_users
 						* @since 3.2.4-RC1
 						*/
 						$vars = array('user_row', 'sql_ary');
-						extract($phpbb_dispatcher->trigger_event('core.acp_users_modify_signature_sql_ary', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.acp_users_modify_signature_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -2124,7 +2124,7 @@ class acp_users
 				}
 
 				/** @var \phpbb\controller\helper $controller_helper */
-				$controller_helper = $phpbb_container->get('controller.helper');
+				$controller_helper = $engine_container->get('controller.helper');
 
 				$template->assign_vars(array(
 					'S_SIGNATURE'		=> true,
@@ -2158,7 +2158,7 @@ class acp_users
 
 			case 'attach':
 				/* @var $pagination \phpbb\pagination */
-				$pagination = $phpbb_container->get('pagination');
+				$pagination = $engine_container->get('pagination');
 
 				$start		= $request->variable('start', 0);
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
@@ -2202,13 +2202,13 @@ class acp_users
 						$db->sql_freeresult($result);
 
 						/** @var \phpbb\attachment\manager $attachment_manager */
-						$attachment_manager = $phpbb_container->get('attachment.manager');
+						$attachment_manager = $engine_container->get('attachment.manager');
 						$attachment_manager->delete('attach', $marked);
 						unset($attachment_manager);
 
 						$message = (count($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode($user->lang['COMMA_SEPARATOR'], $log_attachments)));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode($user->lang['COMMA_SEPARATOR'], $log_attachments)));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else
@@ -2273,11 +2273,11 @@ class acp_users
 				{
 					if ($row['in_message'])
 					{
-						$view_topic = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;p={$row['post_msg_id']}");
+						$view_topic = append_sid("{$engine_root_path}ucp.$phpEx", "i=pm&amp;p={$row['post_msg_id']}");
 					}
 					else
 					{
-						$view_topic = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p={$row['post_msg_id']}") . '#p' . $row['post_msg_id'];
+						$view_topic = append_sid("{$engine_root_path}viewtopic.$phpEx", "p={$row['post_msg_id']}") . '#p' . $row['post_msg_id'];
 					}
 
 					$template->assign_block_vars('attach', array(
@@ -2295,7 +2295,7 @@ class acp_users
 
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
+						'U_DOWNLOAD'		=> append_sid("{$engine_root_path}download/file.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}
@@ -2316,7 +2316,7 @@ class acp_users
 
 				if (!function_exists('group_user_attributes'))
 				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					include($engine_root_path . 'includes/functions_user.' . $phpEx);
 				}
 
 				$user->add_lang(array('groups', 'acp/groups'));
@@ -2448,7 +2448,7 @@ class acp_users
 				}
 
 				/** @var \phpbb\group\helper $group_helper */
-				$group_helper = $phpbb_container->get('group_helper');
+				$group_helper = $engine_container->get('group_helper');
 
 				$sql = 'SELECT ug.*, g.*
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
@@ -2512,7 +2512,7 @@ class acp_users
 					foreach ($data_ary as $data)
 					{
 						$template->assign_block_vars('group', array(
-							'U_EDIT_GROUP'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g={$data['group_id']}&amp;back_link=acp_users_groups"),
+							'U_EDIT_GROUP'		=> append_sid("{$engine_admin_path}index.$phpEx", "i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g={$data['group_id']}&amp;back_link=acp_users_groups"),
 							'U_DEFAULT'			=> $this->u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'] . '&amp;hash=' . generate_link_hash('acp_users'),
 							'U_DEMOTE_PROMOTE'	=> $this->u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'] . '&amp;hash=' . generate_link_hash('acp_users'),
 							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
@@ -2540,7 +2540,7 @@ class acp_users
 
 				if (!class_exists('auth_admin'))
 				{
-					include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+					include($engine_root_path . 'includes/acp/auth.' . $phpEx);
 				}
 
 				$auth_admin = new auth_admin();
@@ -2599,8 +2599,8 @@ class acp_users
 					'S_FORUM_OPTIONS'			=> $s_forum_options,
 
 					'U_ACTION'					=> $this->u_action . '&amp;u=' . $user_id,
-					'U_USER_PERMISSIONS'		=> append_sid("{$phpbb_admin_path}index.$phpEx" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
-					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id))
+					'U_USER_PERMISSIONS'		=> append_sid("{$engine_admin_path}index.$phpEx" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
+					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$engine_admin_path}index.$phpEx", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id))
 				);
 
 			break;
@@ -2621,7 +2621,7 @@ class acp_users
 				* @changed 3.2.10-RC1 Added u_action
 				*/
 				$vars = array('mode', 'user_id', 'user_row', 'error', 'u_action');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_mode_add', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_users_mode_add', compact($vars)));
 
 				unset($u_action);
 			break;

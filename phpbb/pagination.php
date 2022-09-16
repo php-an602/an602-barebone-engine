@@ -25,7 +25,7 @@ class pagination
 	protected $helper;
 
 	/** @var \phpbb\event\dispatcher_interface */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/**
 	* Constructor
@@ -33,14 +33,14 @@ class pagination
 	* @param	\phpbb\template\template			$template
 	* @param	\phpbb\user							$user
 	* @param	\phpbb\controller\helper			$helper
-	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher
+	* @param	\phpbb\event\dispatcher_interface	$engine_dispatcher
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \phpbb\event\dispatcher_interface $engine_dispatcher)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->helper = $helper;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 	}
 
 	/**

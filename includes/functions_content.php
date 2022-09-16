@@ -47,7 +47,7 @@ if (!defined('IN_ENGINE'))
 */
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param, $def_st = false, $def_sk = false, $def_sd = false)
 {
-	global $user, $phpbb_dispatcher;
+	global $user, $engine_dispatcher;
 
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -140,7 +140,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 		'def_sd',
 		'sorts',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.gen_sort_selects_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.gen_sort_selects_after', compact($vars)));
 
 	return;
 }
@@ -150,7 +150,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 */
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false, $force_display = false)
 {
-	global $config, $auth, $template, $user, $db, $phpbb_path_helper, $phpbb_dispatcher;
+	global $config, $auth, $template, $user, $db, $engine_path_helper, $engine_dispatcher;
 
 	// We only return if the jumpbox is not forced to be displayed (in case it is needed for functionality)
 	if (!$config['load_jumpbox'] && $force_display === false)
@@ -183,7 +183,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	* @since 3.1.10-RC1
 	*/
 	$vars = array('rowset');
-	extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_forum_list', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.make_jumpbox_modify_forum_list', compact($vars)));
 
 	// Sometimes it could happen that forums will be displayed here not be displayed within the index page
 	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
@@ -229,7 +229,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 				'FORUM_ID'		=> ($select_all) ? 0 : -1,
 				'FORUM_NAME'	=> ($select_all) ? $user->lang['ALL_FORUMS'] : $user->lang['SELECT_FORUM'],
 				'S_FORUM_COUNT'	=> $iteration,
-				'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $forum_id)),
+				'LINK'			=> $engine_path_helper->append_url_params($action, array('f' => $forum_id)),
 			);
 
 			$iteration++;
@@ -244,7 +244,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			'S_IS_CAT'		=> ($row['forum_type'] == FORUM_CAT) ? true : false,
 			'S_IS_LINK'		=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_IS_POST'		=> ($row['forum_type'] == FORUM_POST) ? true : false,
-			'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $row['forum_id'])),
+			'LINK'			=> $engine_path_helper->append_url_params($action, array('f' => $row['forum_id'])),
 		);
 
 		/**
@@ -259,7 +259,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			'row',
 			'tpl_ary',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_tpl_ary', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.make_jumpbox_modify_tpl_ary', compact($vars)));
 
 		$template->assign_block_vars_array('jumpbox_forums', $tpl_ary);
 
@@ -273,7 +273,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	}
 	unset($padding_store, $rowset);
 
-	$url_parts = $phpbb_path_helper->get_url_parts($action);
+	$url_parts = $engine_path_helper->get_url_parts($action);
 
 	$template->assign_vars(array(
 		'S_DISPLAY_JUMPBOX'			=> $display_jumpbox,
@@ -469,7 +469,7 @@ function phpbb_clean_search_string($search_string)
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $phpbb_container, $phpbb_dispatcher;
+	global $engine_container, $engine_dispatcher;
 
 	/**
 	 * Use this event to modify the message before it is decoded
@@ -481,12 +481,12 @@ function decode_message(&$message, $bbcode_uid = '')
 	 */
 	$message_text = $message;
 	$vars = array('message_text', 'bbcode_uid');
-	extract($phpbb_dispatcher->trigger_event('core.decode_message_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.decode_message_before', compact($vars)));
 	$message = $message_text;
 
 	if (preg_match('#^<[rt][ >]#', $message))
 	{
-		$message = htmlspecialchars($phpbb_container->get('text_formatter.utils')->unparse($message), ENT_COMPAT);
+		$message = htmlspecialchars($engine_container->get('text_formatter.utils')->unparse($message), ENT_COMPAT);
 	}
 	else
 	{
@@ -519,7 +519,7 @@ function decode_message(&$message, $bbcode_uid = '')
 	*/
 	$message_text = $message;
 	$vars = array('message_text', 'bbcode_uid');
-	extract($phpbb_dispatcher->trigger_event('core.decode_message_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.decode_message_after', compact($vars)));
 	$message = $message_text;
 }
 
@@ -528,11 +528,11 @@ function decode_message(&$message, $bbcode_uid = '')
 */
 function strip_bbcode(&$text, $uid = '')
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	if (preg_match('#^<[rt][ >]#', $text))
 	{
-		$text = utf8_htmlspecialchars($phpbb_container->get('text_formatter.utils')->clean_formatting($text));
+		$text = utf8_htmlspecialchars($engine_container->get('text_formatter.utils')->clean_formatting($text));
 	}
 	else
 	{
@@ -558,7 +558,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 {
 	static $bbcode;
 	global $auth, $config, $user;
-	global $phpbb_dispatcher, $phpbb_container;
+	global $engine_dispatcher, $engine_container;
 
 	if ($text === '')
 	{
@@ -577,11 +577,11 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags', 'censor_text');
-	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
 	if (preg_match('#^<[rt][ >]#', $text))
 	{
-		$renderer = $phpbb_container->get('text_formatter.renderer');
+		$renderer = $engine_container->get('text_formatter.renderer');
 
 		// Temporarily switch off viewcensors if applicable
 		$old_censor = $renderer->get_viewcensors();
@@ -617,8 +617,8 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 		{
 			if (!class_exists('bbcode'))
 			{
-				global $phpbb_root_path, $phpEx;
-				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+				global $engine_root_path, $phpEx;
+				include($engine_root_path . 'includes/bbcode.' . $phpEx);
 			}
 
 			if (empty($bbcode))
@@ -648,7 +648,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags');
-	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_text_for_display_after', compact($vars)));
 
 	return $text;
 }
@@ -675,7 +675,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 */
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $mode = 'post')
 {
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $engine_root_path, $phpEx, $engine_dispatcher;
 
 	/**
 	* Use this event to modify the text before it is prepared for storage
@@ -710,14 +710,14 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		'allow_url_bbcode',
 		'mode',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
 
 	$uid = $bitfield = '';
 	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 
 	if (!class_exists('parse_message'))
 	{
-		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		include($engine_root_path . 'includes/message_parser.' . $phpEx);
 	}
 
 	$message_parser = new parse_message($text);
@@ -747,7 +747,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @changed 3.1.11-RC1			Added message_parser to vars
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags', 'message_parser');
-	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
 
 	return $message_parser->warn_msg;
 }
@@ -758,7 +758,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 */
 function generate_text_for_edit($text, $uid, $flags)
 {
-	global $phpbb_dispatcher;
+	global $engine_dispatcher;
 
 	/**
 	* Use this event to modify the text before it is decoded for editing
@@ -770,7 +770,7 @@ function generate_text_for_edit($text, $uid, $flags)
 	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'flags');
-	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_text_for_edit_before', compact($vars)));
 
 	decode_message($text, $uid);
 
@@ -783,7 +783,7 @@ function generate_text_for_edit($text, $uid, $flags)
 	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'flags');
-	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_after', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_text_for_edit_after', compact($vars)));
 
 	return array(
 		'allow_bbcode'	=> ($flags & OPTION_FLAG_BBCODE) ? 1 : 0,
@@ -1080,7 +1080,7 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $config, $user, $phpbb_path_helper, $phpbb_dispatcher;
+	global $config, $user, $engine_path_helper, $engine_dispatcher;
 
 	if ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies'))
 	{
@@ -1088,7 +1088,7 @@ function smiley_text($text, $force_option = false)
 	}
 	else
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $engine_path_helper->get_web_root_path();
 
 		/**
 		* Event to override the root_path for smilies
@@ -1098,7 +1098,7 @@ function smiley_text($text, $force_option = false)
 		* @since 3.1.11-RC1
 		*/
 		$vars = array('root_path');
-		extract($phpbb_dispatcher->trigger_event('core.smiley_text_root_path', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.smiley_text_root_path', compact($vars)));
 		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img class="smilies" src="' . $root_path . $config['smilies_path'] . '/\2 />', $text);
 	}
 }
@@ -1119,8 +1119,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		return;
 	}
 
-	global $template, $cache, $user, $phpbb_dispatcher;
-	global $extensions, $config, $phpbb_root_path, $phpEx;
+	global $template, $cache, $user, $engine_dispatcher;
+	global $extensions, $config, $engine_root_path, $phpEx;
 
 	//
 	$compiled_attachments = array();
@@ -1198,7 +1198,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
+		$filename = $engine_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 		$download_link = '';
@@ -1212,7 +1212,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 			}
 			else if ($extensions[$attachment['extension']]['upload_icon'])
 			{
-				$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+				$upload_icon = '<img src="' . $engine_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
 			}
 		}
 
@@ -1282,14 +1282,14 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
+			$download_link = append_sid("{$engine_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
 			$l_downloaded_viewed = 'VIEWED_COUNTS';
 
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
-					$inline_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
+					$inline_link = append_sid("{$engine_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
 					$download_link .= '&amp;mode=view';
 
 					$block_array += array(
@@ -1302,7 +1302,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
-					$thumbnail_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1');
+					$thumbnail_link = append_sid("{$engine_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1');
 					$download_link .= '&amp;mode=view';
 
 					$block_array += array(
@@ -1360,7 +1360,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 			'preview',
 			'update_count',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.parse_attachments_modify_template_data', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.parse_attachments_modify_template_data', compact($vars)));
 		$update_count_ary = $update_count;
 		unset($update_count, $display_cat, $download_link);
 
@@ -1513,15 +1513,15 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
 	static $_profile_cache;
-	global $phpbb_dispatcher;
+	global $engine_dispatcher;
 
 	// We cache some common variables we need within this function
 	if (empty($_profile_cache))
 	{
-		global $phpbb_root_path, $phpEx;
+		global $engine_root_path, $phpEx;
 
 		/** @html Username spans and links for usage in the template */
-		$_profile_cache['base_url'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u={USER_ID}');
+		$_profile_cache['base_url'] = append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u={USER_ID}');
 		$_profile_cache['tpl_noprofile'] = '<span class="username">{USERNAME}</span>';
 		$_profile_cache['tpl_noprofile_colour'] = '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
 		$_profile_cache['tpl_profile'] = '<a href="{PROFILE_URL}" class="username">{USERNAME}</a>';
@@ -1632,7 +1632,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		'username_string',
 		'_profile_cache',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
 	return $username_string;
 }
@@ -1646,13 +1646,13 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
  */
 function phpbb_add_quickmod_option($url, $option, $lang_string)
 {
-	global $template, $user, $phpbb_path_helper;
+	global $template, $user, $engine_path_helper;
 
 	$lang_string = $user->lang($lang_string);
 	$template->assign_block_vars('quickmod', array(
 		'VALUE'		=> $option,
 		'TITLE'		=> $lang_string,
-		'LINK'		=> $phpbb_path_helper->append_url_params($url, array('action' => $option)),
+		'LINK'		=> $engine_path_helper->append_url_params($url, array('action' => $option)),
 	));
 }
 

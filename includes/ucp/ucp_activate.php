@@ -29,8 +29,8 @@ class ucp_activate
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx, $request;
-		global $db, $user, $auth, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
+		global $config, $engine_root_path, $phpEx, $request;
+		global $db, $user, $auth, $engine_container, $engine_log, $engine_dispatcher;
 
 		$user_id = $request->variable('u', 0);
 		$key = $request->variable('k', '');
@@ -49,7 +49,7 @@ class ucp_activate
 
 		if ($user_row['user_type'] <> USER_INACTIVE && !$user_row['user_newpasswd'])
 		{
-			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
+			meta_refresh(3, append_sid("{$engine_root_path}index.$phpEx"));
 			trigger_error('ALREADY_ACTIVATED');
 		}
 
@@ -91,7 +91,7 @@ class ucp_activate
 
 			$user->reset_login_keys($user_row['user_id']);
 
-			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+			$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
 				'reportee_id' => $user_row['user_id'],
 				$user_row['username']
 			));
@@ -99,7 +99,7 @@ class ucp_activate
 
 		if (!$update_password)
 		{
-			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include_once($engine_root_path . 'includes/functions_user.' . $phpEx);
 
 			user_active_flip('activate', $user_row['user_id']);
 
@@ -115,23 +115,23 @@ class ucp_activate
 			$db->sql_query($sql);
 
 			// Create the correct logs
-			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
+			$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
 				'reportee_id' => $user_row['user_id']
 			));
 
 			if ($auth->acl_get('a_user'))
 			{
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($user_row['username']));
+				$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($user_row['username']));
 			}
 		}
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{
-			/* @var $phpbb_notifications \phpbb\notification\manager */
-			$phpbb_notifications = $phpbb_container->get('notification_manager');
-			$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
+			/* @var $engine_notifications \phpbb\notification\manager */
+			$engine_notifications = $engine_container->get('notification_manager');
+			$engine_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			include_once($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 
 			$messenger = new messenger(false);
 
@@ -170,9 +170,9 @@ class ucp_activate
 		* @since 3.1.6-RC1
 		*/
 		$vars = array('user_row', 'message');
-		extract($phpbb_dispatcher->trigger_event('core.ucp_activate_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_activate_after', compact($vars)));
 
-		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
+		meta_refresh(3, append_sid("{$engine_root_path}index.$phpEx"));
 		trigger_error($user->lang[$message]);
 	}
 }

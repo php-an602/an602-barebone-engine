@@ -43,7 +43,7 @@ class create_config_file extends \phpbb\install\task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -62,7 +62,7 @@ class create_config_file extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\config							$install_config
 	 * @param \phpbb\install\helper\database						$db_helper
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
-	 * @param string												$phpbb_root_path
+	 * @param string												$engine_root_path
 	 * @param string												$php_ext
 	 * @param array													$options
 	 */
@@ -70,7 +70,7 @@ class create_config_file extends \phpbb\install\task_base
 								\phpbb\install\helper\config $install_config,
 								\phpbb\install\helper\database $db_helper,
 								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
-								$phpbb_root_path,
+								$engine_root_path,
 								$php_ext,
 								$options = array())
 	{
@@ -78,7 +78,7 @@ class create_config_file extends \phpbb\install\task_base
 		$this->db_helper		= $db_helper;
 		$this->filesystem		= $filesystem;
 		$this->iohandler		= $iohandler;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 		$this->options			= array_merge(array(
 			'debug' => false,

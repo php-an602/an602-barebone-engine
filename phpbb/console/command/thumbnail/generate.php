@@ -38,7 +38,7 @@ class generate extends \phpbb\console\command\command
 	* phpBB root path
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	* PHP extension.
@@ -54,15 +54,15 @@ class generate extends \phpbb\console\command\command
 	* @param \phpbb\user $user The user object (used to get language information)
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\cache\service $cache The cache service
-	* @param string $phpbb_root_path Root path
+	* @param string $engine_root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $engine_root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->cache = $cache;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 
 		parent::__construct($user);

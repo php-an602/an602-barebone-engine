@@ -81,7 +81,7 @@ class feed
 	/**
 	 * @var dispatcher_interface
 	 */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/**
 	 * @var string
@@ -105,11 +105,11 @@ class feed
 	 * @param feed_helper $feed_helper
 	 * @param user $user
 	 * @param auth $auth
-	 * @param dispatcher_interface $phpbb_dispatcher
+	 * @param dispatcher_interface $engine_dispatcher
 	 * @param language $language
 	 * @param string $php_ext
 	 */
-	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, language $language, $php_ext)
+	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $engine_dispatcher, language $language, $php_ext)
 	{
 		$this->request = $request;
 		$this->controller_helper = $controller_helper;
@@ -122,7 +122,7 @@ class feed
 		$this->php_ext = $php_ext;
 		$this->template = $twig;
 		$this->language = $language;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 	}
 
 	/**

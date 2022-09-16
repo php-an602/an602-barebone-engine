@@ -29,14 +29,14 @@ class acp_jabber
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpEx;
+		global $db, $user, $template, $engine_log, $request;
+		global $config, $engine_root_path, $phpEx;
 
 		$user->add_lang('acp/board');
 
 		if (!class_exists('jabber'))
 		{
-			include($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
+			include($engine_root_path . 'includes/functions_jabber.' . $phpEx);
 		}
 
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -120,7 +120,7 @@ class acp_jabber
 			$config->set('jab_verify_peer_name', $jab_verify_peer_name);
 			$config->set('jab_allow_self_signed', $jab_allow_self_signed);
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . $log);
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . $log);
 			trigger_error($message . adm_back_link($this->u_action));
 		}
 

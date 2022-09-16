@@ -61,7 +61,7 @@ class update_files extends task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Constructor
@@ -71,15 +71,15 @@ class update_files extends task_base
 	 * @param iohandler_interface	$iohandler
 	 * @param factory				$file_updater_factory
 	 * @param update_helper			$update_helper
-	 * @param string				$phpbb_root_path
+	 * @param string				$engine_root_path
 	 */
-	public function __construct(container_factory $container, config $config, iohandler_interface $iohandler, factory $file_updater_factory, update_helper $update_helper, $phpbb_root_path)
+	public function __construct(container_factory $container, config $config, iohandler_interface $iohandler, factory $file_updater_factory, update_helper $update_helper, $engine_root_path)
 	{
 		$this->factory			= $file_updater_factory;
 		$this->installer_config	= $config;
 		$this->iohandler		= $iohandler;
 		$this->update_helper	= $update_helper;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 
 		$this->cache			= $container->get('cache.driver');
 		$this->file_updater		= null;

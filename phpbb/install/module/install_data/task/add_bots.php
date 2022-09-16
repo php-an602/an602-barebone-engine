@@ -137,7 +137,7 @@ class add_bots extends \phpbb\install\task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -151,14 +151,14 @@ class add_bots extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler			Input-output handler for the installer
 	 * @param \phpbb\install\helper\container_factory				$container			Installer's DI container
 	 * @param \phpbb\language\language								$language			Language provider
-	 * @param string												$phpbb_root_path	Relative path to phpBB root
+	 * @param string												$engine_root_path	Relative path to phpBB root
 	 * @param string												$php_ext			PHP extension
 	 */
 	public function __construct(\phpbb\install\helper\config $install_config,
 								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
 								\phpbb\install\helper\container_factory $container,
 								\phpbb\language\language $language,
-								$phpbb_root_path,
+								$engine_root_path,
 								$php_ext)
 	{
 		parent::__construct(true);
@@ -167,7 +167,7 @@ class add_bots extends \phpbb\install\task_base
 		$this->install_config	= $install_config;
 		$this->io_handler		= $iohandler;
 		$this->language			= $language;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 	}
 

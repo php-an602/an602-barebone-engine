@@ -153,7 +153,7 @@ class asset
 		// Since 1.7.0 Twig returns the real path of the file. We need it to be relative.
 		$real_root_path = $this->filesystem->realpath($this->path_helper->get_phpbb_root_path()) . DIRECTORY_SEPARATOR;
 
-		// If the asset is under the phpBB root path we need to remove its path and then prepend $phpbb_root_path
+		// If the asset is under the phpBB root path we need to remove its path and then prepend $engine_root_path
 		if ($real_root_path && substr($path . DIRECTORY_SEPARATOR, 0, strlen($real_root_path)) === $real_root_path)
 		{
 			$path = $this->path_helper->get_phpbb_root_path() . str_replace('\\', '/', substr($path, strlen($real_root_path)));

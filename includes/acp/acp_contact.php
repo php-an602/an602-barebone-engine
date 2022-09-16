@@ -29,7 +29,7 @@ class acp_contact
 	public function main($id, $mode)
 	{
 		global $user, $request, $template;
-		global $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $config, $engine_root_path, $phpEx, $engine_container;
 
 		$user->add_lang(array('acp/board', 'posting'));
 
@@ -41,15 +41,15 @@ class acp_contact
 
 		if (!function_exists('display_custom_bbcodes'))
 		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+			include($engine_root_path . 'includes/functions_display.' . $phpEx);
 		}
 		if (!class_exists('parse_message'))
 		{
-			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+			include($engine_root_path . 'includes/message_parser.' . $phpEx);
 		}
 
 		/* @var $config_text \phpbb\config\db_text */
-		$config_text = $phpbb_container->get('config_text');
+		$config_text = $engine_container->get('config_text');
 
 		$contact_admin_data			= $config_text->get_array(array(
 			'contact_admin_info',
@@ -106,7 +106,7 @@ class acp_contact
 		$contact_admin_edit = generate_text_for_edit($contact_admin_info, $contact_admin_info_uid, $contact_admin_info_flags);
 
 		/** @var \phpbb\controller\helper $controller_helper */
-		$controller_helper = $phpbb_container->get('controller.helper');
+		$controller_helper = $engine_container->get('controller.helper');
 
 		$template->assign_vars(array(
 			'ERRORS'			=> $error,

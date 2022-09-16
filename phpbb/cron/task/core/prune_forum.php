@@ -22,7 +22,7 @@ namespace phpbb\cron\task\core;
 */
 class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\parametrized
 {
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 	protected $php_ext;
 	protected $config;
 	protected $db;
@@ -40,14 +40,14 @@ class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\para
 	/**
 	* Constructor.
 	*
-	* @param string $phpbb_root_path The root path
+	* @param string $engine_root_path The root path
 	* @param string $php_ext PHP file extension
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\db\driver\driver_interface $db The db connection
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
+	public function __construct($engine_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->db = $db;

@@ -25,7 +25,7 @@ class acp_logs
 
 	function main($id, $mode)
 	{
-		global $user, $auth, $template, $phpbb_container;
+		global $user, $auth, $template, $engine_container;
 		global $config;
 		global $request;
 
@@ -48,7 +48,7 @@ class acp_logs
 		$this->log_type = constant('LOG_' . strtoupper($mode));
 
 		/* @var $pagination \phpbb\pagination */
-		$pagination = $phpbb_container->get('pagination');
+		$pagination = $engine_container->get('pagination');
 
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -73,9 +73,9 @@ class acp_logs
 					$conditions['keywords'] = $keywords;
 				}
 
-				/* @var $phpbb_log \phpbb\log\log_interface */
-				$phpbb_log = $phpbb_container->get('log');
-				$phpbb_log->delete($mode, $conditions);
+				/* @var $engine_log \phpbb\log\log_interface */
+				$engine_log = $engine_container->get('log');
+				$engine_log->delete($mode, $conditions);
 			}
 			else
 			{

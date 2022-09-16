@@ -38,7 +38,7 @@ class session
 	 */
 	static function extract_current_page($root_path)
 	{
-		global $request, $symfony_request, $phpbb_filesystem;
+		global $request, $symfony_request, $engine_filesystem;
 
 		$page_array = array();
 
@@ -85,7 +85,7 @@ class session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name, ENT_COMPAT));
 
-		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
+		$symfony_request_path = $engine_filesystem->clean_path($symfony_request->getPathInfo());
 		if ($symfony_request_path !== '/')
 		{
 			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
@@ -99,8 +99,8 @@ class session
 		else
 		{
 			// current directory within the phpBB root (for example: adm)
-			$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+			$root_dirs = explode('/', str_replace('\\', '/', $engine_filesystem->realpath($root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', $engine_filesystem->realpath('./')));
 		}
 
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
@@ -227,8 +227,8 @@ class session
 	*/
 	function session_begin($update_session_page = true)
 	{
-		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request, $phpbb_container, $user, $phpbb_log, $phpbb_dispatcher;
+		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $engine_root_path;
+		global $request, $engine_container, $user, $engine_log, $engine_dispatcher;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -239,7 +239,7 @@ class session
 		$this->forwarded_for		= $request->header('X-Forwarded-For');
 
 		$this->host					= $this->extract_current_hostname();
-		$this->page					= $this->extract_current_page($phpbb_root_path);
+		$this->page					= $this->extract_current_page($engine_root_path);
 
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
@@ -300,7 +300,7 @@ class session
 		* @since 3.1.10-RC1
 		*/
 		$vars = array('ip');
-		extract($phpbb_dispatcher->trigger_event('core.session_ip_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.session_ip_after', compact($vars)));
 
 		// split the list of IPs
 		$ips = explode(' ', trim($ip));
@@ -345,7 +345,7 @@ class session
 		if (defined('NEED_SID') && (empty($session_id) || $this->session_id !== $session_id))
 		{
 			send_status_line(401, 'Unauthorized');
-			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+			redirect(append_sid("{$engine_root_path}index.$phpEx"));
 		}
 
 		// if session id is set
@@ -400,7 +400,7 @@ class session
 
 					// Check whether the session is still valid if we have one
 					/* @var $provider_collection \phpbb\auth\provider_collection */
-					$provider_collection = $phpbb_container->get('auth.provider_collection');
+					$provider_collection = $engine_container->get('auth.provider_collection');
 					$provider = $provider_collection->get_provider();
 
 					if (!($provider instanceof \phpbb\auth\provider\provider_interface))
@@ -446,11 +446,11 @@ class session
 				else
 				{
 					// Added logging temporarily to help debug bugs...
-					if ($phpbb_container->getParameter('session.log_errors') && $this->data['user_id'] != ANONYMOUS)
+					if ($engine_container->getParameter('session.log_errors') && $this->data['user_id'] != ANONYMOUS)
 					{
 						if ($referer_valid)
 						{
-							$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_IP_BROWSER_FORWARDED_CHECK', false, array(
+							$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_IP_BROWSER_FORWARDED_CHECK', false, array(
 								$u_ip,
 								$s_ip,
 								$u_browser,
@@ -461,7 +461,7 @@ class session
 						}
 						else
 						{
-							$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_REFERER_INVALID', false, array($this->referer));
+							$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_REFERER_INVALID', false, array($this->referer));
 						}
 					}
 				}
@@ -483,7 +483,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_container, $phpbb_dispatcher;
+		global $SID, $_SID, $db, $config, $cache, $engine_container, $engine_dispatcher;
 
 		$this->data = array();
 
@@ -547,7 +547,7 @@ class session
 		}
 
 		/* @var $provider_collection \phpbb\auth\provider_collection */
-		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$provider_collection = $engine_container->get('auth.provider_collection');
 		$provider = $provider_collection->get_provider();
 		$this->data = $provider->autologin();
 
@@ -844,7 +844,7 @@ class session
 		* @since 3.1.6-RC1
 		*/
 		$vars = array('session_data');
-		extract($phpbb_dispatcher->trigger_event('core.session_create_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.session_create_after', compact($vars)));
 		unset($session_data);
 
 		return true;
@@ -860,7 +860,7 @@ class session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $phpbb_container, $phpbb_dispatcher;
+		global $SID, $_SID, $db, $engine_container, $engine_dispatcher;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -880,13 +880,13 @@ class session
 		* @since 3.1.6-RC1
 		*/
 		$vars = array('user_id', 'session_id', 'new_session');
-		extract($phpbb_dispatcher->trigger_event('core.session_kill_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.session_kill_after', compact($vars)));
 		unset($user_id);
 		unset($session_id);
 
 		// Allow connecting logout with external auth method logout
 		/* @var $provider_collection \phpbb\auth\provider_collection */
-		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$provider_collection = $engine_container->get('auth.provider_collection');
 		$provider = $provider_collection->get_provider();
 		$provider->logout($this->data, $new_session);
 
@@ -952,7 +952,7 @@ class session
 	*/
 	function session_gc()
 	{
-		global $db, $config, $phpbb_container, $phpbb_dispatcher;
+		global $db, $config, $engine_container, $engine_dispatcher;
 
 		if (!$this->time_now)
 		{
@@ -1038,7 +1038,7 @@ class session
 
 		// only called from CRON; should be a safe workaround until the infrastructure gets going
 		/* @var \phpbb\captcha\factory $captcha_factory */
-		$captcha_factory = $phpbb_container->get('captcha.factory');
+		$captcha_factory = $engine_container->get('captcha.factory');
 		$captcha_factory->garbage_collect($config['captcha_plugin']);
 
 		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
@@ -1051,7 +1051,7 @@ class session
 		* @event core.session_gc_after
 		* @since 3.1.6-RC1
 		*/
-		$phpbb_dispatcher->dispatch('core.session_gc_after');
+		$engine_dispatcher->dispatch('core.session_gc_after');
 
 		return;
 	}
@@ -1068,7 +1068,7 @@ class session
 	*/
 	function set_cookie($name, $cookiedata, $cookietime, $httponly = true)
 	{
-		global $config, $phpbb_dispatcher;
+		global $config, $engine_dispatcher;
 
 		// If headers are already set, we just return
 		if (headers_sent())
@@ -1095,7 +1095,7 @@ class session
 			'cookietime',
 			'httponly',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.set_cookie', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.set_cookie', compact($vars)));
 
 		if ($disable_cookie)
 		{
@@ -1123,7 +1123,7 @@ class session
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		global $config, $db, $phpbb_dispatcher;
+		global $config, $db, $engine_dispatcher;
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
@@ -1249,11 +1249,11 @@ class session
 		*/
 		$ban_row = isset($ban_row) ? $ban_row : false;
 		$vars = array('return', 'banned', 'ban_row', 'ban_triggered_by');
-		extract($phpbb_dispatcher->trigger_event('core.session_set_custom_ban', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.session_set_custom_ban', compact($vars)));
 
 		if ($banned && !$return)
 		{
-			global $phpbb_root_path, $phpEx;
+			global $engine_root_path, $phpEx;
 
 			// If the session is empty we need to create a valid one...
 			if (empty($this->session_id))
@@ -1297,7 +1297,7 @@ class session
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 
-			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
+			$contact_link = phpbb_get_board_contact_link($config, $engine_root_path, $phpEx);
 			$message = sprintf($this->lang[$message], $till_date, '<a href="' . $contact_link . '">', '</a>');
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
 			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
@@ -1457,7 +1457,7 @@ class session
 	*/
 	function set_login_key($user_id = false, $key = false, $user_ip = false)
 	{
-		global $db, $phpbb_dispatcher;
+		global $db, $engine_dispatcher;
 
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
@@ -1510,7 +1510,7 @@ class session
 			'user_id',
 			'user_ip',
 		];
-		extract($phpbb_dispatcher->trigger_event('core.set_login_key', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.set_login_key', compact($vars)));
 
 		$db->sql_query($sql);
 
@@ -1628,7 +1628,7 @@ class session
 	*/
 	public function update_session($session_data, $session_id = null)
 	{
-		global $db, $phpbb_dispatcher;
+		global $db, $engine_dispatcher;
 
 		$session_id = ($session_id) ? $session_id : $this->session_id;
 
@@ -1646,7 +1646,7 @@ class session
 		* @since 3.1.6-RC1
 		*/
 		$vars = array('session_data', 'session_id');
-		extract($phpbb_dispatcher->trigger_event('core.update_session_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.update_session_after', compact($vars)));
 	}
 
 	public function update_session_infos()

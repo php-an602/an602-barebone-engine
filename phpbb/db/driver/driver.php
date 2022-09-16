@@ -1036,7 +1036,7 @@ abstract class driver implements driver_interface
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $phpbb_path_helper;
+		global $cache, $starttime, $engine_root_path, $engine_path_helper;
 
 		if (!$query && $this->query_hold != '')
 		{
@@ -1061,7 +1061,7 @@ abstract class driver implements driver_interface
 						<meta charset="utf-8">
 						<meta http-equiv="X-UA-Compatible" content="IE=edge">
 						<title>SQL Report</title>
-						<link href="' . htmlspecialchars($phpbb_path_helper->update_web_root_path($phpbb_root_path) . $phpbb_path_helper->get_adm_relative_path(), ENT_COMPAT) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+						<link href="' . htmlspecialchars($engine_path_helper->update_web_root_path($engine_root_path) . $engine_path_helper->get_adm_relative_path(), ENT_COMPAT) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
 					<body id="errorpage">
 					<div id="wrap">

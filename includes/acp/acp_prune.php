@@ -25,13 +25,13 @@ class acp_prune
 
 	function main($id, $mode)
 	{
-		global $user, $phpEx, $phpbb_root_path;
+		global $user, $phpEx, $engine_root_path;
 
 		$user->add_lang('acp/prune');
 
 		if (!function_exists('user_active_flip'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($engine_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		switch ($mode)
@@ -55,7 +55,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request, $phpbb_dispatcher;
+		global $db, $user, $auth, $template, $engine_log, $request, $engine_dispatcher;
 
 		$all_forums = $request->variable('all_forums', 0);
 		$forum_id = $request->variable('f', array(0));
@@ -157,7 +157,7 @@ class acp_prune
 					// Sync all pruned forums at once
 					sync('forum', 'forum_id', $prune_ids, true, true);
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PRUNE', false, array($log_data));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PRUNE', false, array($log_data));
 				}
 				$db->sql_freeresult($result);
 
@@ -187,7 +187,7 @@ class acp_prune
 				 * @since 3.2.2-RC1
 				 */
 				$vars = array('hidden_fields');
-				extract($phpbb_dispatcher->trigger_event('core.prune_forums_settings_confirm', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.prune_forums_settings_confirm', compact($vars)));
 
 				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields($hidden_fields));
 			}
@@ -245,7 +245,7 @@ class acp_prune
 			 * @since 3.2.2-RC1
 			 */
 			$vars = array('template_data');
-			extract($phpbb_dispatcher->trigger_event('core.prune_forums_settings_template_data', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.prune_forums_settings_template_data', compact($vars)));
 
 			$template->assign_vars($template_data);
 		}
@@ -256,11 +256,11 @@ class acp_prune
 	*/
 	function prune_users($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
+		global $db, $user, $auth, $template, $engine_log, $request;
+		global $engine_root_path, $engine_admin_path, $phpEx, $engine_container;
 
 		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_helper = $engine_container->get('group_helper');
 
 		$user->add_lang('memberlist');
 
@@ -299,7 +299,7 @@ class acp_prune
 						}
 					}
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $l_log, false, array(implode(', ', $usernames)));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, $l_log, false, array(implode(', ', $usernames)));
 					$msg = $user->lang['USER_' . strtoupper($action) . '_SUCCESS'];
 				}
 				else
@@ -327,7 +327,7 @@ class acp_prune
 						'USERNAME'			=> $usernames[$user_id],
 						'USER_ID'           => $user_id,
 						'U_PROFILE'			=> get_username_string('profile', $user_id, $usernames[$user_id]),
-						'U_USER_ADMIN'		=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
+						'U_USER_ADMIN'		=> ($auth->acl_get('a_user')) ? append_sid("{$engine_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 					));
 				}
 
@@ -388,7 +388,7 @@ class acp_prune
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
 			'S_GROUP_LIST'		=> $s_group_list,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
+			'U_FIND_USERNAME'	=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
 		));
 	}
 

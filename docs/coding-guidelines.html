@@ -228,9 +228,9 @@ class ...</pre>
 	<div class="codebox"><pre>
 PHPBB_MSG_HANDLER          (overwrite message handler)
 PHPBB_DB_NEW_LINK          (overwrite new_link parameter for sql_connect)
-PHPBB_ROOT_PATH            (overwrite $phpbb_root_path)
-PHPBB_ADMIN_PATH           (overwrite $phpbb_admin_path)
-PHPBB_USE_BOARD_URL_PATH   (use generate_board_url() for image paths instead of $phpbb_root_path)
+PHPBB_ROOT_PATH            (overwrite $engine_root_path)
+PHPBB_ADMIN_PATH           (overwrite $engine_admin_path)
+PHPBB_USE_BOARD_URL_PATH   (use generate_board_url() for image paths instead of $engine_root_path)
 PHPBB_DISABLE_ACP_EDITOR   (disable ACP style editor for templates)
 PHPBB_DISABLE_CONFIG_CHECK (disable ACP config.php writeable check)
 
@@ -520,12 +520,12 @@ do_stuff($str);</pre>
 
 	<p class="bad">// Sometimes single quotes are just not right</p>
 	<div class="codebox"><pre>
-$post_url = $phpbb_root_path . 'posting.' . $phpEx . '?mode=' . $mode . '&amp;amp;start=' . $start;</pre>
+$post_url = $engine_root_path . 'posting.' . $phpEx . '?mode=' . $mode . '&amp;amp;start=' . $start;</pre>
 	</div>
 
 	<p class="good">// Double quotes are sometimes needed to not overcrowd the line with concatenations.</p>
 	<div class="codebox"><pre>
-$post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";</pre>
+$post_url = "{$engine_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";</pre>
 	</div>
 
 	<p>In SQL statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL formatting), else one should try to only use one method - mostly single quotes.</p>
@@ -1109,12 +1109,12 @@ trigger_error('NO_MODE', E_USER_ERROR);</pre>
 
 	<h4>Url formatting</h4>
 
-	<p>All urls pointing to internal files need to be prepended by the <code>$phpbb_root_path</code> variable. Within the administration control panel all urls pointing to internal files need to be prepended by the <code>$phpbb_admin_path</code> variable. This makes sure the path is always correct and users being able to just rename the admin folder and the acp still working as intended (though some links will fail and the code need to be slightly adjusted).</p>
+	<p>All urls pointing to internal files need to be prepended by the <code>$engine_root_path</code> variable. Within the administration control panel all urls pointing to internal files need to be prepended by the <code>$engine_admin_path</code> variable. This makes sure the path is always correct and users being able to just rename the admin folder and the acp still working as intended (though some links will fail and the code need to be slightly adjusted).</p>
 
 	<p>The <code>append_sid()</code> function from 2.0.x is available too, though it does not handle url alterations automatically. Please have a look at the code documentation if you want to get more details on how to use append_sid(). A sample call to append_sid() can look like this:</p>
 
 	<div class="codebox"><pre>
-append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;g=' . $row['group_id'])</pre>
+append_sid(&quot;{$engine_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;g=' . $row['group_id'])</pre>
 	</div>
 
 	<h4>General function usage: </h4>

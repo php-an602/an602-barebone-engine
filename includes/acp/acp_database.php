@@ -28,9 +28,9 @@ class acp_database
 	function main($id, $mode)
 	{
 		global $cache, $db, $user, $template, $table_prefix, $request;
-		global $phpbb_root_path, $phpbb_container, $phpbb_log;
+		global $engine_root_path, $engine_container, $engine_log;
 
-		$this->db_tools = $phpbb_container->get('dbal.tools');
+		$this->db_tools = $engine_container->get('dbal.tools');
 
 		$user->add_lang('acp/database');
 
@@ -77,7 +77,7 @@ class acp_database
 						$filename = 'backup_' . $time . '_' . unique_id();
 
 						/** @var phpbb\db\extractor\extractor_interface $extractor Database extractor */
-						$extractor = $phpbb_container->get('dbal.extractor');
+						$extractor = $engine_container->get('dbal.extractor');
 						$extractor->init_extractor($format, $filename, $time, false, true);
 
 						$extractor->write_start($table_prefix);
@@ -118,7 +118,7 @@ class acp_database
 
 						$extractor->write_end();
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_BACKUP');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_BACKUP');
 
 						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
 					break;
@@ -172,7 +172,7 @@ class acp_database
 						$delete = $request->variable('delete', '');
 						$file = $request->variable('file', '');
 
-						$backup_info = $this->get_backup_file($phpbb_root_path . 'store/', $file);
+						$backup_info = $this->get_backup_file($engine_root_path . 'store/', $file);
 
 						if (empty($backup_info) || !is_readable($backup_info['file_name']))
 						{
@@ -184,7 +184,7 @@ class acp_database
 							if (confirm_box(true))
 							{
 								unlink($backup_info['file_name']);
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_DELETE');
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_DELETE');
 								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
 							}
 							else
@@ -299,7 +299,7 @@ class acp_database
 							// Purge the cache due to updated data
 							$cache->purge();
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_RESTORE');
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_RESTORE');
 							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 							break;
 						}
@@ -309,7 +309,7 @@ class acp_database
 						}
 
 					default:
-						$backup_files = $this->get_file_list($phpbb_root_path . 'store/');
+						$backup_files = $this->get_file_list($engine_root_path . 'store/');
 
 						if (!empty($backup_files))
 						{

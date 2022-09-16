@@ -26,8 +26,8 @@ if (!defined('IN_ENGINE'))
 function compose_pm($id, $mode, $action, $user_folders = array())
 {
 	global $template, $db, $auth, $user, $cache;
-	global $phpbb_root_path, $phpEx, $config, $language;
-	global $request, $phpbb_dispatcher, $phpbb_container;
+	global $engine_root_path, $phpEx, $config, $language;
+	global $request, $engine_dispatcher, $engine_container;
 
 	// Damn php and globals - i know, this is horrible
 	// Needed for handle_message_list_actions()
@@ -35,17 +35,17 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	if (!function_exists('generate_smilies'))
 	{
-		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		include($engine_root_path . 'includes/functions_posting.' . $phpEx);
 	}
 
 	if (!function_exists('display_custom_bbcodes'))
 	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		include($engine_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
 	if (!class_exists('parse_message'))
 	{
-		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		include($engine_root_path . 'includes/message_parser.' . $phpEx);
 	}
 
 	if (!$action)
@@ -87,16 +87,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$current_time = time();
 
 	/** @var \phpbb\group\helper $group_helper */
-	$group_helper = $phpbb_container->get('group_helper');
+	$group_helper = $engine_container->get('group_helper');
 
 	// Was cancel pressed? If so then redirect to the appropriate page
 	if ($cancel)
 	{
 		if ($msg_id)
 		{
-			redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
+			redirect(append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
 		}
-		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm'));
+		redirect(append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm'));
 	}
 
 	// Since viewtopic.php language entries are used in several modes,
@@ -127,7 +127,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'delete',
 		'reply_to_all',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_data', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_modify_data', compact($vars)));
 
 	// Output PM_TO box if message composing
 	if ($action != 'edit')
@@ -167,7 +167,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
+			'U_FIND_USERNAME'	=> append_sid("{$engine_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
 		));
 	}
 
@@ -303,7 +303,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'delete',
 			'reply_to_all',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_compose_pm_basic_info_query_before', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_compose_pm_basic_info_query_before', compact($vars)));
 
 		$result = $db->sql_query($sql);
 		$post = $db->sql_fetchrow($result);
@@ -336,7 +336,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'delete',
 			'reply_to_all',
 		];
-		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_compose_pm_basic_info_query_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_compose_pm_basic_info_query_after', compact($vars)));
 
 		if (!$post)
 		{
@@ -398,7 +398,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				'delete',
 				'reply_to_all',
 			);
-			extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_quotepost_query_after', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_quotepost_query_after', compact($vars)));
 
 			// Passworded forum?
 			if ($post['forum_id'])
@@ -497,7 +497,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @since 3.1.11-RC1
 		*/
 		$vars = array('message_text', 'message_subject');
-		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_predefined_message', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_predefined_message', compact($vars)));
 
 		if ($to_user_id && $to_user_id != ANONYMOUS && $action == 'post')
 		{
@@ -535,14 +535,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	/* @var $plupload \phpbb\plupload\plupload */
-	$plupload = $phpbb_container->get('plupload');
+	$plupload = $engine_container->get('plupload');
 	$message_parser = new parse_message();
 	$message_parser->set_plupload($plupload);
 
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
 
-	$s_action = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=$mode&amp;action=$action", true, $user->session_id);
+	$s_action = append_sid("{$engine_root_path}ucp.$phpEx", "i=$id&amp;mode=$mode&amp;action=$action", true, $user->session_id);
 	$s_action .= (($folder_id) ? "&amp;f=$folder_id" : '') . (($msg_id) ? "&amp;p=$msg_id" : '');
 
 	// Delete triggered ?
@@ -557,7 +557,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			delete_pm($user->data['user_id'], $msg_id, $folder_id);
 
 			// jump to next message in "history"? nope, not for the moment. But able to be included later.
-			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
+			$meta_info = append_sid("{$engine_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
 			$message = $user->lang['MESSAGE_DELETED'];
 
 			meta_refresh(3, $meta_info);
@@ -572,11 +572,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				'action'	=> 'delete'
 			);
 
-			// "{$phpbb_root_path}ucp.$phpEx?i=pm&amp;mode=compose"
+			// "{$engine_root_path}ucp.$phpEx?i=pm&amp;mode=compose"
 			confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
 		}
 
-		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
+		redirect(append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
 	}
 
 	// Get maximum number of allowed recipients
@@ -706,7 +706,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'flash_status',
 		'url_status',
 	];
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_bbcode_status', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_modify_bbcode_status', compact($vars)));
 
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
@@ -740,10 +740,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				$db->sql_query($sql);
 
 				/** @var \phpbb\attachment\manager $attachment_manager */
-				$attachment_manager = $phpbb_container->get('attachment.manager');
+				$attachment_manager = $engine_container->get('attachment.manager');
 				$attachment_manager->delete('attach', array_column($message_parser->attachment_data, 'attach_id'));
 
-				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
+				$redirect_url = append_sid("{$engine_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
 
 				meta_refresh(3, $redirect_url);
 				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
@@ -857,7 +857,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'preview',
 			'error',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
 
 		// Parse Attachments - before checksum is calculated
 		if ($message_parser->check_attachment_form_token($language, $request, 'ucp_pm_compose'))
@@ -935,7 +935,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'preview',
 			'error',
 		];
-		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_after', compact($vars)));
 
 		// Store message, sync counters
 		if (!count($error) && $submit)
@@ -969,14 +969,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm($action, $subject, $pm_data);
 
-			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
-			$inbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
-			$outbox_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
+			$return_message_url = append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
+			$inbox_folder_url = append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox');
+			$outbox_folder_url = append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
 
 			$folder_url = '';
 			if (($folder_id > 0) && isset($user_folders[$folder_id]))
 			{
-				$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id);
+				$folder_url = append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id);
 			}
 
 			$return_box_url = ($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url;
@@ -1100,9 +1100,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$quote_attributes['msg_id'] = $post['msg_id'];
 		}
 		/** @var \phpbb\language\language $language */
-		$language = $phpbb_container->get('language');
+		$language = $engine_container->get('language');
 		/** @var \phpbb\textformatter\utils_interface $text_formatter_utils */
-		$text_formatter_utils = $phpbb_container->get('text_formatter.utils');
+		$text_formatter_utils = $engine_container->get('text_formatter.utils');
 		phpbb_format_quote($language, $message_parser, $text_formatter_utils, $bbcode_status, $quote_attributes, $message_link);
 	}
 
@@ -1118,7 +1118,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @since 3.2.8-RC1
 		*/
 		$vars = array('message_subject');
-		extract($phpbb_dispatcher->trigger_event('core.pm_modify_message_subject', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.pm_modify_message_subject', compact($vars)));
 	}
 
 	if ($action == 'forward' && !$preview && !$refresh && !$submit)
@@ -1141,7 +1141,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode($user->lang['COMMA_SEPARATOR'], $fwd_to_field['to']));
 
-		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
+		$quote_text = $engine_container->get('text_formatter.utils')->generate_quote(
 			censor_text($message_parser->message),
 			array('author' => $quote_username)
 		);
@@ -1261,7 +1261,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				else
 				{
 					$tpl_ary = array_merge($tpl_ary, array(
-						'U_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+						'U_VIEW'		=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
 					));
 				}
 
@@ -1315,7 +1315,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
 	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
+	$controller_helper = $engine_container->get('controller.helper');
 
 	// Start assigning vars for main posting page ...
 	$template_ary = array(
@@ -1361,8 +1361,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_HIDDEN_FIELDS'			=> $s_hidden_fields,
 
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
-		'U_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
-		'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup')),
+		'U_PROGRESS_BAR'			=> append_sid("{$engine_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
+		'UA_PROGRESS_BAR'			=> addslashes(append_sid("{$engine_root_path}posting.$phpEx", 'f=0&amp;mode=popup')),
 	);
 
 	/**
@@ -1373,7 +1373,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	* @since 3.2.6-RC1
 	*/
 	$vars = array('template_ary');
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_template', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.ucp_pm_compose_template', compact($vars)));
 
 	$template->assign_vars($template_ary);
 
@@ -1408,7 +1408,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
 	global $auth, $db, $user;
-	global $request, $phpbb_dispatcher;
+	global $request, $engine_dispatcher;
 
 	// Delete User [TO/BCC]
 	if ($remove_u && $request->variable('remove_u', array(0 => '')))
@@ -1599,7 +1599,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	* @since 3.2.4-RC1
 	*/
 	$vars = array('address_list', 'error', 'remove_u', 'remove_g', 'add_to', 'add_bcc');
-	extract($phpbb_dispatcher->trigger_event('core.message_list_actions', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.message_list_actions', compact($vars)));
 }
 
 /**

@@ -1371,14 +1371,14 @@ function extract_variables_from_file($_filename)
 
 function get_path($src_path, $src_url, $test_file)
 {
-	global $phpbb_root_path, $phpEx;
+	global $engine_root_path, $phpEx;
 
 	$board_config = get_config();
 
 	$test_file = preg_replace('/\.php$/i', ".$phpEx", $test_file);
 	$src_path = path($src_path);
 
-	if (@file_exists($phpbb_root_path . $src_path . $test_file))
+	if (@file_exists($engine_root_path . $src_path . $test_file))
 	{
 		return $src_path;
 	}
@@ -1416,10 +1416,10 @@ function get_path($src_path, $src_url, $test_file)
 
 		$path_array = array();
 
-		$phpbb_parts = explode('/', $script_path);
+		$engine_parts = explode('/', $script_path);
 		for ($i = 0, $end = count($url_parts); $i < $end; ++$i)
 		{
-			if ($i < count($phpbb_parts[$i]) && $url_parts[$i] == $phpbb_parts[$i])
+			if ($i < count($engine_parts[$i]) && $url_parts[$i] == $engine_parts[$i])
 			{
 				$path_array[] = $url_parts[$i];
 				unset($url_parts[$i]);
@@ -1427,7 +1427,7 @@ function get_path($src_path, $src_url, $test_file)
 			else
 			{
 				$path = '';
-				for ($j = $i, $end2 = count($phpbb_parts); $j < $end2; ++$j)
+				for ($j = $i, $end2 = count($engine_parts); $j < $end2; ++$j)
 				{
 					$path .= '../';
 				}
@@ -1438,7 +1438,7 @@ function get_path($src_path, $src_url, $test_file)
 
 		if (!empty($path))
 		{
-			if (@file_exists($phpbb_root_path . $path . $test_file))
+			if (@file_exists($engine_root_path . $path . $test_file))
 			{
 				return $path;
 			}
@@ -1809,7 +1809,7 @@ function sync_post_count($offset, $limit)
 */
 function add_bots()
 {
-	global $db, $convert, $user, $config, $phpbb_root_path, $phpEx;
+	global $db, $convert, $user, $config, $engine_root_path, $phpEx;
 
 	$db->sql_query($convert->truncate_statement . BOTS_TABLE);
 
@@ -1894,7 +1894,7 @@ function add_bots()
 
 	if (!function_exists('user_add'))
 	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		include($engine_root_path . 'includes/functions_user.' . $phpEx);
 	}
 
 	foreach ($bots as $bot_name => $bot_ary)
@@ -2166,7 +2166,7 @@ function fix_empty_primary_groups()
 */
 function remove_invalid_users()
 {
-	global $db, $phpEx, $phpbb_root_path;
+	global $db, $phpEx, $engine_root_path;
 
 	// username_clean is UNIQUE
 	$sql = 'SELECT user_id
@@ -2180,7 +2180,7 @@ function remove_invalid_users()
 	{
 		if (!function_exists('user_delete'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($engine_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		user_delete('remove', $row['user_id']);
@@ -2302,10 +2302,10 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $user, $phpbb_filesystem;
+	global $convert, $engine_root_path, $user, $engine_filesystem;
 
 	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
-	$filesystem = $phpbb_filesystem;
+	$filesystem = $engine_filesystem;
 
 	if (substr($trg, -1) == '/')
 	{
@@ -2324,7 +2324,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 		return;
 	}
 
-	$path = $phpbb_root_path;
+	$path = $engine_root_path;
 	$parts = explode('/', $trg);
 	unset($parts[count($parts) - 1]);
 
@@ -2343,15 +2343,15 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 		@chmod($path, 0777);
 	}
 
-	if (!@copy($src_path, $phpbb_root_path . $trg_path))
+	if (!@copy($src_path, $engine_root_path . $trg_path))
 	{
-		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $src_path, $phpbb_root_path . $trg_path), __LINE__, __FILE__, !$die_on_failure);
+		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $src_path, $engine_root_path . $trg_path), __LINE__, __FILE__, !$die_on_failure);
 		return;
 	}
 
 	if ($perm = @fileperms($src_path))
 	{
-		@chmod($phpbb_root_path . $trg_path, $perm);
+		@chmod($engine_root_path . $trg_path, $perm);
 	}
 
 	return true;
@@ -2359,16 +2359,16 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $phpbb_filesystem;
+	global $convert, $engine_root_path, $config, $user, $engine_filesystem;
 
 	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
-	$filesystem = $phpbb_filesystem;
+	$filesystem = $engine_filesystem;
 
 	$dirlist = $filelist = $bad_dirs = array();
 	$src = path($src, $source_relative_path);
 	$trg = path($trg);
 	$src_path = relative_base($src, $source_relative_path, __LINE__, __FILE__);
-	$trg_path = $phpbb_root_path . $trg;
+	$trg_path = $engine_root_path . $trg;
 
 	if (!is_dir($trg_path))
 	{

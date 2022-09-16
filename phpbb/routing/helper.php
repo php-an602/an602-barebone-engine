@@ -52,7 +52,7 @@ class helper
 	 * phpBB root path
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * PHP file extension
@@ -68,17 +68,17 @@ class helper
 	 * @param \phpbb\symfony_request $symfony_request Symfony Request object
 	 * @param \phpbb\request\request_interface $request phpBB request object
 	 * @param \phpbb\filesystem\filesystem $filesystem The filesystem object
-	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $engine_root_path phpBB root path
 	 * @param string $php_ext PHP file extension
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem\filesystem $filesystem, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem\filesystem $filesystem, $engine_root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->router = $router;
 		$this->symfony_request = $symfony_request;
 		$this->request = $request;
 		$this->filesystem = $filesystem;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 	}
 

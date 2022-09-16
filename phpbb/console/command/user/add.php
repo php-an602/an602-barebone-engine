@@ -48,7 +48,7 @@ class add extends command
 	 *
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * PHP extension.
@@ -65,16 +65,16 @@ class add extends command
 	 * @param config           $config
 	 * @param language         $language
 	 * @param manager          $password_manager
-	 * @param string           $phpbb_root_path
+	 * @param string           $engine_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, config $config, language $language, manager $password_manager, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, config $config, language $language, manager $password_manager, $engine_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->language = $language;
 		$this->password_manager = $password_manager;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 
 		$this->language->add_lang('ucp');

@@ -82,7 +82,7 @@ class filespec
 	protected $language;
 
 	/** @var string phpBB root path */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var \phpbb\plupload\plupload The plupload object */
 	protected $plupload;
@@ -93,21 +93,21 @@ class filespec
 	/**
 	 * File upload class
 	 *
-	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem Filesystem
+	 * @param \phpbb\filesystem\filesystem_interface	$engine_filesystem Filesystem
 	 * @param language					$language Language
 	 * @param \bantu\IniGetWrapper\IniGetWrapper			$php_ini ini_get() wrapper
 	 * @param \FastImageSize\FastImageSize $imagesize Imagesize class
-	 * @param string					$phpbb_root_path phpBB root path
+	 * @param string					$engine_root_path phpBB root path
 	 * @param \phpbb\mimetype\guesser	$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload	$plupload Plupload
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(\phpbb\filesystem\filesystem_interface $engine_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \FastImageSize\FastImageSize $imagesize, $engine_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
-		$this->filesystem = $phpbb_filesystem;
+		$this->filesystem = $engine_filesystem;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
 		$this->imagesize = $imagesize;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
 	}

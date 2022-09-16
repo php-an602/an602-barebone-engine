@@ -51,12 +51,12 @@ class add_tables extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\config				$config
 	 * @param \phpbb\install\helper\database			$db_helper
 	 * @param \phpbb\filesystem\filesystem_interface	$filesystem
-	 * @param string									$phpbb_root_path
+	 * @param string									$engine_root_path
 	 */
 	public function __construct(\phpbb\install\helper\config $config,
 								\phpbb\install\helper\database $db_helper,
 								\phpbb\filesystem\filesystem_interface $filesystem,
-								$phpbb_root_path)
+								$engine_root_path)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
 		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
@@ -76,7 +76,7 @@ class add_tables extends \phpbb\install\task_base
 		$this->config			= $config;
 		$this->db_tools			= $factory->get($this->db);
 		$this->filesystem		= $filesystem;
-		$this->schema_file_path	= $phpbb_root_path . 'store/schema.json';
+		$this->schema_file_path	= $engine_root_path . 'store/schema.json';
 
 		parent::__construct(true);
 	}

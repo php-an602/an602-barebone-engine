@@ -31,12 +31,12 @@ class acp_inactive
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_container, $phpbb_log, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $engine_container, $engine_log, $request;
+		global $engine_root_path, $engine_admin_path, $phpEx;
 
 		if (!function_exists('user_active_flip'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($engine_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		$user->add_lang('memberlist');
@@ -55,7 +55,7 @@ class acp_inactive
 		add_form_key($form_key);
 
 		/* @var $pagination \phpbb\pagination */
-		$pagination = $phpbb_container->get('pagination');
+		$pagination = $engine_container->get('pagination');
 
 		// We build the sort key and per page settings here, because they may be needed later
 
@@ -116,7 +116,7 @@ class acp_inactive
 						{
 							if (!class_exists('messenger'))
 							{
-								include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+								include($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 							}
 
 							$messenger = new messenger(false);
@@ -143,8 +143,8 @@ class acp_inactive
 						{
 							foreach ($inactive_users as $row)
 							{
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($row['username']));
-								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
+								$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($row['username']));
+								$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
 									'reportee_id' => $row['user_id']
 								));
 							}
@@ -170,7 +170,7 @@ class acp_inactive
 
 							user_delete('retain', $mark, true);
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, array(implode(', ', $user_affected)));
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, array(implode(', ', $user_affected)));
 
 							trigger_error(sprintf($user->lang['LOG_INACTIVE_DELETE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
@@ -209,7 +209,7 @@ class acp_inactive
 						// Send the messages
 						if (!class_exists('messenger'))
 						{
-							include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+							include($engine_root_path . 'includes/functions_messenger.' . $phpEx);
 						}
 
 						$messenger = new messenger();
@@ -245,7 +245,7 @@ class acp_inactive
 							WHERE ' . $db->sql_in_set('user_id', $user_ids);
 						$db->sql_query($sql);
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_REMIND', false, array(implode(', ', $usernames)));
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_REMIND', false, array(implode(', ', $usernames)));
 
 						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
@@ -285,13 +285,13 @@ class acp_inactive
 
 				'REMINDED_EXPLAIN'	=> $user->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $user->format_date($row['user_reminded_time'])),
 
-				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;redirect=acp_inactive')),
+				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$engine_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;redirect=acp_inactive')),
 				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 				'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 				'USER_EMAIL'		=> $row['user_email'],
 
-				'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
-				'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
+				'U_USER_ADMIN'	=> append_sid("{$engine_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+				'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$engine_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
 			));
 		}
 

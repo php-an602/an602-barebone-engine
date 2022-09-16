@@ -38,7 +38,7 @@ class create_schema_file extends \phpbb\install\task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -51,13 +51,13 @@ class create_schema_file extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\config							$config				Installer's config provider
 	 * @param \phpbb\install\helper\database						$db_helper			Installer's database helper
 	 * @param \phpbb\filesystem\filesystem_interface				$filesystem			Filesystem service
-	 * @param string												$phpbb_root_path	Path phpBB's root
+	 * @param string												$engine_root_path	Path phpBB's root
 	 * @param string												$php_ext			Extension of PHP files
 	 */
 	public function __construct(\phpbb\install\helper\config $config,
 								\phpbb\install\helper\database $db_helper,
 								\phpbb\filesystem\filesystem_interface $filesystem,
-								$phpbb_root_path,
+								$engine_root_path,
 								$php_ext)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
@@ -76,7 +76,7 @@ class create_schema_file extends \phpbb\install\task_base
 
 		$this->config			= $config;
 		$this->filesystem		= $filesystem;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 
 		parent::__construct(true);

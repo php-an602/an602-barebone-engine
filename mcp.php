@@ -15,12 +15,12 @@
 * @ignore
 */
 define('IN_ENGINE', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$engine_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_mcp.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+include($engine_root_path . 'common.' . $phpEx);
+include($engine_root_path . 'includes/functions_admin.' . $phpEx);
+include($engine_root_path . 'includes/functions_mcp.' . $phpEx);
+require($engine_root_path . 'includes/functions_module.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -43,7 +43,7 @@ if (!$user->data['is_registered'])
 {
 	if ($user->data['is_bot'])
 	{
-		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		redirect(append_sid("{$engine_root_path}index.$phpEx"));
 	}
 
 	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
@@ -143,7 +143,7 @@ if (!$auth->acl_getf_global('m_'))
 		'forum_id',
 		'topic_id',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.mcp_modify_permissions', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.mcp_modify_permissions', compact($vars)));
 
 	if (!$allow_user)
 	{
@@ -179,7 +179,7 @@ $vars = array(
 	'quickmod',
 	'topic_id',
 );
-extract($phpbb_dispatcher->trigger_event('core.mcp_global_f_read_auth_after', compact($vars)));
+extract($engine_dispatcher->trigger_event('core.mcp_global_f_read_auth_after', compact($vars)));
 
 if ($forum_id)
 {
@@ -247,7 +247,7 @@ if ($quickmod)
 			* @since 3.1.0-a4
 			*/
 			$vars = array('module', 'action', 'is_valid_action');
-			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.modify_quickmod_options', compact($vars)));
 
 			if (!$is_valid_action)
 			{
@@ -326,26 +326,26 @@ $vars = array(
 	'username',
 	'id',
 );
-extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
+extract($engine_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
 
 $template->assign_block_vars('navlinks', array(
 	'BREADCRUMB_NAME'	=> $user->lang('MCP'),
-	'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}mcp.$phpEx"),
+	'U_BREADCRUMB'		=> append_sid("{$engine_root_path}mcp.$phpEx"),
 ));
 
 // Generate urls for letting the moderation control panel being accessed in different modes
 $template->assign_vars(array(
-	'U_MCP'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main'),
-	'U_MCP_FORUM'	=> ($forum_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
-	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
-	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
+	'U_MCP'			=> append_sid("{$engine_root_path}mcp.$phpEx", 'i=main'),
+	'U_MCP_FORUM'	=> ($forum_id) ? append_sid("{$engine_root_path}mcp.$phpEx", "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
+	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$engine_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
+	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$engine_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
 ));
 
 // Load and execute the relevant module
 $module->load_active();
 
 // Assign data to the template engine for the list of modules
-$module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
+$module->assign_tpl_vars(append_sid("{$engine_root_path}mcp.$phpEx"));
 
 // Generate the page, do not display/query online list
 $module->display($module->get_page_title());

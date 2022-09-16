@@ -32,7 +32,7 @@ class installer_resources_locator implements resources_locator_interface
 	 *
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Name of the current environment
@@ -45,13 +45,13 @@ class installer_resources_locator implements resources_locator_interface
 	 * Construct method
 	 *
 	 * @param filesystem_interface	$filesystem			phpBB's filesystem handler
-	 * @param string				$phpbb_root_path	phpBB root path
+	 * @param string				$engine_root_path	phpBB root path
 	 * @param string				$environment		Name of the current environment
 	 */
-	public function __construct(filesystem_interface $filesystem, $phpbb_root_path, $environment)
+	public function __construct(filesystem_interface $filesystem, $engine_root_path, $environment)
 	{
 		$this->filesystem			= $filesystem;
-		$this->phpbb_root_path		= $phpbb_root_path;
+		$this->phpbb_root_path		= $engine_root_path;
 		$this->environment			= $environment;
 	}
 

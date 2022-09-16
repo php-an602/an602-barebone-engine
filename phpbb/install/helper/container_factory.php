@@ -27,7 +27,7 @@ class container_factory
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -57,15 +57,15 @@ class container_factory
 	 * @param language 		$language			Language service
 	 * @param request		$request			Request interface
 	 * @param update_helper	$update_helper		Update helper
-	 * @param string		$phpbb_root_path	Path to phpBB's root
+	 * @param string		$engine_root_path	Path to phpBB's root
 	 * @param string		$php_ext			Extension of PHP files
 	 */
-	public function __construct(language $language, request $request, update_helper $update_helper, $phpbb_root_path, $php_ext)
+	public function __construct(language $language, request $request, update_helper $update_helper, $engine_root_path, $php_ext)
 	{
 		$this->language			= $language;
 		$this->request			= $request;
 		$this->update_helper	= $update_helper;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 		$this->container		= null;
 	}
@@ -143,18 +143,18 @@ class container_factory
 			$this->request->enable_super_globals();
 		}
 
-		$phpbb_config_php_file = new \phpbb\config_php_file($this->phpbb_root_path, $this->php_ext);
-		$phpbb_container_builder = new \phpbb\di\container_builder($this->phpbb_root_path, $this->php_ext);
+		$engine_config_php_file = new \phpbb\config_php_file($this->phpbb_root_path, $this->php_ext);
+		$engine_container_builder = new \phpbb\di\container_builder($this->phpbb_root_path, $this->php_ext);
 
 		// For BC with functions that we need during install
-		global $phpbb_container, $table_prefix;
+		global $engine_container, $table_prefix;
 
 		$other_config_path = $this->phpbb_root_path . 'install/update/new/config';
 		$config_path = (is_dir($other_config_path)) ? $other_config_path : $this->phpbb_root_path . 'config';
 
-		$this->container = $phpbb_container_builder
+		$this->container = $engine_container_builder
 			->with_environment('production')
-			->with_config($phpbb_config_php_file)
+			->with_config($engine_config_php_file)
 			->with_config_path($config_path)
 			->without_compiled_container()
 			->get_container();
@@ -172,8 +172,8 @@ class container_factory
 
 		$this->container->compile();
 
-		$phpbb_container = $this->container;
-		$table_prefix = $phpbb_config_php_file->get('table_prefix');
+		$engine_container = $this->container;
+		$table_prefix = $engine_config_php_file->get('table_prefix');
 
 		// Restore super globals to previous state
 		if ($disable_super_globals)

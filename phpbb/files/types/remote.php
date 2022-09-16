@@ -41,7 +41,7 @@ class remote extends base
 	protected $upload;
 
 	/** @var string phpBB root path */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Construct a form upload type
@@ -51,16 +51,16 @@ class remote extends base
 	 * @param language $language Language class
 	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request object
-	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $engine_root_path phpBB root path
 	 */
-	public function __construct(config $config, factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
+	public function __construct(config $config, factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $engine_root_path)
 	{
 		$this->config = $config;
 		$this->factory = $factory;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
 		$this->request = $request;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 	}
 
 	/**

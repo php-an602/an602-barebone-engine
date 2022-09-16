@@ -15,7 +15,7 @@ class acp_logs_info
 {
 	function module()
 	{
-		global $phpbb_dispatcher;
+		global $engine_dispatcher;
 
 		$modes = array(
 			'admin'		=> array('title' => 'ACP_ADMIN_LOGS', 'auth' => 'acl_a_viewlogs', 'cat' => array('ACP_FORUM_LOGS')),
@@ -33,7 +33,7 @@ class acp_logs_info
 		* @since 3.2.1-RC1
 		*/
 		$vars = array('modes');
-		extract($phpbb_dispatcher->trigger_event('core.acp_logs_info_modify_modes', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.acp_logs_info_modify_modes', compact($vars)));
 
 		return array(
 			'filename'	=> 'acp_logs',

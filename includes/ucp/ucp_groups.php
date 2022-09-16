@@ -28,12 +28,12 @@ class ucp_groups
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx, $phpbb_admin_path;
+		global $config, $engine_root_path, $phpEx, $engine_admin_path;
 		global $db, $user, $auth, $cache, $template;
-		global $request, $phpbb_container, $phpbb_log;
+		global $request, $engine_container, $engine_log;
 
 		/** @var \phpbb\language\language $language Language object */
-		$language = $phpbb_container->get('language');
+		$language = $engine_container->get('language');
 
 		$user->add_lang('groups');
 
@@ -43,7 +43,7 @@ class ucp_groups
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
 
 		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_helper = $engine_container->get('group_helper');
 
 		switch ($mode)
 		{
@@ -104,7 +104,7 @@ class ucp_groups
 							{
 								group_user_attributes('default', $group_id, $user->data['user_id']);
 
-								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_CHANGE', false, array(
+								$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_CHANGE', false, array(
 									'reportee_id' => $user->data['user_id'],
 									sprintf($user->lang['USER_GROUP_CHANGE'], $group_row[$user->data['group_id']]['group_name'], $group_row[$group_id]['group_name'])
 								));
@@ -154,7 +154,7 @@ class ucp_groups
 							{
 								group_user_del($group_id, $user->data['user_id']);
 
-								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_RESIGN', false, array(
+								$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_RESIGN', false, array(
 									'reportee_id' => $user->data['user_id'],
 									$group_row[$group_id]['group_name']
 								));
@@ -213,7 +213,7 @@ class ucp_groups
 									group_user_add($group_id, $user->data['user_id'], false, false, false, 0, 1);
 								}
 
-								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), false, array(
+								$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), false, array(
 									'reportee_id' => $user->data['user_id'],
 									$group_row[$group_id]['group_name']
 								));
@@ -251,7 +251,7 @@ class ucp_groups
 							{
 								group_user_attributes('demote', $group_id, $user->data['user_id']);
 
-								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_DEMOTE', false, array(
+								$engine_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_DEMOTE', false, array(
 									'reportee_id' => $user->data['user_id'],
 									$group_row[$group_id]['group_name']
 								));
@@ -318,7 +318,7 @@ class ucp_groups
 						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
-						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
+						'U_VIEW_GROUP'	=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
 
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $user->data['group_id']) ? true : false,
 						'S_ROW_COUNT'		=> ${$block . '_count'}++)
@@ -374,7 +374,7 @@ class ucp_groups
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
-						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
+						'U_VIEW_GROUP'	=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
 
 						'S_ROW_COUNT'	=> $nonmember_count++)
 					);
@@ -401,7 +401,7 @@ class ucp_groups
 
 				if (!function_exists('phpbb_get_user_rank'))
 				{
-					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+					include($engine_root_path . 'includes/functions_display.' . $phpEx);
 				}
 
 				add_form_key('ucp_groups');
@@ -479,12 +479,12 @@ class ucp_groups
 						$avatar_data = null;
 						$avatar_error = array();
 
-						/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
-						$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+						/** @var \phpbb\avatar\manager $engine_avatar_manager */
+						$engine_avatar_manager = $engine_container->get('avatar.manager');
 
 						if ($config['allow_avatar'])
 						{
-							$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
+							$avatar_drivers = $engine_avatar_manager->get_enabled_drivers();
 
 							// This is normalised data, without the group_ prefix
 							$avatar_data = \phpbb\avatar\manager::clean_row($group_row, 'group');
@@ -496,7 +496,7 @@ class ucp_groups
 							if (confirm_box(true))
 							{
 								$avatar_data['id'] = substr($avatar_data['id'], 1);
-								$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
+								$engine_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
 								$cache->destroy('sql', GROUPS_TABLE);
 
 								$message = $action === 'edit' ? 'GROUP_UPDATED' : 'GROUP_CREATED';
@@ -543,11 +543,11 @@ class ucp_groups
 							if (!count($error) && $config['allow_avatar'])
 							{
 								// Handle avatar
-								$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
+								$driver_name = $engine_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
 
 								if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 								{
-									$driver = $phpbb_avatar_manager->get_driver($driver_name);
+									$driver = $engine_avatar_manager->get_driver($driver_name);
 									$result = $driver->process_form($request, $template, $user, $avatar_data, $avatar_error);
 
 									if ($result && empty($avatar_error))
@@ -559,7 +559,7 @@ class ucp_groups
 								}
 
 								// Merge any avatars errors into the primary error array
-								$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+								$error = array_merge($error, $engine_avatar_manager->localize_errors($user, $avatar_error));
 							}
 
 							// Validate submitted colour value
@@ -665,7 +665,7 @@ class ucp_groups
 						if ($config['allow_avatar'])
 						{
 							$avatars_enabled = false;
-							$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
+							$selected_driver = $engine_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
 
 							// Assign min and max values before generating avatar driver html
 							$template->assign_vars(array(
@@ -677,7 +677,7 @@ class ucp_groups
 
 							foreach ($avatar_drivers as $current_driver)
 							{
-								$driver = $phpbb_avatar_manager->get_driver($current_driver);
+								$driver = $engine_avatar_manager->get_driver($current_driver);
 
 								$avatars_enabled = true;
 								$template->set_filenames(array(
@@ -686,7 +686,7 @@ class ucp_groups
 
 								if ($driver->prepare_form($request, $template, $user, $avatar_data, $avatar_error))
 								{
-									$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
+									$driver_name = $engine_avatar_manager->prepare_driver_name($current_driver);
 									$driver_upper = strtoupper($driver_name);
 									$template->assign_block_vars('avatar_drivers', array(
 										'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
@@ -700,10 +700,10 @@ class ucp_groups
 							}
 						}
 
-						if (isset($phpbb_avatar_manager) && !$update)
+						if (isset($engine_avatar_manager) && !$update)
 						{
 							// Merge any avatars errors into the primary error array
-							$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+							$error = array_merge($error, $engine_avatar_manager->localize_errors($user, $avatar_error));
 						}
 
 						$template->assign_vars(array(
@@ -853,7 +853,7 @@ class ucp_groups
 						}
 
 						/* @var $pagination \phpbb\pagination */
-						$pagination = $phpbb_container->get('pagination');
+						$pagination = $engine_container->get('pagination');
 						$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
 						$start = $pagination->validate_start($start, $config['topics_per_page'], $total_members);
 						$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
@@ -864,7 +864,7 @@ class ucp_groups
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;g=$group_id",
-							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=usernames'),
+							'U_FIND_USERNAME'	=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=usernames'),
 						));
 
 					break;

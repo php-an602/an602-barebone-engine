@@ -26,8 +26,8 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $cache, $user, $auth, $template, $request, $phpbb_log;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher, $phpbb_filesystem;
+		global $config, $db, $cache, $user, $auth, $template, $request, $engine_log;
+		global $engine_root_path, $engine_admin_path, $phpEx, $engine_container, $engine_dispatcher, $engine_filesystem;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -46,9 +46,9 @@ class acp_main
 
 			$template->assign_vars(array(
 				'S_RESTORE_PERMISSIONS'		=> true,
-				'U_RESTORE_PERMISSIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm'),
+				'U_RESTORE_PERMISSIONS'		=> append_sid("{$engine_root_path}ucp.$phpEx", 'mode=restore_perm'),
 				'PERM_FROM'					=> $perm_from,
-				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERRED_EXPLAIN'], $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
+				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERRED_EXPLAIN'], $perm_from, append_sid("{$engine_root_path}ucp.$phpEx", 'mode=restore_perm')),
 			));
 
 			return;
@@ -61,7 +61,7 @@ class acp_main
 			if ($action === 'admlogout')
 			{
 				$user->unset_admin();
-				redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+				redirect(append_sid("{$engine_root_path}index.$phpEx"));
 			}
 
 			if (!confirm_box(true))
@@ -125,7 +125,7 @@ class acp_main
 
 						$config->set('record_online_users', 1, false);
 						$config->set('record_online_date', time(), false);
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_ONLINE');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_ONLINE');
 
 						if ($request->is_ajax())
 						{
@@ -177,11 +177,11 @@ class acp_main
 
 						if (!function_exists('update_last_username'))
 						{
-							include($phpbb_root_path . "includes/functions_user.$phpEx");
+							include($engine_root_path . "includes/functions_user.$phpEx");
 						}
 						update_last_username();
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_STATS');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_STATS');
 
 						if ($request->is_ajax())
 						{
@@ -219,7 +219,7 @@ class acp_main
 						// Still no maximum post id? Then we are finished
 						if (!$max_post_id)
 						{
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
+							$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
 							break;
 						}
 
@@ -249,7 +249,7 @@ class acp_main
 							$start += $step;
 						}
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
 
 						if ($request->is_ajax())
 						{
@@ -265,7 +265,7 @@ class acp_main
 						}
 
 						$config->set('board_startdate', time() - 1);
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_DATE');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_DATE');
 
 						if ($request->is_ajax())
 						{
@@ -344,7 +344,7 @@ class acp_main
 							}
 						}
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POST_MARKING');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POST_MARKING');
 
 						if ($request->is_ajax())
 						{
@@ -359,13 +359,13 @@ class acp_main
 						// Remove old renderers from the text_formatter service. Since this
 						// operation is performed after the cache is purged, there is not "current"
 						// renderer and in effect all renderers will be purged
-						$phpbb_container->get('text_formatter.cache')->tidy();
+						$engine_container->get('text_formatter.cache')->tidy();
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();
 						phpbb_cache_moderators($db, $cache, $auth);
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_CACHE');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_CACHE');
 
 						if ($request->is_ajax())
 						{
@@ -416,7 +416,7 @@ class acp_main
 						$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
 						$db->sql_query($sql);
 
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_SESSIONS');
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_SESSIONS');
 
 						if ($request->is_ajax())
 						{
@@ -440,7 +440,7 @@ class acp_main
 
 		if ($auth->acl_get('a_board'))
 		{
-			$version_helper = $phpbb_container->get('version_helper');
+			$version_helper = $engine_container->get('version_helper');
 			try
 			{
 				$recheck = $request->variable('versioncheck_force', false);
@@ -484,7 +484,7 @@ class acp_main
 		* @event core.acp_main_notice
 		* @since 3.1.0-RC3
 		*/
-		$phpbb_dispatcher->dispatch('core.acp_main_notice');
+		$engine_dispatcher->dispatch('core.acp_main_notice');
 
 		// Get forum statistics
 		$total_posts = $config['num_posts'];
@@ -505,13 +505,13 @@ class acp_main
 
 		$avatar_dir_size = 0;
 
-		if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
+		if ($avatar_dir = @opendir($engine_root_path . $config['avatar_path']))
 		{
 			while (($file = readdir($avatar_dir)) !== false)
 			{
 				if ($file[0] != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
 				{
-					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
+					$avatar_dir_size += filesize($engine_root_path . $config['avatar_path'] . '/' . $file);
 				}
 			}
 			closedir($avatar_dir);
@@ -574,11 +574,11 @@ class acp_main
 			'BOARD_VERSION'		=> $config['version'],
 
 			'U_ACTION'			=> $this->u_action,
-			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
-			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
-			'U_VERSIONCHECK'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=update&amp;mode=version_check'),
-			'U_VERSIONCHECK_FORCE'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'versioncheck_force=1'),
-			'U_ATTACH_ORPHAN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=acp_attachments&mode=orphan'),
+			'U_ADMIN_LOG'		=> append_sid("{$engine_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
+			'U_INACTIVE_USERS'	=> append_sid("{$engine_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
+			'U_VERSIONCHECK'	=> append_sid("{$engine_admin_path}index.$phpEx", 'i=update&amp;mode=version_check'),
+			'U_VERSIONCHECK_FORCE'	=> append_sid("{$engine_admin_path}index.$phpEx", 'versioncheck_force=1'),
+			'U_ATTACH_ORPHAN'	=> append_sid("{$engine_admin_path}index.$phpEx", 'i=acp_attachments&mode=orphan'),
 
 			'S_VERSIONCHECK'	=> ($auth->acl_get('a_board')) ? true : false,
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
@@ -628,12 +628,12 @@ class acp_main
 
 					'REMINDED_EXPLAIN'	=> $user->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $user->format_date($row['user_reminded_time'])),
 
-					'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview')),
+					'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$engine_admin_path}index.$phpEx", 'i=users&amp;mode=overview')),
 					'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 					'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 
-					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
-					'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
+					'U_USER_ADMIN'	=> append_sid("{$engine_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+					'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$engine_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
 				));
 			}
 
@@ -650,7 +650,7 @@ class acp_main
 		}
 
 		// Warn if install is still present
-		if (!defined('IN_INSTALL') && !$phpbb_container->getParameter('allow_install_dir') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
+		if (!defined('IN_INSTALL') && !$engine_container->getParameter('allow_install_dir') && file_exists($engine_root_path . 'install') && !is_file($engine_root_path . 'install'))
 		{
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
@@ -660,13 +660,13 @@ class acp_main
 		{
 			$error = false;
 			$search_type = $config['search_type'];
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+			$search = new $search_type($error, $engine_root_path, $phpEx, $auth, $config, $db, $user, $engine_dispatcher);
 
 			if (!$search->index_created())
 			{
 				$template->assign_vars(array(
 					'S_SEARCH_INDEX_MISSING'	=> true,
-					'L_NO_SEARCH_INDEX'			=> $user->lang('NO_SEARCH_INDEX', $search->get_name(), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=acp_search&amp;mode=index') . '">', '</a>'),
+					'L_NO_SEARCH_INDEX'			=> $user->lang('NO_SEARCH_INDEX', $search->get_name(), '<a href="' . append_sid("{$engine_admin_path}index.$phpEx", 'i=acp_search&amp;mode=index') . '">', '</a>'),
 				));
 			}
 		}
@@ -674,10 +674,10 @@ class acp_main
 		if (!defined('PHPBB_DISABLE_CONFIG_CHECK'))
 		{
 			// World-Writable? (000x)
-			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
+			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($engine_root_path . 'config.' . $phpEx) & 0x0002));
 		}
 
-		$this->php_ini			= $phpbb_container->get('php_ini');
+		$this->php_ini			= $engine_container->get('php_ini');
 		$func_overload			= $this->php_ini->getNumeric('mbstring.func_overload');
 		$encoding_translation	= $this->php_ini->getString('mbstring.encoding_translation');
 		$http_input				= $this->php_ini->getString('mbstring.http_input');

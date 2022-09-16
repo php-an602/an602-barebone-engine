@@ -25,23 +25,23 @@ class acp_permissions
 	var $permission_dropdown;
 
 	/**
-	 * @var $phpbb_permissions \phpbb\permissions
+	 * @var $engine_permissions \phpbb\permissions
 	 */
 	protected $permissions;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_container, $request;
-		global $config, $phpbb_root_path, $phpEx;
+		global $db, $user, $auth, $template, $engine_container, $request;
+		global $config, $engine_root_path, $phpEx;
 
 		if (!function_exists('user_get_id_name'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($engine_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		if (!class_exists('auth_admin'))
 		{
-			include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			include($engine_root_path . 'includes/acp/auth.' . $phpEx);
 		}
 
 		$auth_admin = new auth_admin();
@@ -51,7 +51,7 @@ class acp_permissions
 
 		$this->tpl_name = 'acp_permissions';
 
-		$this->permissions = $phpbb_container->get('acl.permissions');
+		$this->permissions = $engine_container->get('acl.permissions');
 
 		// Trace has other vars
 		if ($mode == 'trace')
@@ -402,7 +402,7 @@ class acp_permissions
 
 					$template->assign_vars(array(
 						'S_SELECT_USER'			=> true,
-						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username&amp;select_single=true'),
+						'U_FIND_USERNAME'		=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username&amp;select_single=true'),
 					));
 
 				break;
@@ -464,7 +464,7 @@ class acp_permissions
 						'S_DEFINED_USER_OPTIONS'	=> $items['user_ids_options'],
 						'S_DEFINED_GROUP_OPTIONS'	=> $items['group_ids_options'],
 						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids'], false),	// Show all groups
-						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username&amp;select_single=true'),
+						'U_FIND_USERNAME'			=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username&amp;select_single=true'),
 					));
 
 				break;
@@ -922,7 +922,7 @@ class acp_permissions
 	*/
 	function log_action($mode, $action, $permission_type, $ug_type, $ug_id, $forum_id)
 	{
-		global $db, $user, $phpbb_log, $phpbb_container;
+		global $db, $user, $engine_log, $engine_container;
 
 		if (!is_array($ug_id))
 		{
@@ -940,7 +940,7 @@ class acp_permissions
 		$result = $db->sql_query($sql);
 
 		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_helper = $engine_container->get('group_helper');
 
 		$l_ug_list = '';
 		while ($row = $db->sql_fetchrow($result))
@@ -954,7 +954,7 @@ class acp_permissions
 
 		if ($forum_id[0] == 0)
 		{
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, array($l_ug_list));
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, array($l_ug_list));
 		}
 		else
 		{
@@ -971,7 +971,7 @@ class acp_permissions
 			}
 			$db->sql_freeresult($result);
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, array($l_forum_list, $l_ug_list));
+			$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), false, array($l_forum_list, $l_ug_list));
 		}
 	}
 
@@ -980,7 +980,7 @@ class acp_permissions
 	*/
 	function permission_trace($user_id, $forum_id, $permission)
 	{
-		global $db, $template, $user, $auth, $request, $phpbb_container;
+		global $db, $template, $user, $auth, $request, $engine_container;
 
 		if ($user_id != $user->data['user_id'])
 		{
@@ -997,7 +997,7 @@ class acp_permissions
 		}
 
 		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_helper = $engine_container->get('group_helper');
 
 		$forum_name = false;
 
@@ -1253,10 +1253,10 @@ class acp_permissions
 	*/
 	function retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type)
 	{
-		global $db, $phpbb_container;
+		global $db, $engine_container;
 
 		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_helper = $engine_container->get('group_helper');
 
 		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((count($forum_id)) ? 'AND ' . $db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
 

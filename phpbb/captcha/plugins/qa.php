@@ -134,9 +134,9 @@ class qa
 	*/
 	public function is_installed()
 	{
-		global $phpbb_container;
+		global $engine_container;
 
-		$db_tool = $phpbb_container->get('dbal.tools');
+		$db_tool = $engine_container->get('dbal.tools');
 
 		return $db_tool->sql_table_exists($this->table_captcha_questions);
 	}
@@ -219,7 +219,7 @@ class qa
 	*/
 	function get_template()
 	{
-		global $phpbb_log, $template, $user;
+		global $engine_log, $template, $user;
 
 		if ($this->is_solved())
 		{
@@ -227,8 +227,8 @@ class qa
 		}
 		else if (empty($this->question_text) || !count($this->question_ids))
 		{
-			/** @var \phpbb\log\log_interface $phpbb_log */
-			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
+			/** @var \phpbb\log\log_interface $engine_log */
+			$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
 			return false;
 		}
 		else
@@ -333,9 +333,9 @@ class qa
 	*/
 	function install()
 	{
-		global $phpbb_container;
+		global $engine_container;
 
-		$db_tool = $phpbb_container->get('dbal.tools');
+		$db_tool = $engine_container->get('dbal.tools');
 		$schemas = array(
 				$this->table_captcha_questions		=> array (
 					'COLUMNS' => array(
@@ -390,14 +390,14 @@ class qa
 	*/
 	function validate()
 	{
-		global $phpbb_log, $user;
+		global $engine_log, $user;
 
 		$error = '';
 
 		if (!count($this->question_ids))
 		{
-			/** @var \phpbb\log\log_interface $phpbb_log */
-			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
+			/** @var \phpbb\log\log_interface $engine_log */
+			$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
 			return $user->lang('CONFIRM_QUESTION_MISSING');
 		}
 
@@ -639,7 +639,7 @@ class qa
 	*/
 	function acp_page($id, $module)
 	{
-		global $config, $request, $phpbb_log, $template, $user;
+		global $config, $request, $engine_log, $template, $user;
 
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
@@ -761,7 +761,7 @@ class qa
 						$this->acp_add_question($question_input);
 					}
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($list_url));
 				}
 			}

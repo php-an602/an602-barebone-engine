@@ -26,7 +26,7 @@ class acp_update
 	function main($id, $mode)
 	{
 		global $config, $user, $template, $request;
-		global $phpbb_root_path, $phpEx, $phpbb_container;
+		global $engine_root_path, $phpEx, $engine_container;
 
 		$user->add_lang('install');
 
@@ -34,7 +34,7 @@ class acp_update
 		$this->page_title = 'ACP_VERSION_CHECK';
 
 		/* @var $version_helper \phpbb\version_helper */
-		$version_helper = $phpbb_container->get('version_helper');
+		$version_helper = $engine_container->get('version_helper');
 		try
 		{
 			$recheck = $request->variable('versioncheck_force', false);
@@ -57,7 +57,7 @@ class acp_update
 			$template->assign_block_vars('updates_available', $updates_available);
 		}
 
-		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
+		$update_link = $engine_root_path . 'install/app.' . $phpEx;
 
 		$template_ary = [
 			'S_UP_TO_DATE'				=> empty($updates_available),
@@ -76,7 +76,7 @@ class acp_update
 		// Incomplete update?
 		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
 		{
-			$database_update_link = $phpbb_root_path . 'install/app.php/update';
+			$database_update_link = $engine_root_path . 'install/app.php/update';
 
 			$template->assign_vars(array(
 				'S_UPDATE_INCOMPLETE'		=> true,

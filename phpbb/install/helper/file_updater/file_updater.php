@@ -30,18 +30,18 @@ class file_updater implements file_updater_interface
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Constructor
 	 *
 	 * @param filesystem	$filesystem
-	 * @param string		$phpbb_root_path
+	 * @param string		$engine_root_path
 	 */
-	public function __construct(filesystem $filesystem, $phpbb_root_path)
+	public function __construct(filesystem $filesystem, $engine_root_path)
 	{
 		$this->filesystem		= $filesystem;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 	}
 
 	/**

@@ -48,7 +48,7 @@ class file_check extends task_base
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Construct
@@ -57,15 +57,15 @@ class file_check extends task_base
 	 * @param config				$config
 	 * @param iohandler_interface	$iohandler
 	 * @param update_helper			$update_helper
-	 * @param string				$phpbb_root_path
+	 * @param string				$engine_root_path
 	 */
-	public function __construct(filesystem $filesystem, config $config, iohandler_interface $iohandler, update_helper $update_helper, $phpbb_root_path)
+	public function __construct(filesystem $filesystem, config $config, iohandler_interface $iohandler, update_helper $update_helper, $engine_root_path)
 	{
 		$this->filesystem		= $filesystem;
 		$this->installer_config	= $config;
 		$this->iohandler		= $iohandler;
 		$this->update_helper	= $update_helper;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 
 		parent::__construct(false);
 	}

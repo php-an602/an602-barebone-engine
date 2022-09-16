@@ -36,7 +36,7 @@ class mcp_logs
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $request;
-		global $config, $phpbb_container, $phpbb_log;
+		global $config, $engine_container, $engine_log;
 
 		$user->add_lang('acp/common');
 		$this->p_master->add_mod_info('acp');
@@ -67,7 +67,7 @@ class mcp_logs
 		$this->page_title = 'MCP_LOGS';
 
 		/* @var $pagination \phpbb\pagination */
-		$pagination = $phpbb_container->get('pagination');
+		$pagination = $engine_container->get('pagination');
 
 		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
 		$forum_list[] = 0;
@@ -123,7 +123,7 @@ class mcp_logs
 						'log_id'	=> array('IN' => $marked),
 					);
 
-					$phpbb_log->delete('mod', $conditions);
+					$engine_log->delete('mod', $conditions);
 				}
 				else if ($deleteall)
 				{
@@ -144,7 +144,7 @@ class mcp_logs
 						$conditions['topic_id'] = $topic_id;
 					}
 
-					$phpbb_log->delete('mod', $conditions);
+					$engine_log->delete('mod', $conditions);
 				}
 			}
 			else

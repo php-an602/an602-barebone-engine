@@ -149,30 +149,30 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
+		global $user, $engine_dispatcher, $engine_extension_manager, $engine_container, $engine_filesystem;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
 			$template = new \phpbb\template\twig\twig(
-				$phpbb_container->get('path_helper'),
-				$phpbb_container->get('config'),
+				$engine_container->get('path_helper'),
+				$engine_container->get('config'),
 				new \phpbb\template\context(),
 				new \phpbb\template\twig\environment(
-					$phpbb_container->get('config'),
-					$phpbb_container->get('filesystem'),
-					$phpbb_container->get('path_helper'),
-					$phpbb_container->getParameter('core.cache_dir'),
-					$phpbb_container->get('ext.manager'),
+					$engine_container->get('config'),
+					$engine_container->get('filesystem'),
+					$engine_container->get('path_helper'),
+					$engine_container->getParameter('core.cache_dir'),
+					$engine_container->get('ext.manager'),
 					new \phpbb\template\twig\loader(
-						$phpbb_filesystem
+						$engine_filesystem
 					)
 				),
-				$phpbb_container->getParameter('core.cache_dir'),
-				$phpbb_container->get('user'),
-				$phpbb_container->get('template.twig.extensions.collection'),
-				$phpbb_extension_manager
+				$engine_container->getParameter('core.cache_dir'),
+				$engine_container->get('user'),
+				$engine_container->get('template.twig.extensions.collection'),
+				$engine_extension_manager
 			);
 
 			$template->set_style();
@@ -455,7 +455,7 @@ class bbcode
 		* @since 3.1.3-RC1
 		*/
 		$vars = array('bbcode_cache', 'bbcode_bitfield', 'bbcode_uid');
-		extract($phpbb_dispatcher->trigger_event('core.bbcode_cache_init_end', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.bbcode_cache_init_end', compact($vars)));
 
 		$this->bbcode_cache = $bbcode_cache;
 		$this->bbcode_bitfield = $bbcode_bitfield;
@@ -684,7 +684,7 @@ class bbcode
 	*/
 	function bbcode_second_pass_by_extension()
 	{
-		global $phpbb_dispatcher;
+		global $engine_dispatcher;
 
 		$return = false;
 		$params_array = func_get_args();
@@ -700,7 +700,7 @@ class bbcode
 		* @since 3.1.5-RC1
 		*/
 		$vars = array('params_array', 'return');
-		extract($phpbb_dispatcher->trigger_event('core.bbcode_second_pass_by_extension', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.bbcode_second_pass_by_extension', compact($vars)));
 
 		return $return;
 	}

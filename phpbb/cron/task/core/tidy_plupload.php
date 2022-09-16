@@ -34,7 +34,7 @@ class tidy_plupload extends \phpbb\cron\task\base
 	* phpBB root path
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	* Config object
@@ -57,14 +57,14 @@ class tidy_plupload extends \phpbb\cron\task\base
 	/**
 	* Constructor.
 	*
-	* @param string $phpbb_root_path The root path
+	* @param string $engine_root_path The root path
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\log\log_interface $log Log
 	* @param \phpbb\user $user User object
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\user $user)
+	public function __construct($engine_root_path, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\user $user)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->config = $config;
 		$this->log = $log;
 		$this->user = $user;

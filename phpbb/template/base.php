@@ -177,13 +177,13 @@ abstract class base implements template
 	*/
 	protected function call_hook($handle, $method)
 	{
-		global $phpbb_hook;
+		global $engine_hook;
 
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array('template', $method), $handle, $this))
+		if (!empty($engine_hook) && $engine_hook->call_hook(array('template', $method), $handle, $this))
 		{
-			if ($phpbb_hook->hook_return(array('template', $method)))
+			if ($engine_hook->hook_return(array('template', $method)))
 			{
-				$result = $phpbb_hook->hook_return_result(array('template', $method));
+				$result = $engine_hook->hook_return_result(array('template', $method));
 				return array($result);
 			}
 		}

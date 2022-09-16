@@ -52,7 +52,7 @@ class activate extends command
 	 *
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * PHP extension.
@@ -71,10 +71,10 @@ class activate extends command
 	 * @param log_interface    $log
 	 * @param manager          $notifications
 	 * @param user_loader      $user_loader
-	 * @param string           $phpbb_root_path
+	 * @param string           $engine_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, config $config, language $language, log_interface $log, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, config $config, language $language, log_interface $log, manager $notifications, user_loader $user_loader, $engine_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -82,7 +82,7 @@ class activate extends command
 		$this->log = $log;
 		$this->notifications = $notifications;
 		$this->user_loader = $user_loader;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 
 		$this->language->add_lang('acp/users');

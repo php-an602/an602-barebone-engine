@@ -49,7 +49,7 @@ class remote extends \phpbb\avatar\driver\driver
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
-		global $phpbb_dispatcher;
+		global $engine_dispatcher;
 
 		$url = $request->variable('avatar_remote_url', '');
 		$width = $request->variable('avatar_remote_width', 0);
@@ -97,7 +97,7 @@ class remote extends \phpbb\avatar\driver\driver
 		 * @since 3.2.9-RC1
 		 */
 		$vars = array('url', 'width', 'height', 'error');
-		extract($phpbb_dispatcher->trigger_event('core.ucp_profile_avatar_upload_validation', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.ucp_profile_avatar_upload_validation', compact($vars)));
 
 		if (!empty($error))
 		{

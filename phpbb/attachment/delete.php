@@ -39,7 +39,7 @@ class delete
 	protected $resync;
 
 	/** @var string phpBB root path */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var array Attachement IDs */
 	protected $ids;
@@ -73,16 +73,16 @@ class delete
 	 * @param dispatcher $dispatcher
 	 * @param filesystem $filesystem
 	 * @param resync $resync
-	 * @param string $phpbb_root_path
+	 * @param string $engine_root_path
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, filesystem $filesystem, resync $resync, $phpbb_root_path)
+	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, filesystem $filesystem, resync $resync, $engine_root_path)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
 		$this->filesystem = $filesystem;
 		$this->resync = $resync;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 	}
 
 	/**

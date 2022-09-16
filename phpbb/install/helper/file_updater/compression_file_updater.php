@@ -33,7 +33,7 @@ class compression_file_updater implements file_updater_interface
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * @var string
@@ -44,14 +44,14 @@ class compression_file_updater implements file_updater_interface
 	 * Constructor
 	 *
 	 * @param update_helper	$update_helper
-	 * @param string		$phpbb_root_path
+	 * @param string		$engine_root_path
 	 * @param string		$php_ext
 	 */
-	public function __construct(update_helper $update_helper, $phpbb_root_path, $php_ext)
+	public function __construct(update_helper $update_helper, $engine_root_path, $php_ext)
 	{
 		$this->compress			= null;
 		$this->update_helper	= $update_helper;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->php_ext			= $php_ext;
 	}
 

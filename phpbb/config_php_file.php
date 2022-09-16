@@ -16,7 +16,7 @@ namespace phpbb;
 class config_php_file
 {
 	/** @var string phpBB Root Path */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string php file extension  */
 	protected $php_ext;
@@ -36,7 +36,7 @@ class config_php_file
 	protected $config_data = array();
 
 	/**
-	* The path to the config file. (Default: $phpbb_root_path . 'config.' . $php_ext)
+	* The path to the config file. (Default: $engine_root_path . 'config.' . $php_ext)
 	*
 	* @var string
 	*/
@@ -47,12 +47,12 @@ class config_php_file
 	/**
 	* Constructor
 	*
-	* @param string $phpbb_root_path phpBB Root Path
+	* @param string $engine_root_path phpBB Root Path
 	* @param string $php_ext php file extension
 	*/
-	function __construct($phpbb_root_path, $php_ext)
+	function __construct($engine_root_path, $php_ext)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->config_file = $this->phpbb_root_path . 'config.' . $this->php_ext;
 	}

@@ -58,10 +58,10 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 */
 function phpbb_hash($password)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	/* @var $passwords_manager \phpbb\passwords\manager */
-	$passwords_manager = $phpbb_container->get('passwords.manager');
+	$passwords_manager = $engine_container->get('passwords.manager');
 	return $passwords_manager->hash($password);
 }
 
@@ -77,10 +77,10 @@ function phpbb_hash($password)
 */
 function phpbb_check_hash($password, $hash)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	/* @var $passwords_manager \phpbb\passwords\manager */
-	$passwords_manager = $phpbb_container->get('passwords.manager');
+	$passwords_manager = $engine_container->get('passwords.manager');
 	return $passwords_manager->check($password, $hash);
 }
 
@@ -96,36 +96,36 @@ function phpbb_check_hash($password, $hash)
 */
 function phpbb_clean_path($path)
 {
-	global $phpbb_path_helper, $phpbb_container;
+	global $engine_path_helper, $engine_container;
 
-	if (!$phpbb_path_helper && $phpbb_container)
+	if (!$engine_path_helper && $engine_container)
 	{
-		/* @var $phpbb_path_helper \phpbb\path_helper */
-		$phpbb_path_helper = $phpbb_container->get('path_helper');
+		/* @var $engine_path_helper \phpbb\path_helper */
+		$engine_path_helper = $engine_container->get('path_helper');
 	}
-	else if (!$phpbb_path_helper)
+	else if (!$engine_path_helper)
 	{
-		global $phpbb_root_path, $phpEx;
+		global $engine_root_path, $phpEx;
 
 		// The container is not yet loaded, use a new instance
 		if (!class_exists('\phpbb\path_helper'))
 		{
-			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
+			require($engine_root_path . 'phpbb/path_helper.' . $phpEx);
 		}
 
 		$request = new phpbb\request\request();
-		$phpbb_path_helper = new phpbb\path_helper(
+		$engine_path_helper = new phpbb\path_helper(
 			new phpbb\symfony_request(
 				$request
 			),
 			new phpbb\filesystem\filesystem(),
 			$request,
-			$phpbb_root_path,
+			$engine_root_path,
 			$phpEx
 		);
 	}
 
-	return $phpbb_path_helper->clean_path($path);
+	return $engine_path_helper->clean_path($path);
 }
 
 /**
@@ -188,10 +188,10 @@ function update_foes($group_id = false, $user_id = false)
 */
 function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
-	global $phpbb_root_path, $phpEx;
+	global $engine_root_path, $phpEx;
 	if (!function_exists('phpbb_get_user_rank'))
 	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		include($engine_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
 	$rank_data = phpbb_get_user_rank(array('user_rank' => $user_rank), $user_posts);
@@ -207,11 +207,11 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
  */
 function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	// Get file downloader and assign $errstr and $errno
 	/* @var $file_downloader \phpbb\file_downloader */
-	$file_downloader = $phpbb_container->get('file_downloader');
+	$file_downloader = $engine_container->get('file_downloader');
 
 	$file_data = $file_downloader->get($host, $directory, $filename, $port, $timeout);
 	$errstr = $file_downloader->get_error_string();
@@ -236,7 +236,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
  */
 function add_log()
 {
-	global $phpbb_log, $user;
+	global $engine_log, $user;
 
 	$args = func_get_args();
 	$mode = array_shift($args);
@@ -263,7 +263,7 @@ function add_log()
 	$user_id = (empty($user->data)) ? ANONYMOUS : $user->data['user_id'];
 	$user_ip = (empty($user->ip)) ? '' : $user->ip;
 
-	return $phpbb_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
+	return $engine_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
 }
 
 /**
@@ -426,11 +426,11 @@ function get_tables($db)
  */
 function phpbb_chmod($filename, $perms = CHMOD_READ)
 {
-	global $phpbb_filesystem;
+	global $engine_filesystem;
 
 	try
 	{
-		$phpbb_filesystem->phpbb_chmod($filename, $perms);
+		$engine_filesystem->phpbb_chmod($filename, $perms);
 	}
 	catch (\phpbb\filesystem\exception\filesystem_exception $e)
 	{
@@ -453,9 +453,9 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
  */
 function phpbb_is_writable($file)
 {
-	global $phpbb_filesystem;
+	global $engine_filesystem;
 
-	return $phpbb_filesystem->is_writable($file);
+	return $engine_filesystem->is_writable($file);
 }
 
 /**
@@ -468,9 +468,9 @@ function phpbb_is_writable($file)
  */
 function phpbb_is_absolute($path)
 {
-	global $phpbb_filesystem;
+	global $engine_filesystem;
 
-	return $phpbb_filesystem->is_absolute_path($path);
+	return $engine_filesystem->is_absolute_path($path);
 }
 
 /**
@@ -480,9 +480,9 @@ function phpbb_is_absolute($path)
  */
 function phpbb_realpath($path)
 {
-	global $phpbb_filesystem;
+	global $engine_filesystem;
 
-	return $phpbb_filesystem->realpath($path);
+	return $engine_filesystem->realpath($path);
 }
 
 /**
@@ -497,10 +497,10 @@ function phpbb_realpath($path)
  */
 function phpbb_get_plural_form($rule, $number)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	/** @var \phpbb\language\language $language */
-	$language = $phpbb_container->get('language');
+	$language = $engine_container->get('language');
 	return $language->get_plural_form($number, $rule);
 }
 
@@ -536,10 +536,10 @@ function set_var(&$result, $var, $type, $multibyte = false)
  */
 function delete_attachments($mode, $ids, $resync = true)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$attachment_manager = $engine_container->get('attachment.manager');
 	$num_deleted = $attachment_manager->delete($mode, $ids, $resync);
 
 	unset($attachment_manager);
@@ -554,10 +554,10 @@ function delete_attachments($mode, $ids, $resync = true)
  */
 function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$attachment_manager = $engine_container->get('attachment.manager');
 	$unlink = $attachment_manager->unlink($filename, $mode, $entry_removed);
 	unset($attachment_manager);
 
@@ -571,9 +571,9 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
  */
 function display_reasons($reason_id = 0)
 {
-	global $phpbb_container;
+	global $engine_container;
 
-	$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
+	$engine_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 }
 
 /**
@@ -593,10 +593,10 @@ function display_reasons($reason_id = 0)
  */
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
 {
-	global $phpbb_container;
+	global $engine_container;
 
 	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$attachment_manager = $engine_container->get('attachment.manager');
 	$file = $attachment_manager->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
 	unset($attachment_manager);
 
@@ -678,14 +678,14 @@ function phpbb_email_hash($email)
 /**
  * Load the autoloaders added by the extensions.
  *
- * @param string $phpbb_root_path Path to the phpbb root directory.
+ * @param string $engine_root_path Path to the phpbb root directory.
  */
-function phpbb_load_extensions_autoloaders($phpbb_root_path)
+function phpbb_load_extensions_autoloaders($engine_root_path)
 {
 	$iterator = new \RecursiveIteratorIterator(
 		new \phpbb\recursive_dot_prefix_filter_iterator(
 			new \RecursiveDirectoryIterator(
-				$phpbb_root_path . 'ext/',
+				$engine_root_path . 'ext/',
 				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
 			)
 		),

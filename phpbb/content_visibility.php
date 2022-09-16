@@ -47,13 +47,13 @@ class content_visibility
 	* Event dispatcher object
 	* @var \phpbb\event\dispatcher_interface
 	*/
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/**
 	* phpBB root path
 	* @var string
 	*/
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	* PHP Extension
@@ -66,24 +66,24 @@ class content_visibility
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
 	* @param	\phpbb\config\config	$config	Config object
-	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	* @param	\phpbb\event\dispatcher_interface	$engine_dispatcher	Event dispatcher object
 	* @param	\phpbb\db\driver\driver_interface	$db		Database object
 	* @param	\phpbb\user		$user			User object
-	* @param	string		$phpbb_root_path	Root path
+	* @param	string		$engine_root_path	Root path
 	* @param	string		$php_ext			PHP Extension
 	* @param	string		$forums_table		Forums table name
 	* @param	string		$posts_table		Posts table name
 	* @param	string		$topics_table		Topics table name
 	* @param	string		$users_table		Users table name
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $engine_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $engine_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 		$this->db = $db;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->forums_table = $forums_table;
 		$this->posts_table = $posts_table;

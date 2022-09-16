@@ -18,7 +18,7 @@ namespace phpbb\cron\task\core;
 */
 class queue extends \phpbb\cron\task\base
 {
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 	protected $php_ext;
 	protected $cache_dir;
 	protected $config;
@@ -26,14 +26,14 @@ class queue extends \phpbb\cron\task\base
 	/**
 	 * Constructor.
 	 *
-	 * @param string $phpbb_root_path The root path
+	 * @param string $engine_root_path The root path
 	 * @param string $php_ext PHP file extension
 	 * @param \phpbb\config\config $config The config
 	 * @param string $cache_dir phpBB cache directory
 	 */
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, $cache_dir)
+	public function __construct($engine_root_path, $php_ext, \phpbb\config\config $config, $cache_dir)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->cache_dir = $cache_dir;

@@ -24,7 +24,7 @@ namespace phpbb\event;
 * Example:
 *
 * $vars = array('page_title');
-* extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
+* extract($engine_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
 interface dispatcher_interface extends \Symfony\Component\EventDispatcher\EventDispatcherInterface

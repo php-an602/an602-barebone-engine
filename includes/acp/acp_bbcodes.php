@@ -25,8 +25,8 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template, $cache, $request, $phpbb_dispatcher, $phpbb_container;
-		global $phpbb_log;
+		global $db, $user, $template, $cache, $request, $engine_dispatcher, $engine_container;
+		global $engine_log;
 
 		$user->add_lang('acp/posting');
 
@@ -123,7 +123,7 @@ class acp_bbcodes
 				* @since 3.1.0-a3
 				*/
 				$vars = array('action', 'tpl_ary', 'bbcode_id', 'bbcode_tokens');
-				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_edit_add', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_bbcodes_edit_add', compact($vars)));
 
 				$template->assign_vars($tpl_ary);
 
@@ -170,9 +170,9 @@ class acp_bbcodes
 					'bbcode_helpline',
 					'hidden_fields',
 				);
-				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
-				$acp_utils   = $phpbb_container->get('text_formatter.acp_utils');
+				$acp_utils   = $engine_container->get('text_formatter.acp_utils');
 				$bbcode_info = $acp_utils->analyse_bbcode($bbcode_match, $bbcode_tpl);
 				$warn_unsafe = ($bbcode_info['status'] === $acp_utils::BBCODE_STATUS_UNSAFE);
 
@@ -290,7 +290,7 @@ class acp_bbcodes
 
 						$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
 						$cache->destroy('sql', BBCODES_TABLE);
-						$phpbb_container->get('text_formatter.cache')->invalidate();
+						$engine_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_ADDED';
 						$log_action = 'LOG_BBCODE_ADD';
@@ -302,13 +302,13 @@ class acp_bbcodes
 							WHERE bbcode_id = ' . $bbcode_id;
 						$db->sql_query($sql);
 						$cache->destroy('sql', BBCODES_TABLE);
-						$phpbb_container->get('text_formatter.cache')->invalidate();
+						$engine_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_EDITED';
 						$log_action = 'LOG_BBCODE_EDIT';
 					}
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($data['bbcode_tag']));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($data['bbcode_tag']));
 
 					/**
 					* Event after a BBCode has been added or updated
@@ -324,7 +324,7 @@ class acp_bbcodes
 						'bbcode_id',
 						'sql_ary',
 					);
-					extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create_after', compact($vars)));
+					extract($engine_dispatcher->trigger_event('core.acp_bbcodes_modify_create_after', compact($vars)));
 
 					trigger_error($user->lang[$lang] . adm_back_link($this->u_action));
 				}
@@ -360,8 +360,8 @@ class acp_bbcodes
 
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
-						$phpbb_container->get('text_formatter.cache')->invalidate();
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BBCODE_DELETE', false, array($bbcode_tag));
+						$engine_container->get('text_formatter.cache')->invalidate();
+						$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BBCODE_DELETE', false, array($bbcode_tag));
 
 						/**
 						* Event after a BBCode has been deleted
@@ -377,7 +377,7 @@ class acp_bbcodes
 							'bbcode_id',
 							'bbcode_tag',
 						);
-						extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_delete_after', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.acp_bbcodes_delete_after', compact($vars)));
 
 						if ($request->is_ajax())
 						{
@@ -428,7 +428,7 @@ class acp_bbcodes
 		* @since 3.1.0-a3
 		*/
 		$vars = array('action', 'sql_ary', 'template_data', 'u_action');
-		extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
@@ -452,7 +452,7 @@ class acp_bbcodes
 			* @since 3.1.0-a3
 			*/
 			$vars = array('bbcodes_array', 'row', 'u_action');
-			extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));
+			extract($engine_dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));
 
 			$template->assign_block_vars('bbcodes', $bbcodes_array);
 

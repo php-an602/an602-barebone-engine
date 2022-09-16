@@ -57,7 +57,7 @@ class fulltext_sphinx
 	 * Relative path to board root
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * PHP Extension
@@ -99,7 +99,7 @@ class fulltext_sphinx
 	 * phpBB event dispatcher object
 	 * @var \phpbb\event\dispatcher_interface
 	 */
-	protected $phpbb_dispatcher;
+	protected $engine_dispatcher;
 
 	/**
 	 * User object
@@ -125,27 +125,27 @@ class fulltext_sphinx
 	 * Creates a new \phpbb\search\fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
-	 * @param string $phpbb_root_path Relative path to phpBB root
+	 * @param string $engine_root_path Relative path to phpBB root
 	 * @param string $phpEx PHP file extension
 	 * @param \phpbb\auth\auth $auth Auth object
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\db\driver\driver_interface $db Database object
 	 * @param \phpbb\user $user User object
-	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	 * @param \phpbb\event\dispatcher_interface	$engine_dispatcher	Event dispatcher object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
+	public function __construct(&$error, $engine_root_path, $phpEx, $auth, $config, $db, $user, $engine_dispatcher)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $phpEx;
 		$this->config = $config;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $engine_dispatcher;
 		$this->user = $user;
 		$this->db = $db;
 		$this->auth = $auth;
 
 		// Initialize \phpbb\db\tools\tools object
-		global $phpbb_container; // TODO inject into object
-		$this->db_tools = $phpbb_container->get('dbal.tools');
+		global $engine_container; // TODO inject into object
+		$this->db_tools = $engine_container->get('dbal.tools');
 
 		if (!$this->config['fulltext_sphinx_id'])
 		{
@@ -542,7 +542,7 @@ class fulltext_sphinx
 	*/
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
-		global $user, $phpbb_log;
+		global $user, $engine_log;
 
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !count($author_ary))
@@ -724,7 +724,7 @@ class fulltext_sphinx
 
 		if ($this->sphinx->GetLastError())
 		{
-			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_SPHINX_ERROR', false, array($this->sphinx->GetLastError()));
+			$engine_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_SPHINX_ERROR', false, array($this->sphinx->GetLastError()));
 			if ($this->auth->acl_get('a_'))
 			{
 				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED', $this->sphinx->GetLastError()));

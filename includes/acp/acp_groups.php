@@ -26,11 +26,11 @@ class acp_groups
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request, $phpbb_container, $phpbb_dispatcher;
+		global $engine_root_path, $engine_admin_path, $phpEx;
+		global $request, $engine_container, $engine_dispatcher;
 
 		/** @var \phpbb\language\language $language Language object */
-		$language = $phpbb_container->get('language');
+		$language = $engine_container->get('language');
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -47,7 +47,7 @@ class acp_groups
 
 		if (!function_exists('group_user_attributes'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($engine_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		// Check and set some common vars
@@ -61,7 +61,7 @@ class acp_groups
 		$update		= (isset($_POST['update'])) ? true : false;
 
 		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_helper = $engine_container->get('group_helper');
 
 		// Clear some vars
 		$group_row = array();
@@ -320,7 +320,7 @@ class acp_groups
 
 				if (!function_exists('display_forums'))
 				{
-					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+					include($engine_root_path . 'includes/functions_display.' . $phpEx);
 				}
 
 				if ($action == 'edit' && !$group_id)
@@ -343,12 +343,12 @@ class acp_groups
 				$avatar_data = null;
 				$avatar_error = array();
 
-				/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
-				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+				/** @var \phpbb\avatar\manager $engine_avatar_manager */
+				$engine_avatar_manager = $engine_container->get('avatar.manager');
 
 				if ($config['allow_avatar'])
 				{
-					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
+					$avatar_drivers = $engine_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the group_ prefix
 					$avatar_data = \phpbb\avatar\manager::clean_row($group_row, 'group');
@@ -363,7 +363,7 @@ class acp_groups
 					if (confirm_box(true))
 					{
 						$avatar_data['id'] = substr($avatar_data['id'], 1);
-						$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
+						$engine_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
 
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($user->lang[$message] . adm_back_link($this->u_action));
@@ -416,11 +416,11 @@ class acp_groups
 					if ($config['allow_avatar'])
 					{
 						// Handle avatar
-						$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
+						$driver_name = $engine_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
 
 						if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 						{
-							$driver = $phpbb_avatar_manager->get_driver($driver_name);
+							$driver = $engine_avatar_manager->get_driver($driver_name);
 							$result = $driver->process_form($request, $template, $user, $avatar_data, $avatar_error);
 
 							if ($result && empty($avatar_error))
@@ -431,7 +431,7 @@ class acp_groups
 						}
 						else
 						{
-							$driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']);
+							$driver = $engine_avatar_manager->get_driver($avatar_data['avatar_type']);
 							if ($driver)
 							{
 								$driver->delete($avatar_data);
@@ -445,7 +445,7 @@ class acp_groups
 						}
 
 						// Merge any avatar errors into the primary error array
-						$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+						$error = array_merge($error, $engine_avatar_manager->localize_errors($user, $avatar_error));
 					}
 
 					/*
@@ -493,7 +493,7 @@ class acp_groups
 						'submit_ary',
 						'validation_checks',
 					);
-					extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_request_data', compact($vars)));
+					extract($engine_dispatcher->trigger_event('core.acp_manage_group_request_data', compact($vars)));
 
 					if ($validation_error = validate_data($submit_ary, $validation_checks))
 					{
@@ -561,7 +561,7 @@ class acp_groups
 							'submit_ary',
 							'test_variables',
 						);
-						extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_initialise_data', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.acp_manage_group_initialise_data', compact($vars)));
 
 						foreach ($test_variables as $test => $type)
 						{
@@ -686,7 +686,7 @@ class acp_groups
 				if ($config['allow_avatar'])
 				{
 					$avatars_enabled = false;
-					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
+					$selected_driver = $engine_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
 
 					// Assign min and max values before generating avatar driver html
 					$template->assign_vars(array(
@@ -698,7 +698,7 @@ class acp_groups
 
 					foreach ($avatar_drivers as $current_driver)
 					{
-						$driver = $phpbb_avatar_manager->get_driver($current_driver);
+						$driver = $engine_avatar_manager->get_driver($current_driver);
 
 						$avatars_enabled = true;
 						$template->set_filenames(array(
@@ -707,7 +707,7 @@ class acp_groups
 
 						if ($driver->prepare_form($request, $template, $user, $avatar_data, $avatar_error))
 						{
-							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
+							$driver_name = $engine_avatar_manager->prepare_driver_name($current_driver);
 							$driver_upper = strtoupper($driver_name);
 							$template->assign_block_vars('avatar_drivers', array(
 								'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
@@ -723,10 +723,10 @@ class acp_groups
 
 				$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
 
-				if (isset($phpbb_avatar_manager) && !$update)
+				if (isset($engine_avatar_manager) && !$update)
 				{
 					// Merge any avatar errors into the primary error array
-					$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
+					$error = array_merge($error, $engine_avatar_manager->localize_errors($user, $avatar_error));
 				}
 
 				$back_link = $request->variable('back_link', '');
@@ -734,7 +734,7 @@ class acp_groups
 				switch ($back_link)
 				{
 					case 'acp_users_groups':
-						$u_back = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=groups&amp;u=' . $request->variable('u', 0));
+						$u_back = append_sid("{$engine_admin_path}index.$phpEx", 'i=users&amp;mode=groups&amp;u=' . $request->variable('u', 0));
 					break;
 
 					default:
@@ -771,7 +771,7 @@ class acp_groups
 
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
-					'AVATAR'				=> empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
+					'AVATAR'				=> empty($avatar) ? '<img src="' . $engine_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
 					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
 					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
@@ -823,7 +823,7 @@ class acp_groups
 					'rank_options',
 					'error',
 				);
-				extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_display_form', compact($vars)));
+				extract($engine_dispatcher->trigger_event('core.acp_manage_group_display_form', compact($vars)));
 
 				return;
 			break;
@@ -836,7 +836,7 @@ class acp_groups
 				}
 
 				/* @var $pagination \phpbb\pagination */
-				$pagination = $phpbb_container->get('pagination');
+				$pagination = $engine_container->get('pagination');
 				$this->page_title = 'GROUP_MEMBERS';
 
 				// Grab the leaders - always, on every page...
@@ -851,7 +851,7 @@ class acp_groups
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('leader', array(
-						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+						'U_USER_EDIT'		=> append_sid("{$engine_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'USERNAME_COLOUR'	=> $row['user_colour'],
@@ -892,7 +892,7 @@ class acp_groups
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
-					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
+					'U_FIND_USERNAME'	=> append_sid("{$engine_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
 					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=set_default_on_all&amp;g=$group_id",
 				));
 
@@ -919,7 +919,7 @@ class acp_groups
 					}
 
 					$template->assign_block_vars('member', array(
-						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+						'U_USER_EDIT'		=> append_sid("{$engine_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'USERNAME_COLOUR'	=> $row['user_colour'],
@@ -1010,7 +1010,7 @@ class acp_groups
 
 	public function manage_position()
 	{
-		global $config, $db, $template, $user, $request, $phpbb_container;
+		global $config, $db, $template, $user, $request, $engine_container;
 
 		$this->tpl_name = 'acp_groups_position';
 		$this->page_title = 'ACP_GROUPS_POSITION';
@@ -1022,7 +1022,7 @@ class acp_groups
 		$category_id = $request->variable('c', 0);
 
 		/** @var \phpbb\group\helper $group_helper */
-		$group_helper = $phpbb_container->get('group_helper');
+		$group_helper = $engine_container->get('group_helper');
 
 		if ($field && !in_array($field, array('legend', 'teampage')))
 		{
@@ -1032,7 +1032,7 @@ class acp_groups
 		else if ($field && in_array($field, array('legend', 'teampage')))
 		{
 			/* @var $group_position \phpbb\groupposition\groupposition_interface */
-			$group_position = $phpbb_container->get('groupposition.' . $field);
+			$group_position = $engine_container->get('groupposition.' . $field);
 		}
 
 		if ($field == 'teampage')

@@ -26,7 +26,7 @@ if (!defined('IN_ENGINE'))
 function view_folder($id, $mode, $folder_id, $folder)
 {
 	global $user, $template, $auth, $db, $cache, $request;
-	global $phpbb_root_path, $config, $phpEx;
+	global $engine_root_path, $config, $phpEx;
 
 	$submit_export = (isset($_POST['submit_export'])) ? true : false;
 
@@ -134,8 +134,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
-				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
-				$remove_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
+				$view_message_url = append_sid("{$engine_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
+				$remove_message_url = append_sid("{$engine_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
 
 				$row_indicator = '';
 				foreach ($color_rows as $var)
@@ -163,7 +163,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'SENT_TIME'			=> $user->format_date($row['message_time']),
 					'SUBJECT'			=> censor_text($row['message_subject']),
 					'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
-					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'folder=' . $row['folder_id']) : '',
+					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid("{$engine_root_path}ucp.$phpEx", 'folder=' . $row['folder_id']) : '',
 					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
@@ -178,7 +178,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
-					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
+					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$engine_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
 					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
 				);
 			}
@@ -227,7 +227,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 			{
 				$row = &$folder_info['rowset'][$message_id];
 
-				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				include_once($engine_root_path . 'includes/functions_posting.' . $phpEx);
 
 				$sql = 'SELECT p.message_text, p.bbcode_uid
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -401,7 +401,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 */
 function get_pm_from($folder_id, $folder, $user_id)
 {
-	global $user, $db, $template, $config, $auth, $phpbb_container, $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
+	global $user, $db, $template, $config, $auth, $engine_container, $engine_root_path, $phpEx, $request, $engine_dispatcher;
 
 	$start = $request->variable('start', 0);
 
@@ -411,7 +411,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$sort_dir	= $request->variable('sd', 'd');
 
 	/* @var $pagination \phpbb\pagination */
-	$pagination = $phpbb_container->get('pagination');
+	$pagination = $engine_container->get('pagination');
 
 	// PM ordering options
 	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
@@ -462,7 +462,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		$sql_limit_time = '';
 	}
 
-	$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param");
+	$base_url = append_sid("{$engine_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param");
 	$start = $pagination->validate_start($start, $config['topics_per_page'], $pm_count);
 	$pagination->generate_template_pagination($base_url, 'pagination', 'start', $pm_count, $config['topics_per_page'], $start);
 
@@ -478,8 +478,8 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 		'S_TOPIC_ICONS'			=> ($config['enable_pm_icons']) ? true : false,
 
-		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose') : '',
-		'S_PM_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')),
+		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid("{$engine_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose') : '',
+		'S_PM_ACTION'		=> append_sid("{$engine_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')),
 	);
 
 	/**
@@ -504,7 +504,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'pm_count',
 		'template_vars',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_folder_get_pm_from_template', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.ucp_pm_view_folder_get_pm_from_template', compact($vars)));
 
 	$template->assign_vars($template_vars);
 
@@ -569,7 +569,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'sql_limit',
 		'sql_start',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_folder_get_pm_from_sql', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.ucp_pm_view_folder_get_pm_from_sql', compact($vars)));
 
 	$result = $db->sql_query_limit($db->sql_build_query('SELECT', $sql_ary), $sql_limit, $sql_start);
 

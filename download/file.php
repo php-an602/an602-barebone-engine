@@ -15,7 +15,7 @@
 * @ignore
 */
 define('IN_ENGINE', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
+$engine_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 // Thank you sun.
@@ -33,14 +33,14 @@ else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'
 
 if (isset($_GET['avatar']))
 {
-	require($phpbb_root_path . 'includes/startup.' . $phpEx);
+	require($engine_root_path . 'includes/startup.' . $phpEx);
 
-	require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
-	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
-	$phpbb_class_loader->register();
+	require($engine_root_path . 'phpbb/class_loader.' . $phpEx);
+	$engine_class_loader = new \phpbb\class_loader('phpbb\\', "{$engine_root_path}phpbb/", $phpEx);
+	$engine_class_loader->register();
 
-	$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
-	extract($phpbb_config_php_file->get_all());
+	$engine_config_php_file = new \phpbb\config_php_file($engine_root_path, $phpEx);
+	extract($engine_config_php_file->get_all());
 
 	if (!defined('PHPBB_ENVIRONMENT'))
 	{
@@ -52,52 +52,52 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 
-	require($phpbb_root_path . 'includes/constants.' . $phpEx);
-	require($phpbb_root_path . 'includes/functions.' . $phpEx);
-	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
-	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+	require($engine_root_path . 'includes/constants.' . $phpEx);
+	require($engine_root_path . 'includes/functions.' . $phpEx);
+	require($engine_root_path . 'includes/functions_download' . '.' . $phpEx);
+	require($engine_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 	// Setup class loader first
-	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
-	$phpbb_class_loader_ext->register();
+	$engine_class_loader_ext = new \phpbb\class_loader('\\', "{$engine_root_path}ext/", $phpEx);
+	$engine_class_loader_ext->register();
 
 	// Set up container
-	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
-	$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
+	$engine_container_builder = new \phpbb\di\container_builder($engine_root_path, $phpEx);
+	$engine_container = $engine_container_builder->with_config($engine_config_php_file)->get_container();
 
-	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
-	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
+	$engine_class_loader->set_cache($engine_container->get('cache.driver'));
+	$engine_class_loader_ext->set_cache($engine_container->get('cache.driver'));
 
 	// set up caching
 	/* @var $cache \phpbb\cache\service */
-	$cache = $phpbb_container->get('cache');
+	$cache = $engine_container->get('cache');
 
-	/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
-	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+	/* @var $engine_dispatcher \phpbb\event\dispatcher */
+	$engine_dispatcher = $engine_container->get('dispatcher');
 
 	/* @var $request \phpbb\request\request_interface */
-	$request	= $phpbb_container->get('request');
+	$request	= $engine_container->get('request');
 
 	/* @var $db \phpbb\db\driver\driver_interface */
-	$db			= $phpbb_container->get('dbal.conn');
+	$db			= $engine_container->get('dbal.conn');
 
-	/* @var $phpbb_log \phpbb\log\log_interface */
-	$phpbb_log	= $phpbb_container->get('log');
+	/* @var $engine_log \phpbb\log\log_interface */
+	$engine_log	= $engine_container->get('log');
 
 	unset($dbpasswd);
 
 	/* @var $config \phpbb\config\config */
-	$config = $phpbb_container->get('config');
+	$config = $engine_container->get('config');
 
 	// load extensions
-	/* @var $phpbb_extension_manager \phpbb\extension\manager */
-	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+	/* @var $engine_extension_manager \phpbb\extension\manager */
+	$engine_extension_manager = $engine_container->get('ext.manager');
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
 
-	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
-	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+	/* @var $engine_avatar_manager \phpbb\avatar\manager */
+	$engine_avatar_manager = $engine_container->get('avatar.manager');
 
 	$filename = $request->variable('avatar', '');
 	$avatar_group = false;
@@ -147,8 +147,8 @@ if (isset($_GET['avatar']))
 }
 
 // implicit else: we are not in avatar mode
-include($phpbb_root_path . 'common.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
+include($engine_root_path . 'common.' . $phpEx);
+require($engine_root_path . 'includes/functions_download' . '.' . $phpEx);
 
 $attach_id = $request->variable('id', 0);
 $mode = $request->variable('mode', '');
@@ -159,7 +159,7 @@ $user->session_begin(false);
 $auth->acl($user->data);
 $user->setup('viewtopic');
 
-$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+$engine_content_visibility = $engine_container->get('content.visibility');
 
 if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 {
@@ -227,7 +227,7 @@ else
 			$post_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			if (!$post_row || !$phpbb_content_visibility->is_visible('post', $post_row['forum_id'], $post_row))
+			if (!$post_row || !$engine_content_visibility->is_visible('post', $post_row['forum_id'], $post_row))
 			{
 				// Attachment of a soft deleted post and the user is not allowed to see the post
 				send_status_line(404, 'Not Found');
@@ -280,7 +280,7 @@ else
 		'mode',
 		'thumbnail',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
+	extract($engine_dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
 
 	if ($thumbnail)
 	{
@@ -294,7 +294,7 @@ else
 
 	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && (strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7))
 	{
-		wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
+		wrap_img_in_html(append_sid($engine_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 		file_gc();
 	}
 	else
@@ -303,13 +303,13 @@ else
 		if ($download_mode == PHYSICAL_LINK)
 		{
 			// This presenting method should no longer be used
-			if (!@is_dir($phpbb_root_path . $config['upload_path']))
+			if (!@is_dir($engine_root_path . $config['upload_path']))
 			{
 				send_status_line(500, 'Internal Server Error');
 				trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 			}
 
-			redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+			redirect($engine_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
 			file_gc();
 		}
 		else

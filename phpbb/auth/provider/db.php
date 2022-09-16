@@ -43,7 +43,7 @@ class db extends base
 	protected $user;
 
 	/** @var string phpBB root path */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string PHP file extension */
 	protected $php_ext;
@@ -64,10 +64,10 @@ class db extends base
 	 * @param	manager	$passwords_manager
 	 * @param	request_interface		$request
 	 * @param	user			$user
-	 * @param	string				$phpbb_root_path
+	 * @param	string				$engine_root_path
 	 * @param	string				$php_ext
 	 */
-	public function __construct(factory $captcha_factory, config $config, driver_interface $db, manager $passwords_manager, request_interface $request, user $user, $phpbb_root_path, $php_ext)
+	public function __construct(factory $captcha_factory, config $config, driver_interface $db, manager $passwords_manager, request_interface $request, user $user, $engine_root_path, $php_ext)
 	{
 		$this->captcha_factory = $captcha_factory;
 		$this->config = $config;
@@ -75,7 +75,7 @@ class db extends base
 		$this->passwords_manager = $passwords_manager;
 		$this->request = $request;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 	}
 

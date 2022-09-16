@@ -41,7 +41,7 @@ class apache extends base
 	protected $user;
 
 	/** @var string Relative path to phpBB root */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/** @var string PHP file extension */
 	protected $php_ext;
@@ -54,17 +54,17 @@ class apache extends base
 	 * @param	language			$language Language object
 	 * @param	request_interface 	$request		Request object
 	 * @param	user 				$user		User object
-	 * @param	string 				$phpbb_root_path		Relative path to phpBB root
+	 * @param	string 				$engine_root_path		Relative path to phpBB root
 	 * @param	string 				$php_ext		PHP file extension
 	 */
-	public function __construct(config $config, driver_interface $db, language $language, request_interface $request, user $user, $phpbb_root_path, $php_ext)
+	public function __construct(config $config, driver_interface $db, language $language, request_interface $request, user $user, $engine_root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->language = $language;
 		$this->request = $request;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_root_path = $engine_root_path;
 		$this->php_ext = $php_ext;
 	}
 

@@ -25,8 +25,8 @@ class ucp_notifications
 
 	public function main($id, $mode)
 	{
-		global $config, $template, $user, $request, $phpbb_container, $phpbb_dispatcher;
-		global $phpbb_root_path, $phpEx;
+		global $config, $template, $user, $request, $engine_container, $engine_dispatcher;
+		global $engine_root_path, $phpEx;
 
 		add_form_key('ucp_notification');
 
@@ -34,16 +34,16 @@ class ucp_notifications
 		$form_time = $request->variable('form_time', 0);
 		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
-		/* @var $phpbb_notifications \phpbb\notification\manager */
-		$phpbb_notifications = $phpbb_container->get('notification_manager');
+		/* @var $engine_notifications \phpbb\notification\manager */
+		$engine_notifications = $engine_container->get('notification_manager');
 
 		/* @var $pagination \phpbb\pagination */
-		$pagination = $phpbb_container->get('pagination');
+		$pagination = $engine_container->get('pagination');
 
 		switch ($mode)
 		{
 			case 'notification_options':
-				$subscriptions = $phpbb_notifications->get_global_subscriptions(false);
+				$subscriptions = $engine_notifications->get_global_subscriptions(false);
 
 				// Add/remove subscriptions
 				if ($request->is_set_post('submit'))
@@ -53,9 +53,9 @@ class ucp_notifications
 						trigger_error('FORM_INVALID');
 					}
 
-					$notification_methods = $phpbb_notifications->get_subscription_methods();
+					$notification_methods = $engine_notifications->get_subscription_methods();
 
-					foreach ($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
+					foreach ($engine_notifications->get_subscription_types() as $group => $subscription_types)
 					{
 						foreach ($subscription_types as $type => $type_data)
 						{
@@ -84,15 +84,15 @@ class ucp_notifications
 									'is_available',
 									'subscriptions',
 								];
-								extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
+								extract($engine_dispatcher->trigger_event('core.ucp_notifications_submit_notification_is_set', compact($vars)));
 
 								if ($is_set_notify && $is_available && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
-									$phpbb_notifications->add_subscription($type, 0, $method_data['id']);
+									$engine_notifications->add_subscription($type, 0, $method_data['id']);
 								}
 								else if ((!$is_set_notify || !$is_available) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
 								{
-									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
+									$engine_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
 							}
 						}
@@ -103,9 +103,9 @@ class ucp_notifications
 					trigger_error($message);
 				}
 
-				$this->output_notification_methods($phpbb_notifications, $template, $user, 'notification_methods');
+				$this->output_notification_methods($engine_notifications, $template, $user, 'notification_methods');
 
-				$this->output_notification_types($subscriptions, $phpbb_notifications, $template, $user, $phpbb_dispatcher, 'notification_types');
+				$this->output_notification_types($subscriptions, $engine_notifications, $template, $user, $engine_dispatcher, 'notification_types');
 
 				$this->tpl_name = 'ucp_notifications';
 				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
@@ -116,7 +116,7 @@ class ucp_notifications
 				// Mark all items read
 				if ($request->variable('mark', '') == 'all' && check_link_hash($request->variable('token', ''), 'mark_all_notifications_read'))
 				{
-					$phpbb_notifications->mark_notifications(false, false, $user->data['user_id'], $form_time);
+					$engine_notifications->mark_notifications(false, false, $user->data['user_id'], $form_time);
 
 					meta_refresh(3, $this->u_action);
 					$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'];
@@ -147,11 +147,11 @@ class ucp_notifications
 
 					if (!empty($mark_read))
 					{
-						$phpbb_notifications->mark_notifications_by_id('notification.method.board', $mark_read, $form_time);
+						$engine_notifications->mark_notifications_by_id('notification.method.board', $mark_read, $form_time);
 					}
 				}
 
-				$notifications = $phpbb_notifications->load_notifications('notification.method.board', array(
+				$notifications = $engine_notifications->load_notifications('notification.method.board', array(
 					'start'			=> $start,
 					'limit'			=> $config['topics_per_page'],
 					'count_total'	=> true,
@@ -162,7 +162,7 @@ class ucp_notifications
 					$template->assign_block_vars('notification_list', $notification->prepare_for_display());
 				}
 
-				$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=ucp_notifications&amp;mode=notification_list");
+				$base_url = append_sid("{$engine_root_path}ucp.$phpEx", "i=ucp_notifications&amp;mode=notification_list");
 				$start = $pagination->validate_start($start, $config['topics_per_page'], $notifications['total_count']);
 				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $notifications['total_count'], $config['topics_per_page'], $start);
 
@@ -190,17 +190,17 @@ class ucp_notifications
 	* Output all the notification types to the template
 	*
 	* @param array $subscriptions Array containing global subscriptions
-	* @param \phpbb\notification\manager $phpbb_notifications
+	* @param \phpbb\notification\manager $engine_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
-	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
+	* @param \phpbb\event\dispatcher_interface $engine_dispatcher
 	* @param string $block
 	*/
-	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher, $block = 'notification_types')
+	public function output_notification_types($subscriptions, \phpbb\notification\manager $engine_notifications, \phpbb\template\template $template, \phpbb\user $user, \phpbb\event\dispatcher_interface $engine_dispatcher, $block = 'notification_types')
 	{
-		$notification_methods = $phpbb_notifications->get_subscription_methods();
+		$notification_methods = $engine_notifications->get_subscription_methods();
 
-		foreach ($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
+		foreach ($engine_notifications->get_subscription_types() as $group => $subscription_types)
 		{
 			$template->assign_block_vars($block, array(
 				'GROUP_NAME'	=> $user->lang($group),
@@ -242,7 +242,7 @@ class ucp_notifications
 						'tpl_ary',
 						'subscriptions',
 					];
-					extract($phpbb_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
+					extract($engine_dispatcher->trigger_event('core.ucp_notifications_output_notification_types_modify_template_vars', compact($vars)));
 
 					$template->assign_block_vars($block . '.notification_methods', $tpl_ary);
 				}
@@ -257,14 +257,14 @@ class ucp_notifications
 	/**
 	* Output all the notification methods to the template
 	*
-	* @param \phpbb\notification\manager $phpbb_notifications
+	* @param \phpbb\notification\manager $engine_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
 	* @param string $block
 	*/
-	public function output_notification_methods(\phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_methods')
+	public function output_notification_methods(\phpbb\notification\manager $engine_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_methods')
 	{
-		$notification_methods = $phpbb_notifications->get_subscription_methods();
+		$notification_methods = $engine_notifications->get_subscription_methods();
 
 		foreach ($notification_methods as $method => $method_data)
 		{

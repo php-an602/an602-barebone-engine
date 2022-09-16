@@ -22,11 +22,11 @@ if (!defined('IN_ENGINE'))
 if (!class_exists('bbcode'))
 {
 	// The following lines are for extensions which include message_parser.php
-	// while $phpbb_root_path and $phpEx are out of the script scope
+	// while $engine_root_path and $phpEx are out of the script scope
 	// which may lead to the 'Undefined variable' and 'failed to open stream' errors
-	if (!isset($phpbb_root_path))
+	if (!isset($engine_root_path))
 	{
-		global $phpbb_root_path;
+		global $engine_root_path;
 	}
 
 	if (!isset($phpEx))
@@ -34,7 +34,7 @@ if (!class_exists('bbcode'))
 		global $phpEx;
 	}
 
-	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+	include($engine_root_path . 'includes/bbcode.' . $phpEx);
 }
 
 /**
@@ -127,7 +127,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_init($allow_custom_bbcode = true)
 	{
-		global $phpbb_dispatcher;
+		global $engine_dispatcher;
 
 		static $rowset;
 
@@ -257,7 +257,7 @@ class bbcode_firstpass extends bbcode
 		* @since 3.1.0-a3
 		*/
 		$vars = array('bbcodes', 'rowset');
-		extract($phpbb_dispatcher->trigger_event('core.modify_bbcode_init', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.modify_bbcode_init', compact($vars)));
 
 		$this->bbcodes = $bbcodes;
 	}
@@ -1124,7 +1124,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
-		global $config, $user, $phpbb_dispatcher, $phpbb_container;
+		global $config, $user, $engine_dispatcher, $engine_container;
 
 		$this->mode = $mode;
 
@@ -1215,7 +1215,7 @@ class parse_message extends bbcode_firstpass
 			'return',
 			'warn_msg',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.message_parser_check_message', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.message_parser_check_message', compact($vars)));
 		$this->message = $message;
 		$this->warn_msg = $warn_msg;
 		$this->bbcode_bitfield = $bbcode_bitfield;
@@ -1226,7 +1226,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		// Get the parser
-		$parser = $phpbb_container->get('text_formatter.parser');
+		$parser = $engine_container->get('text_formatter.parser');
 
 		// Set the parser's options
 		($allow_bbcode)       ? $parser->enable_bbcodes()       : $parser->disable_bbcodes();
@@ -1266,7 +1266,7 @@ class parse_message extends bbcode_firstpass
 		// Remove quotes that are nested too deep
 		if ($config['max_quote_depth'] > 0)
 		{
-			$this->message = $phpbb_container->get('text_formatter.utils')->remove_bbcode(
+			$this->message = $engine_container->get('text_formatter.utils')->remove_bbcode(
 				$this->message,
 				'quote',
 				$config['max_quote_depth']
@@ -1303,7 +1303,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
-		global $phpbb_container, $phpbb_dispatcher;
+		global $engine_container, $engine_dispatcher;
 
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
@@ -1329,7 +1329,7 @@ class parse_message extends bbcode_firstpass
 		* @since 3.1.6-RC1
 		*/
 		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
-		extract($phpbb_dispatcher->trigger_event('core.modify_format_display_text_before', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.modify_format_display_text_before', compact($vars)));
 
 		$this->message = $text;
 		$this->bbcode_uid = $uid;
@@ -1350,10 +1350,10 @@ class parse_message extends bbcode_firstpass
 		// devised
 		if ($this->message === '')
 		{
-			$this->message = $phpbb_container->get('text_formatter.parser')->parse($this->message);
+			$this->message = $engine_container->get('text_formatter.parser')->parse($this->message);
 		}
 
-		$this->message = $phpbb_container->get('text_formatter.renderer')->render($this->message);
+		$this->message = $engine_container->get('text_formatter.renderer')->render($this->message);
 
 		$text = $this->message;
 		$uid = $this->bbcode_uid;
@@ -1372,7 +1372,7 @@ class parse_message extends bbcode_firstpass
 		* @since 3.1.0-a3
 		*/
 		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
-		extract($phpbb_dispatcher->trigger_event('core.modify_format_display_text_after', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.modify_format_display_text_after', compact($vars)));
 
 		$this->message = $text;
 		$this->bbcode_uid = $uid;
@@ -1531,8 +1531,8 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
-		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
-		global $phpbb_container, $phpbb_dispatcher;
+		global $config, $auth, $user, $engine_root_path, $phpEx, $db, $request;
+		global $engine_container, $engine_dispatcher;
 
 		$error = array();
 
@@ -1569,7 +1569,7 @@ class parse_message extends bbcode_firstpass
 			if ($num_attachments < $cfg['max_attachments'] || $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id))
 			{
 				/** @var \phpbb\attachment\manager $attachment_manager */
-				$attachment_manager = $phpbb_container->get('attachment.manager');
+				$attachment_manager = $engine_container->get('attachment.manager');
 				$filedata = $attachment_manager->upload($form_name, $forum_id, false, '', $is_message);
 				$error = $filedata['error'];
 
@@ -1597,7 +1597,7 @@ class parse_message extends bbcode_firstpass
 					* @since 3.2.6-RC1
 					*/
 					$vars = array('sql_ary');
-					extract($phpbb_dispatcher->trigger_event('core.modify_attachment_sql_ary_on_submit', compact($vars)));
+					extract($engine_dispatcher->trigger_event('core.modify_attachment_sql_ary_on_submit', compact($vars)));
 
 					$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
@@ -1620,7 +1620,7 @@ class parse_message extends bbcode_firstpass
 					*/
 					$attachment_data = $this->attachment_data;
 					$vars = array('attachment_data');
-					extract($phpbb_dispatcher->trigger_event('core.modify_attachment_data_on_submit', compact($vars)));
+					extract($engine_dispatcher->trigger_event('core.modify_attachment_data_on_submit', compact($vars)));
 					$this->attachment_data = $attachment_data;
 					unset($attachment_data);
 
@@ -1657,7 +1657,7 @@ class parse_message extends bbcode_firstpass
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
-				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				include_once($engine_root_path . 'includes/functions_admin.' . $phpEx);
 
 				$index = array_keys($request->variable('delete_file', array(0 => 0)));
 				$index = (!empty($index)) ? $index[0] : false;
@@ -1665,7 +1665,7 @@ class parse_message extends bbcode_firstpass
 				if ($index !== false && !empty($this->attachment_data[$index]))
 				{
 					/** @var \phpbb\attachment\manager $attachment_manager */
-					$attachment_manager = $phpbb_container->get('attachment.manager');
+					$attachment_manager = $engine_container->get('attachment.manager');
 
 					// delete selected attachment
 					if ($this->attachment_data[$index]['is_orphan'])
@@ -1714,7 +1714,7 @@ class parse_message extends bbcode_firstpass
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
 					/** @var \phpbb\attachment\manager $attachment_manager */
-					$attachment_manager = $phpbb_container->get('attachment.manager');
+					$attachment_manager = $engine_container->get('attachment.manager');
 					$filedata = $attachment_manager->upload($form_name, $forum_id, false, '', $is_message);
 					$error = array_merge($error, $filedata['error']);
 
@@ -1742,7 +1742,7 @@ class parse_message extends bbcode_firstpass
 						* @since 3.2.6-RC1
 						*/
 						$vars = array('sql_ary');
-						extract($phpbb_dispatcher->trigger_event('core.modify_attachment_sql_ary_on_upload', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.modify_attachment_sql_ary_on_upload', compact($vars)));
 
 						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
@@ -1765,7 +1765,7 @@ class parse_message extends bbcode_firstpass
 						*/
 						$attachment_data = $this->attachment_data;
 						$vars = array('attachment_data');
-						extract($phpbb_dispatcher->trigger_event('core.modify_attachment_data_on_upload', compact($vars)));
+						extract($engine_dispatcher->trigger_event('core.modify_attachment_data_on_upload', compact($vars)));
 						$this->attachment_data = $attachment_data;
 						unset($attachment_data);
 
@@ -1776,7 +1776,7 @@ class parse_message extends bbcode_firstpass
 
 						if (isset($this->plupload) && $this->plupload->is_active())
 						{
-							$download_url = append_sid("{$phpbb_root_path}download/file.{$phpEx}", 'mode=view&amp;id=' . $new_entry['attach_id']);
+							$download_url = append_sid("{$engine_root_path}download/file.{$phpEx}", 'mode=view&amp;id=' . $new_entry['attach_id']);
 
 							// Send the client the attachment data to maintain state
 							$json_response->send(array('data' => $this->attachment_data, 'download_url' => $download_url));
@@ -1966,11 +1966,11 @@ class parse_message extends bbcode_firstpass
 	*/
 	public function remove_nested_quotes($max_depth)
 	{
-		global $phpbb_container;
+		global $engine_container;
 
 		if (preg_match('#^<[rt][ >]#', $this->message))
 		{
-			$this->message = $phpbb_container->get('text_formatter.utils')->remove_bbcode(
+			$this->message = $engine_container->get('text_formatter.utils')->remove_bbcode(
 				$this->message,
 				'quote',
 				$max_depth
@@ -2038,7 +2038,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	public function validate_bbcode_by_extension()
 	{
-		global $phpbb_dispatcher;
+		global $engine_dispatcher;
 
 		$return = false;
 		$params_array = func_get_args();
@@ -2054,7 +2054,7 @@ class parse_message extends bbcode_firstpass
 		* @since 3.1.5-RC1
 		*/
 		$vars = array('params_array', 'return');
-		extract($phpbb_dispatcher->trigger_event('core.validate_bbcode_by_extension', compact($vars)));
+		extract($engine_dispatcher->trigger_event('core.validate_bbcode_by_extension', compact($vars)));
 
 		return $return;
 	}

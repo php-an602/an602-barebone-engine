@@ -48,7 +48,7 @@ class config
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $engine_root_path;
 
 	/**
 	 * Array containing progress information
@@ -83,11 +83,11 @@ class config
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \bantu\IniGetWrapper\IniGetWrapper $php_ini, $phpbb_root_path)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \bantu\IniGetWrapper\IniGetWrapper $php_ini, $engine_root_path)
 	{
 		$this->filesystem		= $filesystem;
 		$this->php_ini			= $php_ini;
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->phpbb_root_path	= $engine_root_path;
 		$this->do_clean_up		= false;
 
 		// Set up data arrays

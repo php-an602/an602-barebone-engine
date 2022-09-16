@@ -16,9 +16,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 /**
 */
 define('IN_ENGINE', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$engine_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+include($engine_root_path . 'common.' . $phpEx);
 
 // Do not update users last page entry
 $user->session_begin(false);
@@ -29,7 +29,7 @@ $cron_type = $request->variable('cron_type', '');
 $get_params_array = $request->get_super_global(\phpbb\request\request_interface::GET);
 
 /** @var \phpbb\controller\helper $controller_helper */
-$controller_helper = $phpbb_container->get('controller.helper');
+$controller_helper = $engine_container->get('controller.helper');
 $response = new RedirectResponse(
 	$controller_helper->route('phpbb_cron_run', $get_params_array, false),
 	301

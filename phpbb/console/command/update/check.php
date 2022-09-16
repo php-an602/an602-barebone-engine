@@ -30,7 +30,7 @@ class check extends \phpbb\console\command\command
 	protected $config;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerBuilder */
-	protected $phpbb_container;
+	protected $engine_container;
 
 	/**
 	 * @var language
@@ -40,10 +40,10 @@ class check extends \phpbb\console\command\command
 	/**
 	* Construct method
 	*/
-	public function __construct(user $user, config $config, ContainerInterface $phpbb_container, language $language)
+	public function __construct(user $user, config $config, ContainerInterface $engine_container, language $language)
 	{
 		$this->config = $config;
-		$this->phpbb_container = $phpbb_container;
+		$this->phpbb_container = $engine_container;
 		$this->language = $language;
 
 		$this->language->add_lang(array('acp/common', 'acp/extensions'));

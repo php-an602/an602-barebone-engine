@@ -28,7 +28,7 @@ class acp_words
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template, $cache, $phpbb_log, $request, $phpbb_container;
+		global $db, $user, $template, $cache, $engine_log, $request, $engine_container;
 
 		$user->add_lang('acp/posting');
 
@@ -114,11 +114,11 @@ class acp_words
 				}
 
 				$cache->destroy('_word_censors');
-				$phpbb_container->get('text_formatter.cache')->invalidate();
+				$engine_container->get('text_formatter.cache')->invalidate();
 
 				$log_action = ($word_id) ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD';
 
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($word));
+				$engine_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($word));
 
 				$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
 				trigger_error($message . adm_back_link($this->u_action));
@@ -148,9 +148,9 @@ class acp_words
 					$db->sql_query($sql);
 
 					$cache->destroy('_word_censors');
-					$phpbb_container->get('text_formatter.cache')->invalidate();
+					$engine_container->get('text_formatter.cache')->invalidate();
 
-					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WORD_DELETE', false, array($deleted_word));
+					$engine_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WORD_DELETE', false, array($deleted_word));
 
 					trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
 				}
