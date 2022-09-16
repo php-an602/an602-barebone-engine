@@ -189,7 +189,7 @@ function generate_smilies($mode, $forum_id)
 
 	if (count($smilies))
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $engine_path_helper->get_web_root_path();
+		$root_path = (defined('ENGINE_USE_BOARD_URL_PATH') && ENGINE_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $engine_path_helper->get_web_root_path();
 
 		foreach ($smilies as $row)
 		{
@@ -432,7 +432,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 
 	if (count($icons))
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $engine_root_path;
+		$root_path = (defined('ENGINE_USE_BOARD_URL_PATH') && ENGINE_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $engine_root_path;
 
 		foreach ($icons as $id => $data)
 		{

@@ -3703,7 +3703,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 			$engine_path_helper = $engine_container->get('path_helper');
 			$corrected_path = $engine_path_helper->get_web_root_path();
 
-			$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
+			$web_path = (defined('ENGINE_USE_BOARD_URL_PATH') && ENGINE_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 			$theme = "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme';
 
@@ -3899,7 +3899,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	/* @var $engine_path_helper \phpbb\path_helper */
 	$engine_path_helper = $engine_container->get('path_helper');
 	$corrected_path = $engine_path_helper->get_web_root_path();
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
+	$web_path = (defined('ENGINE_USE_BOARD_URL_PATH') && ENGINE_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];

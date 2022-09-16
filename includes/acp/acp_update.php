@@ -74,13 +74,13 @@ class acp_update
 		$template->assign_vars($template_ary);
 
 		// Incomplete update?
-		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
+		if (phpbb_version_compare($config['version'], ENGINE_VERSION, '<'))
 		{
 			$database_update_link = $engine_root_path . 'install/app.php/update';
 
 			$template->assign_vars(array(
 				'S_UPDATE_INCOMPLETE'		=> true,
-				'FILES_VERSION'				=> PHPBB_VERSION,
+				'FILES_VERSION'				=> ENGINE_VERSION,
 				'INCOMPLETE_INSTRUCTIONS'	=> $user->lang('UPDATE_INCOMPLETE_EXPLAIN', $database_update_link),
 			));
 		}

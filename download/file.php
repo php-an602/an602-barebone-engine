@@ -15,7 +15,7 @@
 * @ignore
 */
 define('IN_ENGINE', true);
-$engine_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
+$engine_root_path = (defined('ENGINE_ROOT_PATH')) ? ENGINE_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 // Thank you sun.
@@ -42,12 +42,12 @@ if (isset($_GET['avatar']))
 	$engine_config_php_file = new \phpbb\config_php_file($engine_root_path, $phpEx);
 	extract($engine_config_php_file->get_all());
 
-	if (!defined('PHPBB_ENVIRONMENT'))
+	if (!defined('ENGINE_ENVIRONMENT'))
 	{
-		@define('PHPBB_ENVIRONMENT', 'production');
+		@define('ENGINE_ENVIRONMENT', 'production');
 	}
 
-	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
+	if (!defined('ENGINE_INSTALLED') || empty($dbms) || empty($acm_type))
 	{
 		exit;
 	}

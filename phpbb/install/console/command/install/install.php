@@ -109,7 +109,7 @@ class install extends \phpbb\console\command\command
 
 		if ($this->install_helper->is_phpbb_installed())
 		{
-			$iohandler->add_error_message('INSTALL_PHPBB_INSTALLED');
+			$iohandler->add_error_message('INSTALL_ENGINE_INSTALLED');
 
 			return 1;
 		}

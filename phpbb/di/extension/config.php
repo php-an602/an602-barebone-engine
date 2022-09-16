@@ -43,7 +43,7 @@ class config extends Extension
 			'core.adm_relative_path'	=> $this->config_php->get('phpbb_adm_relative_path') ? $this->config_php->get('phpbb_adm_relative_path') : 'adm/',
 			'core.table_prefix'			=> $this->config_php->get('table_prefix'),
 			'cache.driver.class'		=> $this->convert_30_acm_type($this->config_php->get('acm_type')),
-			'dbal.new_link'				=> defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK,
+			'dbal.new_link'				=> defined('ENGINE_DB_NEW_LINK') && ENGINE_DB_NEW_LINK,
 		);
 		$parameter_bag = $container->getParameterBag();
 

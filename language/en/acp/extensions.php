@@ -108,7 +108,7 @@ $lang = array_merge($lang, array(
 	'LICENSE'				=> 'Licence',
 
 	'REQUIREMENTS'			=> 'Requirements',
-	'PHPBB_VERSION'			=> 'phpBB Version',
+	'ENGINE_VERSION'			=> 'phpBB Version',
 	'PHP_VERSION'			=> 'PHP Version',
 	'AUTHOR_INFORMATION'	=> 'Author Information',
 	'AUTHOR_NAME'			=> 'Name',

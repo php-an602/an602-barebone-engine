@@ -190,19 +190,19 @@ class create_config_file extends \phpbb\install\task_base
 			$config_content .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
 		}
 
-		$config_content .= "\n@define('PHPBB_INSTALLED', true);\n";
+		$config_content .= "\n@define('ENGINE_INSTALLED', true);\n";
 
 		if ($environment)
 		{
-			$config_content .= "@define('PHPBB_ENVIRONMENT', 'test');\n";
+			$config_content .= "@define('ENGINE_ENVIRONMENT', 'test');\n";
 		}
 		else if ($debug)
 		{
-			$config_content .= "@define('PHPBB_ENVIRONMENT', 'development');\n";
+			$config_content .= "@define('ENGINE_ENVIRONMENT', 'development');\n";
 		}
 		else
 		{
-			$config_content .= "@define('PHPBB_ENVIRONMENT', 'production');\n";
+			$config_content .= "@define('ENGINE_ENVIRONMENT', 'production');\n";
 		}
 
 		if ($debug_container)

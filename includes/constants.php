@@ -21,17 +21,17 @@ if (!defined('IN_ENGINE'))
 
 /**
 * valid external constants:
-* PHPBB_MSG_HANDLER
-* PHPBB_DB_NEW_LINK
-* PHPBB_ROOT_PATH
-* PHPBB_ADMIN_PATH
+* ENGINE_MSG_HANDLER
+* ENGINE_DB_NEW_LINK
+* ENGINE_ROOT_PATH
+* ENGINE_ADMIN_PATH
 */
 
 // phpBB Version
-@define('PHPBB_VERSION', '3.3.8');
+@define('ENGINE_VERSION', '3.3.8');
 
 // QA-related
-// define('PHPBB_QA', 1);
+// define('ENGINE_QA', 1);
 
 // User related
 define('ANONYMOUS', 1);

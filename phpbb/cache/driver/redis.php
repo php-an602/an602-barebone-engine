@@ -13,14 +13,14 @@
 
 namespace phpbb\cache\driver;
 
-if (!defined('PHPBB_ACM_REDIS_PORT'))
+if (!defined('ENGINE_ACM_REDIS_PORT'))
 {
-	define('PHPBB_ACM_REDIS_PORT', 6379);
+	define('ENGINE_ACM_REDIS_PORT', 6379);
 }
 
-if (!defined('PHPBB_ACM_REDIS_HOST'))
+if (!defined('ENGINE_ACM_REDIS_HOST'))
 {
-	define('PHPBB_ACM_REDIS_HOST', 'localhost');
+	define('ENGINE_ACM_REDIS_HOST', 'localhost');
 }
 
 /**
@@ -41,10 +41,10 @@ class redis extends \phpbb\cache\driver\memory
 	*
 	* The following global constants affect operation:
 	*
-	* PHPBB_ACM_REDIS_HOST
-	* PHPBB_ACM_REDIS_PORT
-	* PHPBB_ACM_REDIS_PASSWORD
-	* PHPBB_ACM_REDIS_DB
+	* ENGINE_ACM_REDIS_HOST
+	* ENGINE_ACM_REDIS_PORT
+	* ENGINE_ACM_REDIS_PASSWORD
+	* ENGINE_ACM_REDIS_DB
 	*
 	* There are no publicly documented constructor parameters.
 	*/
@@ -62,7 +62,7 @@ class redis extends \phpbb\cache\driver\memory
 		}
 		else
 		{
-			$ok = $this->redis->connect(PHPBB_ACM_REDIS_HOST, PHPBB_ACM_REDIS_PORT);
+			$ok = $this->redis->connect(ENGINE_ACM_REDIS_HOST, ENGINE_ACM_REDIS_PORT);
 		}
 
 		if (!$ok)
@@ -70,9 +70,9 @@ class redis extends \phpbb\cache\driver\memory
 			trigger_error('Could not connect to redis server');
 		}
 
-		if (defined('PHPBB_ACM_REDIS_PASSWORD'))
+		if (defined('ENGINE_ACM_REDIS_PASSWORD'))
 		{
-			if (!$this->redis->auth(PHPBB_ACM_REDIS_PASSWORD))
+			if (!$this->redis->auth(ENGINE_ACM_REDIS_PASSWORD))
 			{
 				global $acm_type;
 
@@ -83,9 +83,9 @@ class redis extends \phpbb\cache\driver\memory
 		$this->redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_PHP);
 		$this->redis->setOption(\Redis::OPT_PREFIX, $this->key_prefix);
 
-		if (defined('PHPBB_ACM_REDIS_DB'))
+		if (defined('ENGINE_ACM_REDIS_DB'))
 		{
-			if (!$this->redis->select(PHPBB_ACM_REDIS_DB))
+			if (!$this->redis->select(ENGINE_ACM_REDIS_DB))
 			{
 				global $acm_type;
 

@@ -1088,7 +1088,7 @@ function smiley_text($text, $force_option = false)
 	}
 	else
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $engine_path_helper->get_web_root_path();
+		$root_path = (defined('ENGINE_USE_BOARD_URL_PATH') && ENGINE_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $engine_path_helper->get_web_root_path();
 
 		/**
 		* Event to override the root_path for smilies

@@ -33,9 +33,9 @@ $engine_class_loader->register();
 $engine_config_php_file = new \phpbb\config_php_file($engine_root_path, $phpEx);
 extract($engine_config_php_file->get_all());
 
-if (!defined('PHPBB_ENVIRONMENT'))
+if (!defined('ENGINE_ENVIRONMENT'))
 {
-	@define('PHPBB_ENVIRONMENT', 'production');
+	@define('ENGINE_ENVIRONMENT', 'production');
 }
 
 require($engine_root_path . 'includes/constants.' . $phpEx);
@@ -84,7 +84,7 @@ $user = $engine_container->get('user');
 $user->data['user_id'] = ANONYMOUS;
 $user->ip = '127.0.0.1';
 
-$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $language, $config);
+$application = new \phpbb\console\application('phpBB Console', ENGINE_VERSION, $language, $config);
 $application->setDispatcher($engine_container->get('dispatcher'));
 $application->register_container_commands($engine_container->get('console.command_collection'));
 $application->run($input);

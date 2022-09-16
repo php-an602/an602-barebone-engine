@@ -15,7 +15,7 @@
 * @ignore
 */
 define('IN_ENGINE', true);
-$engine_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+$engine_root_path = (defined('ENGINE_ROOT_PATH')) ? ENGINE_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($engine_root_path . 'common.' . $phpEx);
 require($engine_root_path . 'includes/functions_user.' . $phpEx);

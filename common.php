@@ -20,6 +20,11 @@ if (!defined('IN_ENGINE'))
 	exit;
 }
 
+/**
+* DEFINE ENGINE DIRECTORY
+*/
+//$engine = 'phpbb/';
+
 require($engine_root_path . 'includes/startup.' . $phpEx);
 require($engine_root_path . 'phpbb/class_loader.' . $phpEx);
 
@@ -29,12 +34,12 @@ $engine_class_loader->register();
 $engine_config_php_file = new \phpbb\config_php_file($engine_root_path, $phpEx);
 extract($engine_config_php_file->get_all());
 
-if (!defined('PHPBB_ENVIRONMENT'))
+if (!defined('ENGINE_ENVIRONMENT'))
 {
-	@define('PHPBB_ENVIRONMENT', 'production');
+	@define('ENGINE_ENVIRONMENT', 'production');
 }
 
-if (!defined('PHPBB_INSTALLED'))
+if (!defined('ENGINE_INSTALLED'))
 {
 	// Redirect the user to the installer
 	require($engine_root_path . 'includes/functions.' . $phpEx);
@@ -86,7 +91,7 @@ if (!defined('PHPBB_INSTALLED'))
 
 // In case $engine_adm_relative_path is not set (in case of an update), use the default.
 $engine_adm_relative_path = (isset($engine_adm_relative_path)) ? $engine_adm_relative_path : 'adm/';
-$engine_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $engine_root_path . $engine_adm_relative_path;
+$engine_admin_path = (defined('ENGINE_ADMIN_PATH')) ? ENGINE_ADMIN_PATH : $engine_root_path . $engine_adm_relative_path;
 
 // Include files
 require($engine_root_path . 'includes/functions.' . $phpEx);
@@ -98,13 +103,13 @@ require($engine_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Registered before building the container so the development environment stay capable of intercepting
 // the container builder exceptions.
-if (PHPBB_ENVIRONMENT === 'development')
+if (ENGINE_ENVIRONMENT === 'development')
 {
 	\phpbb\debug\debug::enable();
 }
 else
 {
-	set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
+	set_error_handler(defined('ENGINE_MSG_HANDLER') ? ENGINE_MSG_HANDLER : 'msg_handler');
 }
 
 $engine_class_loader_ext = new \phpbb\class_loader('\\', "{$engine_root_path}ext/", $phpEx);
@@ -118,10 +123,10 @@ try
 }
 catch (InvalidArgumentException $e)
 {
-	if (PHPBB_ENVIRONMENT !== 'development')
+	if (ENGINE_ENVIRONMENT !== 'development')
 	{
 		trigger_error(
-			'The requested environment ' . PHPBB_ENVIRONMENT . ' is not available.',
+			'The requested environment ' . ENGINE_ENVIRONMENT . ' is not available.',
 			E_USER_ERROR
 		);
 	}

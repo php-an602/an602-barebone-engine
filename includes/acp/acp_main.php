@@ -473,7 +473,7 @@ class acp_main
 		}
 
 		// Incomplete update?
-		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
+		if (phpbb_version_compare($config['version'], ENGINE_VERSION, '<'))
 		{
 			$template->assign_var('S_UPDATE_INCOMPLETE', true);
 		}
@@ -671,7 +671,7 @@ class acp_main
 			}
 		}
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK'))
+		if (!defined('ENGINE_DISABLE_CONFIG_CHECK'))
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($engine_root_path . 'config.' . $phpEx) & 0x0002));
