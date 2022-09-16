@@ -19,12 +19,6 @@ if (!defined('IN_ENGINE'))
 {
 	exit;
 }
-
-/**
-* DEFINE ENGINE DIRECTORY
-*/
-//$engine = 'phpbb/';
-
 require($engine_root_path . 'includes/startup.' . $phpEx);
 require($engine_root_path . 'phpbb/class_loader.' . $phpEx);
 
