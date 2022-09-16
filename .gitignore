@@ -1,4 +1,7 @@
 _notes
 *.ini
-config.php
+config.*
+
+
+
 
