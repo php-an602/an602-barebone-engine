@@ -13,7 +13,7 @@
 
 /**
 */
-define('IN_PHPBB', true);
+define('IN_ENGINE', true);
 define('ADMIN_START', true);
 define('NEED_SID', true);
 

@@ -20,7 +20,7 @@ if (php_sapi_name() != 'cli')
 	exit(1);
 }
 
-define('IN_PHPBB', true);
+define('IN_ENGINE', true);
 
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
